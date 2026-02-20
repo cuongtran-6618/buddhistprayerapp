@@ -43,7 +43,16 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": ["en", "vi"],
+            "android": ["en", "vi"],
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

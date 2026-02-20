@@ -1,0 +1,12 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Welcome to the Buddhist Prayer App",
+    "NSContactsUsageDescription": "This app uses Vietnamese language",
+    "HELLO_NOTIFICATION_KEY": "Buddhist Prayer App iOS",
+  },
+  "android": {
+    "app_name": "Welcome to the Buddhist Prayer App",
+    "HELLO_NOTIFICATION_KEY": "Buddhist Prayer App"
+  },
+  
+}

@@ -1,0 +1,13 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
+    "NSContactsUsageDescription": "Ứng dụng này sử dụng ngôn ngữ tiếng Việt",
+    "Localizable.strings": {
+      "HELLO_NOTIFICATION_KEY": "Xin chào thế giới"
+    }
+  },
+  "android": {
+    "app_name": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
+    "HELLO_NOTIFICATION_KEY": "Xin chào thế giới    "
+  }
+}
