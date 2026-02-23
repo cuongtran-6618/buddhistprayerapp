@@ -15,10 +15,12 @@ interface OnboardingScreenProps {
   onNext: () => void;
 }
 
+const RING_SIZES = [180, 160, 140];
+
 const slides = [
   {
     icon: "🪷",
-    title: i18n.t("onboarding.welcome"),    
+    title: i18n.t("onboarding.welcome"),
     body: i18n.t("onboarding.description"),
   },
   {
@@ -28,21 +30,29 @@ const slides = [
   },
   {
     icon: "🔔",
-    title: i18n.t("onboarding.prayerReminders"),    
+    title: i18n.t("onboarding.prayerReminders"),
     body: i18n.t("onboarding.prayerRemindersDescription"),
   },
 ];
+
+function LoginLink({ text, link }: { text: string; link: string }) {
+  return (
+    <View style={styles.loginRow}>
+      <Text style={styles.loginText}>{text} </Text>
+      <Text style={styles.loginLink}>{link}</Text>
+    </View>
+  );
+}
 
 export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   const [step, setStep] = useState(0);
   const [animating, setAnimating] = useState(false);
 
   // Pulse animations for the 3 decorative rings
-  const onboardScreens = [
-    useRef(new Animated.Value(1)).current,
-    useRef(new Animated.Value(1)).current,
-    useRef(new Animated.Value(1)).current,
-  ];
+  const ringAnim0 = useRef(new Animated.Value(1)).current;
+  const ringAnim1 = useRef(new Animated.Value(1)).current;
+  const ringAnim2 = useRef(new Animated.Value(1)).current;
+  const ringAnims = [ringAnim0, ringAnim1, ringAnim2];
 
   // Icon fade/scale
   const iconOpacity = useRef(new Animated.Value(1)).current;
@@ -50,7 +60,7 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   const textOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    onboardScreens.forEach((anim, i) => {
+    ringAnims.forEach((anim, i) => {
       Animated.loop(
         Animated.sequence([
           Animated.timing(anim, {
@@ -68,39 +78,44 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
     });
   }, []);
 
-  const advance = () => {
-    if (step < slides.length - 1) {
-      setAnimating(true);
+  const transitionToStep = (newStep: number) => {
+    setAnimating(true);
+    Animated.parallel([
+      Animated.timing(iconOpacity, { toValue: 0, duration: 150, useNativeDriver: true }),
+      Animated.timing(iconScale, { toValue: 0.95, duration: 150, useNativeDriver: true }),
+      Animated.timing(textOpacity, { toValue: 0, duration: 150, useNativeDriver: true }),
+    ]).start(() => {
+      setStep(newStep);
+      setAnimating(false);
       Animated.parallel([
-        Animated.timing(iconOpacity, { toValue: 0, duration: 150, useNativeDriver: true }),
-        Animated.timing(iconScale, { toValue: 0.95, duration: 150, useNativeDriver: true }),
-        Animated.timing(textOpacity, { toValue: 0, duration: 150, useNativeDriver: true }),
-      ]).start(() => {
-        setStep((s) => s + 1);
-        setAnimating(false);
-        Animated.parallel([
-          Animated.timing(iconOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
-          Animated.timing(iconScale, { toValue: 1, duration: 200, useNativeDriver: true }),
-          Animated.timing(textOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
-        ]).start();
-      });
-    } else {
-      onNext();
-    }
+        Animated.timing(iconOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.timing(iconScale, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.timing(textOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+      ]).start();
+    });
   };
 
+  const goBack = () => { if (step > 0 && !animating) transitionToStep(step - 1); };
+  const advance = () => { if (!isLastSlide) transitionToStep(step + 1); else onNext(); };
+
   const slide = slides[step];
-  const ringSizes = [180, 160, 140];
+  const isFirstSlide = step === 0;
+  const isLastSlide = step === slides.length - 1;
 
   return (
     <View style={styles.container}>
-      {/* Atmospheric radial gradient */}
-      <View style={styles.atmosphereTop} pointerEvents="none" />
       <View style={styles.atmosphereAccent} pointerEvents="none" />
 
-      {/* Skip button */}
-      <View style={styles.skipRow}>
-        {step < slides.length - 1 && (
+      {/* Top row: back button (left) + skip button (right) */}
+      <View style={styles.topRow}>
+        {isFirstSlide ? (
+          <View />
+        ) : (
+          <Pressable onPress={goBack} hitSlop={12}>
+            <Text style={styles.backText}>←</Text>
+          </Pressable>
+        )}
+        {!isLastSlide && (
           <Pressable onPress={onNext}>
             <Text style={styles.skipText}>{i18n.t("onboarding.skip")}</Text>
           </Pressable>
@@ -111,7 +126,7 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
       <View style={styles.illustrationArea}>
         {/* Decorative rings */}
         <View style={styles.ringContainer}>
-          {ringSizes.map((size, i) => (
+          {RING_SIZES.map((size, i) => (
             <Animated.View
               key={i}
               style={[
@@ -120,7 +135,7 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
                   width: size,
                   height: size,
                   borderColor: `rgba(200,135,42,${0.08 + i * 0.06})`,
-                  transform: [{ scale: onboardScreens[i] }],
+                  transform: [{ scale: ringAnims[i] }],
                 },
               ]}
             />
@@ -172,21 +187,16 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
             style={styles.ctaButton}
           >
             <Text style={styles.ctaText}>
-              {step < slides.length - 1 ? i18n.t("onboarding.next") + " →" : i18n.t("onboarding.getStarted")}
+              {isLastSlide ? i18n.t("onboarding.getStarted") : i18n.t("onboarding.next") + " →"}
             </Text>
           </LinearGradient>
         </Pressable>
 
-        {step === slides.length - 1 && (
+        {/* Login/signup links on last slide */}
+        {isLastSlide && (
           <View>
-            <View style={styles.loginRow}>
-              <Text style={styles.loginText}>{i18n.t("onboarding.loginText")} </Text>
-              <Text style={styles.loginLink}>{i18n.t("onboarding.loginLink")}</Text>
-            </View>
-            <View style={styles.loginRow}>
-              <Text style={styles.loginText}>{i18n.t("onboarding.signupText")} </Text>
-              <Text style={styles.loginLink}>{i18n.t("onboarding.signupLink")}</Text>
-            </View>
+            <LoginLink text={i18n.t("onboarding.loginText")} link={i18n.t("onboarding.loginLink")} />
+            <LoginLink text={i18n.t("onboarding.signupText")} link={i18n.t("onboarding.signupLink")} />
           </View>
         )}
       </View>
@@ -199,11 +209,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.bg,
   },
-  atmosphereTop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "transparent",
-    // Simulated with a subtle overlay — LinearGradient handles this on the bg
-  },
   atmosphereAccent: {
     position: "absolute",
     bottom: 0,
@@ -212,12 +217,18 @@ const styles = StyleSheet.create({
     height: "60%",
     opacity: 0.4,
   },
-  skipRow: {
+  topRow: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 24,
     paddingTop: 62,
     paddingBottom: 8,
+  },
+  backText: {
+    color: Colors.muted,
+    fontSize: 20,
+    fontFamily: Fonts.regular,
   },
   skipText: {
     color: Colors.muted,
