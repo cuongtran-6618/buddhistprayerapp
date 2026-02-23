@@ -9,5 +9,21 @@
   "android": {
     "app_name": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
     "HELLO_NOTIFICATION_KEY": "Xin chào thế giới    "
-  }
+  },
+  "onboarding": {
+    "welcome": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
+    "description": "Ứng dụng này giúp bạn dễ dàng truy cập các bài kinh và lời cầu nguyện Phật giáo yêu thích của mình.",
+    "getStarted": "Bắt đầu tu hành 🪷",
+    "skip": "Bỏ qua",
+    "next": "Tiếp theo",
+    "chantingDaily": "Tụng Kinh hàng ngày",
+    "chantingDailyDescription": "Tụng Kinh hàng ngày giúp bạn duy trì sự kết nối với lời dạy của Đức Phật và nuôi dưỡng tâm hồn của bạn.",
+    "prayerReminders": "Nhắc nhở thời khóa",
+    "prayerRemindersDescription": "Đặt nhắc nhở để không bao giờ bỏ lỡ thời khóa tu hành.",
+    "loginText": "Bạn đã có tài khoản?",
+    "loginLink": "Đăng nhập",
+    "signupText": "Bạn chưa có tài khoản?",
+    "signupLink": "Đăng ký"
+  },
+
 }

@@ -8,5 +8,19 @@
     "app_name": "Welcome to the Buddhist Prayer App",
     "HELLO_NOTIFICATION_KEY": "Buddhist Prayer App"
   },
-  
+   "onboarding": {
+    "welcome": "Welcome to the Buddhist Prayer App",
+    "description": "This app helps you easily access your favorite Buddhist sutras and prayers.",
+    "getStarted": "Get Started 🪷",
+    "skip": "Skip",
+    "next": "Next",
+    "chantingDaily": "Daily Chanting Practice",
+    "chantingDailyDescription": "Daily chanting helps you maintain a connection with the Buddha's teachings and nourish your soul.",
+    "prayerReminders": "Prayer Reminders",
+    "prayerRemindersDescription": "Set reminders so you never miss a prayer time.",
+    "loginText": "Already have an account?",
+    "loginLink": "Log in",
+    "signupText": "or",
+    "signupLink": "Sign up"
+  },
 }
