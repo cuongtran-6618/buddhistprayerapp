@@ -1,6 +1,16 @@
 import { HomeScreen } from "@/components/home-screen";
+import { usePlayerStore } from "@/store/player-store";
 import { router } from "expo-router";
 
 export default function Home() {
-  return <HomeScreen onChantSelect={() => router.push("/chant")} />;
+  const setTrack = usePlayerStore((s) => s.setTrack);
+
+  return (
+    <HomeScreen
+      onChantSelect={(track) => {
+        setTrack(track);
+        router.navigate("/chant" as any);
+      }}
+    />
+  );
 }

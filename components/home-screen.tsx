@@ -2,6 +2,7 @@ import { BellIcon } from "@/components/icons/bell-icon";
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
+import { Track, TRACKS } from "@/constants/tracks";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import {
@@ -14,28 +15,14 @@ import {
 } from "react-native";
 
 interface HomeScreenProps {
-  onChantSelect: () => void;
+  onChantSelect: (track: Track) => void;
 }
 
 const schedule = [
-  { time: "05:00", label: "Công phu khuya", chant: "Thần Chú Thủ Lăng Nghiêm", done: true, current: false },
-  { time: "11:00", label: "Công phu trưa", chant: "Chú Đại Bi", done: true, current: false },
-  { time: "17:30", label: "Công phu chiều", chant: "Kinh A Di Đà", done: false, current: true },
-  { time: "21:00", label: "Công phu tối", chant: "Sám Hối Phát Nguyện", done: false, current: false },
-];
-
-const chants = [
-  { id: 1, title: "Chú Đại Bi", subtitle: "Great Compassion Mantra", duration: "18 phút", sessions: 247, premium: false },
-  { id: 2, title: "Nam Mô A Di Đà Phật", subtitle: "Amitabha Buddha", duration: "10 phút", sessions: 183, premium: false },
-  { id: 3, title: "Kinh Bát Nhã", subtitle: "Heart Sutra", duration: "8 phút", sessions: 95, premium: true },
-  { id: 4, title: "Thần Chú Cầu An", subtitle: "Protection Mantra", duration: "22 phút", sessions: 61, premium: true },
-];
-
-const tabs = [
-  { icon: "🏠", label: "Trang chủ", active: true },
-  { icon: "📖", label: "Kinh điển", active: false },
-  { icon: "📊", label: "Tiến trình", active: false },
-  { icon: "⚙️", label: "Cài đặt", active: false },
+  { time: "05:00", label: "Công phu khuya", chant: "Thần Chú Thủ Lăng Nghiêm", done: true,  current: false, trackId: null },
+  { time: "11:00", label: "Công phu trưa",  chant: "Chú Đại Bi",                done: true,  current: false, trackId: "chu-dai-bi" },
+  { time: "17:30", label: "Công phu chiều", chant: "Kinh A Di Đà",               done: false, current: true,  trackId: "chu-dai-bi" },
+  { time: "21:00", label: "Công phu tối",   chant: "Sám Hối Phát Nguyện",        done: false, current: false, trackId: null },
 ];
 
 function getGreeting() {
@@ -122,9 +109,16 @@ export function HomeScreen({ onChantSelect }: HomeScreenProps) {
             <Text style={styles.sectionAction}>Chỉnh sửa</Text>
           </View>
           <View style={styles.scheduleList}>
-            {schedule.map((item, i) => (
-              <ScheduleItem key={i} item={item} onPress={item.current ? onChantSelect : undefined} />
-            ))}
+            {schedule.map((item, i) => {
+              const track = item.trackId ? TRACKS.find((t) => t.id === item.trackId) : undefined;
+              return (
+                <ScheduleItem
+                  key={i}
+                  item={item}
+                  onPress={item.current && track ? () => onChantSelect(track) : undefined}
+                />
+              );
+            })}
           </View>
         </View>
 
@@ -135,27 +129,14 @@ export function HomeScreen({ onChantSelect }: HomeScreenProps) {
             <Text style={styles.sectionAction}>Xem tất cả</Text>
           </View>
           <View style={styles.chantGrid}>
-            {chants.map((c) => (
-              <ChantCard key={c.id} chant={c} onPress={onChantSelect} />
+            {TRACKS.map((track) => (
+              <ChantCard key={track.id} track={track} onPress={() => onChantSelect(track)} />
             ))}
           </View>
         </View>
 
         <View style={{ height: 16 }} />
       </ScrollView>
-
-      {/* Bottom navigation */}
-      <View style={styles.bottomNav}>
-        {tabs.map((tab) => (
-          <Pressable key={tab.label} style={styles.tabItem}>
-            <Text style={styles.tabIcon}>{tab.icon}</Text>
-            <Text style={[styles.tabLabel, tab.active && styles.tabLabelActive]}>
-              {tab.label}
-            </Text>
-            {tab.active && <View style={styles.tabDot} />}
-          </Pressable>
-        ))}
-      </View>
     </View>
   );
 }
@@ -244,10 +225,10 @@ function ScheduleItemContent({ item }: { item: (typeof schedule)[0] }) {
   );
 }
 
-function ChantCard({ chant, onPress }: { chant: (typeof chants)[0]; onPress: () => void }) {
+function ChantCard({ track, onPress }: { track: Track; onPress: () => void }) {
   return (
     <Pressable style={styles.chantCard} onPress={onPress}>
-      {chant.premium && (
+      {track.isPremium && (
         <LinearGradient
           colors={[Colors.gold, Colors.red]}
           style={styles.proBadge}
@@ -255,10 +236,12 @@ function ChantCard({ chant, onPress }: { chant: (typeof chants)[0]; onPress: () 
           <Text style={styles.proBadgeText}>PRO</Text>
         </LinearGradient>
       )}
-      <LotusIcon size={22} color={chant.premium ? Colors.goldDim : Colors.gold} />
-      <Text style={styles.chantTitle}>{chant.title}</Text>
-      <Text style={styles.chantSubtitle}>{chant.subtitle}</Text>
-      <Text style={styles.chantDuration}>🕐 {chant.duration}</Text>
+      <LotusIcon size={22} color={track.isPremium ? Colors.goldDim : Colors.gold} />
+      <Text style={styles.chantTitle}>{track.title}</Text>
+      <Text style={styles.chantSubtitle}>{track.subtitle}</Text>
+      {track.durationLabel && (
+        <Text style={styles.chantDuration}>🕐 {track.durationLabel}</Text>
+      )}
     </Pressable>
   );
 }

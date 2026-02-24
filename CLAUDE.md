@@ -31,7 +31,7 @@ Buddhist prayer reminder app — reminds users to chant at scheduled times and d
 - **React Native New Architecture** + **React Compiler** (experimental) both enabled
 - **TypeScript** strict mode; path alias `@/*` → project root
 - **Supabase** for auth/backend, **Zustand** for state, **Zod** for validation
-- **expo-av** for audio playback, **expo-notifications** for prayer reminders
+- **expo-audio** for audio playback, **expo-notifications** for prayer reminders
 - **react-native-purchases** for in-app purchases (PRO chants)
 
 ## Architecture

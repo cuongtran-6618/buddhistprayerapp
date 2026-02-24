@@ -1,8 +1,10 @@
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
+import { Track } from "@/constants/tracks";
+import { useAudioPlayer } from "@/hooks/use-audio-player";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Animated,
   Easing,
@@ -15,69 +17,54 @@ import {
 
 interface PlayerScreenProps {
   onBack: () => void;
+  track: Track;
 }
 
-const chantLines = [
-  { vi: "Nam mô cầu thỉnh Quán Thế Âm", time: "0:00" },
-  { vi: "Nam mô Đại Bi Quán Thế Âm", time: "0:12" },
-  { vi: "Thiên thủ thiên nhãn vô ngại Đại Bi Tâm Đà Ra Ni", time: "0:24" },
-  { vi: "Nam mô hắc ra đát na đa ra dạ da", time: "0:38" },
-  { vi: "Nam mô a rị da bà lô kiết đế thước bát ra da", time: "0:52" },
-  { vi: "Bồ đề tát đỏa bà da", time: "1:05" },
-  { vi: "Ma ha tát đỏa bà da", time: "1:15" },
-  { vi: "Ma ha ca lô ni ca da", time: "1:25" },
-  { vi: "Án tát bàn ra phạt duệ số đát na đát tỏa", time: "1:38" },
-  { vi: "Nam mô tất kiết lật đỏa y mông a rị da", time: "1:52" },
-  { vi: "Bà lô kiết đế thất Phật ra lăng đà bà", time: "2:05" },
-  { vi: "Nam mô na ra cẩn trì", time: "2:18" },
-];
-
-const TOTAL_DURATION = "18:32";
-const TOTAL_SECONDS = 18 * 60 + 32;
-
-export function PlayerScreen({ onBack }: PlayerScreenProps) {
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0.18);
-  const [activeLineIndex, setActiveLineIndex] = useState(2);
+export function PlayerScreen({ onBack, track }: PlayerScreenProps) {
+  const player = useAudioPlayer(track);
   const scrollRef = useRef<ScrollView>(null);
 
-  // Animations
-  const breatheAnim = useRef(new Animated.Value(1)).current;
-  const outerRotate = useRef(new Animated.Value(0)).current;
-  const middleRotate = useRef(new Animated.Value(0)).current;
+  // Derived time display
+  const elapsedMs  = Math.floor(player.progress * player.durationMs);
+  const elapsedMin = Math.floor(elapsedMs / 60000);
+  const elapsedSec = Math.floor((elapsedMs % 60000) / 1000);
+  const totalMin   = Math.floor(player.durationMs / 60000);
+  const totalSec   = Math.floor((player.durationMs % 60000) / 1000);
+
+  // Mandala / breathing animations
+  const breatheAnim    = useRef(new Animated.Value(1)).current;
+  const outerRotate    = useRef(new Animated.Value(0)).current;
+  const middleRotate   = useRef(new Animated.Value(0)).current;
   const activeGlowAnim = useRef(new Animated.Value(0.6)).current;
-  const outerRotateAnim = useRef<Animated.CompositeAnimation | null>(null);
+
+  const outerRotateAnim  = useRef<Animated.CompositeAnimation | null>(null);
   const middleRotateAnim = useRef<Animated.CompositeAnimation | null>(null);
-  const breatheLoopAnim = useRef<Animated.CompositeAnimation | null>(null);
-  const glowLoopAnim = useRef<Animated.CompositeAnimation | null>(null);
+  const breatheLoopAnim  = useRef<Animated.CompositeAnimation | null>(null);
+  const glowLoopAnim     = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
-    if (playing) {
-      // Breathe
+    if (player.playing) {
       breatheLoopAnim.current = Animated.loop(
         Animated.sequence([
           Animated.timing(breatheAnim, { toValue: 1.04, duration: 2000, useNativeDriver: true }),
-          Animated.timing(breatheAnim, { toValue: 1, duration: 2000, useNativeDriver: true }),
+          Animated.timing(breatheAnim, { toValue: 1,    duration: 2000, useNativeDriver: true }),
         ])
       );
       breatheLoopAnim.current.start();
 
-      // Outer ring rotation (20s clockwise)
       outerRotateAnim.current = Animated.loop(
         Animated.timing(outerRotate, { toValue: 1, duration: 20000, easing: Easing.linear, useNativeDriver: true })
       );
       outerRotateAnim.current.start();
 
-      // Middle ring rotation (15s counter-clockwise)
       middleRotateAnim.current = Animated.loop(
         Animated.timing(middleRotate, { toValue: 1, duration: 15000, easing: Easing.linear, useNativeDriver: true })
       );
       middleRotateAnim.current.start();
 
-      // Active glow
       glowLoopAnim.current = Animated.loop(
         Animated.sequence([
-          Animated.timing(activeGlowAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+          Animated.timing(activeGlowAnim, { toValue: 1,   duration: 1000, useNativeDriver: true }),
           Animated.timing(activeGlowAnim, { toValue: 0.6, duration: 1000, useNativeDriver: true }),
         ])
       );
@@ -89,31 +76,14 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
       glowLoopAnim.current?.stop();
       Animated.timing(breatheAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
     }
-  }, [playing]);
-
-  // Progress tick
-  useEffect(() => {
-    if (!playing) return;
-    const interval = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 1) { setPlaying(false); return 1; }
-        return p + 0.002;
-      });
-      setActiveLineIndex((i) => (i + 1) % chantLines.length);
-    }, 800);
-    return () => clearInterval(interval);
-  }, [playing]);
+  }, [player.playing]);
 
   // Auto-scroll to active line
   useEffect(() => {
-    scrollRef.current?.scrollTo({ y: activeLineIndex * 44, animated: true });
-  }, [activeLineIndex]);
+    scrollRef.current?.scrollTo({ y: player.activeLineIndex * 44, animated: true });
+  }, [player.activeLineIndex]);
 
-  const elapsed = Math.floor(progress * TOTAL_SECONDS);
-  const elapsedMin = Math.floor(elapsed / 60);
-  const elapsedSec = elapsed % 60;
-
-  const outerRotateDeg = outerRotate.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
+  const outerRotateDeg  = outerRotate.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
   const middleRotateDeg = middleRotate.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "-360deg"] });
 
   return (
@@ -129,7 +99,7 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
         </Pressable>
         <View style={styles.headerCenter}>
           <Text style={styles.headerLabel}>Đang Tụng</Text>
-          <Text style={styles.headerSub}>Công phu chiều</Text>
+          <Text style={styles.headerSub}>{track.subtitle}</Text>
         </View>
         <Pressable style={styles.headerButton}>
           <Text style={styles.headerButtonText}>⋯</Text>
@@ -138,10 +108,7 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
 
       {/* Mandala album art */}
       <View style={styles.mandalaContainer}>
-        {/* Outer ring (rotating) */}
-        <Animated.View
-          style={[styles.outerRing, { transform: [{ rotate: outerRotateDeg }] }]}
-        >
+        <Animated.View style={[styles.outerRing, { transform: [{ rotate: outerRotateDeg }] }]}>
           {Array.from({ length: 12 }).map((_, i) => (
             <View
               key={i}
@@ -153,48 +120,35 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
           ))}
         </Animated.View>
 
-        {/* Middle ring (counter-rotating) */}
-        <Animated.View
-          style={[styles.middleRing, { transform: [{ rotate: middleRotateDeg }] }]}
-        />
+        <Animated.View style={[styles.middleRing, { transform: [{ rotate: middleRotateDeg }] }]} />
 
-        {/* Center lotus */}
         <Animated.View style={[styles.centerLotus, { transform: [{ scale: breatheAnim }] }]}>
-          <LotusIcon size={40} color={playing ? Colors.goldBright : Colors.gold} />
+          <LotusIcon size={40} color={player.playing ? Colors.goldBright : Colors.gold} />
         </Animated.View>
       </View>
 
       {/* Track info */}
       <View style={styles.trackInfo}>
-        <Text style={styles.trackTitle}>Chú Đại Bi</Text>
-        <Text style={styles.trackSub}>Great Compassion Mantra · 84 câu</Text>
+        <Text style={styles.trackTitle}>{track.title}</Text>
+        <Text style={styles.trackSub}>{track.subtitle}</Text>
       </View>
 
-      {/* Scrolling chant lines */}
+      {/* Scrolling script lines */}
       <View style={styles.chantContainer}>
-        {/* Fade overlays */}
-        <LinearGradient
-          colors={[Colors.bg, "transparent"]}
-          style={styles.fadeTop}
-          pointerEvents="none"
-        />
-        <LinearGradient
-          colors={["transparent", Colors.bg]}
-          style={styles.fadeBottom}
-          pointerEvents="none"
-        />
+        <LinearGradient colors={[Colors.bg, "transparent"]} style={styles.fadeTop} pointerEvents="none" />
+        <LinearGradient colors={["transparent", Colors.bg]} style={styles.fadeBottom} pointerEvents="none" />
         <ScrollView
           ref={scrollRef}
           style={styles.chantScroll}
           showsVerticalScrollIndicator={false}
           scrollEnabled={false}
         >
-          {chantLines.map((line, i) => {
-            const isActive = i === activeLineIndex;
-            const isPast = i < activeLineIndex;
-            const dist = Math.abs(i - activeLineIndex);
-            const opacity = dist > 3 ? 0.15 : dist > 2 ? 0.3 : dist > 1 ? 0.5 : dist > 0 ? 0.7 : 1;
-            const scale = isActive ? 1.04 : Math.max(0.97, 1 - dist * 0.015);
+          {track.script.map((line, i) => {
+            const isActive = i === player.activeLineIndex;
+            const isPast   = i < player.activeLineIndex;
+            const dist     = Math.abs(i - player.activeLineIndex);
+            const opacity  = dist > 3 ? 0.15 : dist > 2 ? 0.3 : dist > 1 ? 0.5 : dist > 0 ? 0.7 : 1;
+            const scale    = isActive ? 1.04 : Math.max(0.97, 1 - dist * 0.015);
 
             return (
               <Animated.View
@@ -202,7 +156,7 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
                 style={[
                   styles.chantLine,
                   {
-                    opacity: isActive && playing ? activeGlowAnim : opacity,
+                    opacity: isActive && player.playing ? activeGlowAnim : opacity,
                     transform: [{ scale }],
                   },
                 ]}
@@ -214,7 +168,7 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
                     isPast && !isActive && styles.chantTextPast,
                   ]}
                 >
-                  {line.vi}
+                  {line.text}
                 </Text>
               </Animated.View>
             );
@@ -229,14 +183,16 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
             colors={[Colors.red, Colors.gold]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={[styles.progressFill, { width: `${progress * 100}%` }]}
+            style={[styles.progressFill, { width: `${player.progress * 100}%` }]}
           />
         </View>
         <View style={styles.progressTimes}>
           <Text style={styles.progressTime}>
             {elapsedMin}:{String(elapsedSec).padStart(2, "0")}
           </Text>
-          <Text style={styles.progressTime}>{TOTAL_DURATION}</Text>
+          <Text style={styles.progressTime}>
+            {totalMin}:{String(totalSec).padStart(2, "0")}
+          </Text>
         </View>
       </View>
 
@@ -245,26 +201,28 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
         <Pressable style={styles.controlBtnSm}>
           <Text style={styles.controlBtnEmoji}>🔀</Text>
         </Pressable>
-        <Pressable style={styles.controlBtnMd}>
+        <Pressable
+          style={styles.controlBtnMd}
+          onPress={() => player.seekToLine(player.activeLineIndex - 1)}
+        >
           <Text style={styles.controlBtnEmoji}>⏮</Text>
         </Pressable>
 
-        {/* Play/Pause */}
-        <Pressable onPress={() => setPlaying((p) => !p)} style={styles.playBtnWrapper}>
+        <Pressable onPress={player.togglePlay} style={styles.playBtnWrapper}>
           <LinearGradient
             colors={[Colors.gold, Colors.red]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[
-              styles.playBtn,
-              playing && styles.playBtnActive,
-            ]}
+            style={[styles.playBtn, player.playing && styles.playBtnActive]}
           >
-            <Text style={styles.playBtnIcon}>{playing ? "⏸" : "▶"}</Text>
+            <Text style={styles.playBtnIcon}>{player.playing ? "⏸" : "▶"}</Text>
           </LinearGradient>
         </Pressable>
 
-        <Pressable style={styles.controlBtnMd}>
+        <Pressable
+          style={styles.controlBtnMd}
+          onPress={() => player.seekToLine(player.activeLineIndex + 1)}
+        >
           <Text style={styles.controlBtnEmoji}>⏭</Text>
         </Pressable>
         <Pressable style={styles.controlBtnSm}>
@@ -335,7 +293,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular,
     marginTop: 1,
   },
-  // Mandala
   mandalaContainer: {
     width: 160,
     height: 160,
@@ -384,7 +341,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // Track info
   trackInfo: {
     alignItems: "center",
     paddingHorizontal: 32,
@@ -401,7 +357,6 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     fontFamily: Fonts.italic,
   },
-  // Chant scroll
   chantContainer: {
     flex: 1,
     overflow: "hidden",
@@ -450,7 +405,6 @@ const styles = StyleSheet.create({
   chantTextPast: {
     color: Colors.muted,
   },
-  // Progress
   progressSection: {
     paddingHorizontal: 28,
     paddingBottom: 8,
@@ -475,7 +429,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: Fonts.regular,
   },
-  // Controls
   controls: {
     flexDirection: "row",
     justifyContent: "space-between",
