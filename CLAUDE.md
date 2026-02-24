@@ -18,40 +18,56 @@ npm run lint           # Run ESLint
 eas build --profile development   # Development build with dev client
 eas build --profile preview       # Internal distribution build
 eas build --profile production    # Production build
-
-# Reset to blank project
-npm run reset-project  # Moves app/ to app-example/ and creates fresh app/
 ```
 
-### Project
-This is the mobile reminder app which can remind buddism to pray and display the chant
+## Project
+
+Buddhist prayer reminder app — reminds users to chant at scheduled times and displays chant lyrics with a player.
+
+## Tech Stack
+
+- **Expo SDK 54** with React Native 0.81.5 and React 19.1
+- **expo-router** for file-based routing (Stack navigator, no tabs yet)
+- **React Native New Architecture** + **React Compiler** (experimental) both enabled
+- **TypeScript** strict mode; path alias `@/*` → project root
+- **Supabase** for auth/backend, **Zustand** for state, **Zod** for validation
+- **expo-av** for audio playback, **expo-notifications** for prayer reminders
+- **react-native-purchases** for in-app purchases (PRO chants)
 
 ## Architecture
 
-### Tech Stack
-- **Expo SDK 54** with React Native 0.81.5 and React 19.1
-- **expo-router** for file-based routing
-- **React Native New Architecture** enabled
-- **React Compiler** enabled (experimental)
-- **TypeScript** with strict mode
+### Screen Structure
 
-### Routing Structure
-Routes are defined by the file system in `app/`:
-- `app/_layout.tsx` - Root layout with ThemeProvider and Stack navigator
-- `app/(tabs)/` - Tab group with bottom tab navigation
-- `app/modal.tsx` - Modal screen (presentation: 'modal')
+Screens are split into a route file (`app/`) and a component file (`components/`). Route files handle navigation wiring; component files contain all UI logic.
 
-The `unstable_settings.anchor` in root layout sets `(tabs)` as the initial route group.
-
-### Theming System
-Theme-aware components use a hook-based pattern:
-1. `constants/theme.ts` - Defines `Colors` (light/dark) and `Fonts` (platform-specific)
-2. `hooks/use-color-scheme.ts` - Returns current color scheme ('light' | 'dark')
-3. `hooks/use-theme-color.ts` - Resolves color from theme or props override
-4. `ThemedText` / `ThemedView` - Accept `lightColor`/`darkColor` props for per-component overrides
-
-### Path Aliases
-`@/*` maps to project root (configured in tsconfig.json):
-```typescript
-import { ThemedText } from '@/components/themed-text';
 ```
+app/_layout.tsx              → Root Stack navigator, loads Be Vietnam Pro fonts
+app/(tabs)/index.tsx         → Mounts OnboardingScreen; on finish: router.replace("/home")
+app/(tabs)/home.tsx          → Mounts HomeScreen; on chant select: router.push("/chant")
+app/(tabs)/chant.tsx         → Mounts PlayerScreen; back: router.back()
+```
+
+```
+components/onboarding-screen.tsx   → 3-slide carousel with animated rings + slide transitions
+components/home-screen.tsx         → Dashboard: time-based greeting, streak card, schedule, chant library
+components/player-screen.tsx       → Audio player with rotating mandala, scrolling lyrics, progress bar
+components/phone-frame.tsx         → Web-only iPhone frame wrapper (transparent on native)
+components/icons/bell-icon.tsx     → SVG bell icon
+components/icons/lotus-icon.tsx    → SVG lotus icon
+```
+
+### Theming
+
+No dynamic light/dark switching — the app uses a **single dark Buddhist theme** defined in:
+- `constants/colors.ts` — exports `Colors` object (bg, surface, card, gold, red, cream, muted, etc.)
+- `constants/fonts.ts` — exports `Fonts` object mapping semantic names to Be Vietnam Pro variants
+
+All components import `Colors` and `Fonts` directly; there is no theme context or hook.
+
+### Internationalization
+
+`app/lib/i18n.ts` sets up `i18n-js` with English and Vietnamese locales. Device language is auto-detected via `expo-localization`. Import `i18n` and call `i18n.t("key.path")`. Translation files are in `app/locales/en.json` and `app/locales/vi.json`.
+
+### Animation Pattern
+
+All animations use React Native's built-in `Animated` API with `useNativeDriver: true`. The common slide-transition pattern (fade + scale out → update state → fade + scale in) is centralized in `transitionToStep()` in the onboarding screen. Player animations (mandala rotation, breathing lotus, glow pulses) pause when audio is not playing.
