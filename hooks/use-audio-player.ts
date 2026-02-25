@@ -1,14 +1,18 @@
-import { setAudioModeAsync, useAudioPlayer as useExpoAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { useEffect } from 'react';
+/**
+ * The hook wraps Expo's audio player functionality to provide a clean API for playing prayer tracks with synchronized lyrics/timing. 
+ * It's designed to work with the app's Track objects that contain audio files and scripts (lyrics with timestamps).
+ */
 import { Track } from '@/constants/tracks';
+import { setAudioModeAsync, useAudioPlayerStatus, useAudioPlayer as useExpoAudioPlayer } from 'expo-audio';
+import { useEffect } from 'react';
 
 export interface AudioPlayer {
-  playing: boolean;
-  progress: number;          // 0–1
-  durationMs: number;
-  activeLineIndex: number;
-  togglePlay: () => void;
-  seekToLine: (index: number) => void;
+  playing: boolean; // Indicating if audio is playing
+  progress: number; // Playback progress (0-1)
+  durationMs: number; // Total duration of the track in milliseconds
+  activeLineIndex: number; // Index of the currently active script line based on playback time
+  togglePlay: () => void; // Toggle between play and pause
+  seekToLine: (index: number) => void; // Seek to a specific line in the script based on its index
   seekTo: (ms: number) => void;   // public API stays in ms for callers
 }
 
