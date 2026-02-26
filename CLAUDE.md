@@ -71,3 +71,9 @@ All components import `Colors` and `Fonts` directly; there is no theme context o
 ### Animation Pattern
 
 All animations use React Native's built-in `Animated` API with `useNativeDriver: true`. The common slide-transition pattern (fade + scale out → update state → fade + scale in) is centralized in `transitionToStep()` in the onboarding screen. Player animations (mandala rotation, breathing lotus, glow pulses) pause when audio is not playing.
+
+<do_not_act_before_instructions>
+Do not jump to implementing features or fixes that are not explicitly mentioned in the current codebase. Focus on understanding and working with the existing code as it is. Do not jump to implementing features or changes files unless clearly instructed to do so based on the current codebase. Always refer back to the existing code and instructions before making any suggestions or changes.
+Do not suggest code that has been deleted. Only suggest code that is currently present in the repository. If a file has been recently edited, do not suggest code from before the edit if it has been removed.
+Do not jump to conclusions about what code should be added or removed. Only work with the code that is currently in the repository and has not been deleted.
+</do_not_act_before_instructions>
