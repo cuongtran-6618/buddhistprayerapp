@@ -3,6 +3,7 @@ import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { useAudioPlayer } from "@/hooks/use-audio-player";
+import { useSeekGesture } from "@/hooks/use-seek-gesture";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import {
@@ -24,10 +25,17 @@ export function PlayerScreen({ onBack, track }: PlayerScreenProps) {
   const player = useAudioPlayer(track);
   const scrollRef = useRef<ScrollView>(null);
 
-  // Derived time display
-  const elapsedMs  = Math.floor(player.progress * player.durationMs);
-  const elapsedMin = Math.floor(elapsedMs / 60000);
-  const elapsedSec = Math.floor((elapsedMs % 60000) / 1000);
+  // Seek gesture — drag thumb along the bar; audio jumps on finger release.
+  const seek = useSeekGesture({
+    durationMs:      player.durationMs,
+    currentProgress: player.progress,
+    onSeek:          player.seekTo,
+  });
+
+  // Elapsed display follows the drag position while scrubbing.
+  const displayMs  = Math.floor(seek.displayProgress * player.durationMs);
+  const displayMin = Math.floor(displayMs / 60000);
+  const displaySec = Math.floor((displayMs % 60000) / 1000);
   const totalMin   = Math.floor(player.durationMs / 60000);
   const totalSec   = Math.floor((player.durationMs % 60000) / 1000);
 
@@ -176,19 +184,46 @@ export function PlayerScreen({ onBack, track }: PlayerScreenProps) {
         </ScrollView>
       </View>
 
-      {/* Progress bar */}
+      {/* Progress / seek */}
       <View style={styles.progressSection}>
-        <View style={styles.progressTrack}>
-          <LinearGradient
-            colors={[Colors.red, Colors.gold]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={[styles.progressFill, { width: `${player.progress * 100}%` }]}
+        {/*
+          seekArea is the full-width gesture target (28 px tall so it's easy
+          to tap). overflow: "visible" lets the thumb render outside the 3 px
+          track. panHandlers attach the PanResponder; onLayout captures the
+          rendered width so the hook can convert touch X → 0–1 progress.
+        */}
+        <View
+          style={styles.seekArea}
+          onLayout={seek.handleLayout}
+          {...seek.panHandlers}
+        >
+          {/* 3 px track — clips gradient fill to rounded corners */}
+          <View style={styles.progressTrack}>
+            <LinearGradient
+              colors={[Colors.red, Colors.gold]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.progressFill, { width: `${seek.displayProgress * 100}%` }]}
+            />
+          </View>
+
+          {/* Scrubber thumb — grows slightly while dragging */}
+          <View
+            style={[
+              styles.scrubberThumb,
+              seek.isDragging && styles.scrubberThumbDragging,
+              {
+                left: `${seek.displayProgress * 100}%` as `${number}%`,
+                transform: [{ translateX: seek.isDragging ? -7 : -6 }],
+              },
+            ]}
           />
         </View>
+
+        {/* Time labels — elapsed label tracks drag position while scrubbing */}
         <View style={styles.progressTimes}>
-          <Text style={styles.progressTime}>
-            {elapsedMin}:{String(elapsedSec).padStart(2, "0")}
+          <Text style={[styles.progressTime, seek.isDragging && styles.progressTimeActive]}>
+            {displayMin}:{String(displaySec).padStart(2, "0")}
           </Text>
           <Text style={styles.progressTime}>
             {totalMin}:{String(totalSec).padStart(2, "0")}
@@ -409,25 +444,55 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingBottom: 8,
   },
+  // Tall hit target — easier to touch than a 3 px bar.
+  // overflow: "visible" lets the thumb render outside the track bounds.
+  seekArea: {
+    height: 28,
+    justifyContent: "center",
+    overflow: "visible",
+    position: "relative",
+  },
   progressTrack: {
     height: 3,
     borderRadius: 2,
     backgroundColor: Colors.border,
     overflow: "hidden",
-    marginBottom: 8,
   },
   progressFill: {
     height: "100%",
     borderRadius: 2,
   },
+  // Thumb circle — always visible on the bar.
+  // Geometry: seekArea h=28, track centred → track top=12.5.
+  // Normal  (h=12): top=8  → centre at 8+6=14  ✓
+  // Dragging (h=14): top=7  → centre at 7+7=14  ✓
+  scrubberThumb: {
+    position: "absolute",
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.gold,
+    top: 8,
+  },
+  scrubberThumbDragging: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    top: 7,
+  },
   progressTimes: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 4,
   },
   progressTime: {
     color: Colors.muted,
     fontSize: 11,
     fontFamily: Fonts.regular,
+  },
+  // Highlight the elapsed label while the user is dragging.
+  progressTimeActive: {
+    color: Colors.goldBright,
   },
   controls: {
     flexDirection: "row",
