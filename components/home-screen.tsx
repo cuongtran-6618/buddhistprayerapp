@@ -16,6 +16,7 @@ import {
 
 interface HomeScreenProps {
   onChantSelect: (track: Track) => void;
+  onRemindersPress: () => void;
 }
 
 const schedule = [
@@ -46,7 +47,7 @@ function GlowView({ style, children }: { style?: object; children: React.ReactNo
   return <Animated.View style={[style, { opacity: glowAnim }]}>{children}</Animated.View>;
 }
 
-export function HomeScreen({ onChantSelect }: HomeScreenProps) {
+export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps) {
   const g = getGreeting();
 
   return (
@@ -66,7 +67,7 @@ export function HomeScreen({ onChantSelect }: HomeScreenProps) {
             <Text style={styles.greetingVi}>{g.vi}</Text>
           </View>
           <View style={styles.headerActions}>
-            <Pressable style={styles.iconButton}>
+            <Pressable style={styles.iconButton} onPress={onRemindersPress}>
               <BellIcon size={18} />
             </Pressable>
             <LinearGradient

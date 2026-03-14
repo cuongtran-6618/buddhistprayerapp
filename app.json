@@ -60,7 +60,8 @@
         }
       ],
       "expo-font",
-      "expo-audio"
+      "expo-audio",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,

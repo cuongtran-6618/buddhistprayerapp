@@ -11,6 +11,7 @@ export default function Home() {
         setTrack(track);
         router.navigate("/chant" as any);
       }}
+      onRemindersPress={() => router.navigate("/reminders" as any)}
     />
   );
 }
