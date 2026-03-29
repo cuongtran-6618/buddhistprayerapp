@@ -29,11 +29,7 @@ import {
   View,
 } from "react-native";
 
-interface RemindersScreenProps {
-  onBack: () => void;
-}
-
-export function RemindersScreen({ onBack }: RemindersScreenProps) {
+export function RemindersScreen() {
   const { reminders, updateReminder, removeReminder } = useRemindersStore();
 
   async function handleToggle(reminder: Reminder) {
@@ -57,11 +53,7 @@ export function RemindersScreen({ onBack }: RemindersScreenProps) {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backArrow}>←</Text>
-        </Pressable>
         <Text style={styles.headerTitle}>Nhắc Nhở</Text>
-        <View style={styles.headerRight} />
       </View>
 
       {/* List */}
@@ -189,29 +181,12 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 24,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backArrow: {
-    color: Colors.cream,
-    fontSize: 18,
-  },
   headerTitle: {
     flex: 1,
     textAlign: "center",
     color: Colors.cream,
     fontSize: 17,
     fontFamily: Fonts.semiBold,
-  },
-  headerRight: {
-    width: 40,
   },
   // List
   listContainer: {
