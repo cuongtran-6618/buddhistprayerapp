@@ -9,7 +9,7 @@ export default function Home() {
     <HomeScreen
       onChantSelect={(track) => {
         setTrack(track);
-        router.navigate("/chant" as any);
+        router.navigate("/player" as any);
       }}
       onRemindersPress={() => router.navigate("/reminders" as any)}
     />

@@ -1,5 +1,4 @@
 import { BellIcon } from "@/components/icons/bell-icon";
-import { LotusIcon } from "@/components/icons/lotus-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track, TRACKS } from "@/constants/tracks";
@@ -123,19 +122,6 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
           </View>
         </View>
 
-        {/* Chant library */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Kinh Thường Tụng</Text>
-            <Text style={styles.sectionAction}>Xem tất cả</Text>
-          </View>
-          <View style={styles.chantGrid}>
-            {TRACKS.map((track) => (
-              <ChantCard key={track.id} track={track} onPress={() => onChantSelect(track)} />
-            ))}
-          </View>
-        </View>
-
         <View style={{ height: 16 }} />
       </ScrollView>
     </View>
@@ -226,26 +212,6 @@ function ScheduleItemContent({ item }: { item: (typeof schedule)[0] }) {
   );
 }
 
-function ChantCard({ track, onPress }: { track: Track; onPress: () => void }) {
-  return (
-    <Pressable style={styles.chantCard} onPress={onPress}>
-      {track.isPremium && (
-        <LinearGradient
-          colors={[Colors.gold, Colors.red]}
-          style={styles.proBadge}
-        >
-          <Text style={styles.proBadgeText}>PRO</Text>
-        </LinearGradient>
-      )}
-      <LotusIcon size={22} color={track.isPremium ? Colors.goldDim : Colors.gold} />
-      <Text style={styles.chantTitle}>{track.title}</Text>
-      <Text style={styles.chantSubtitle}>{track.subtitle}</Text>
-      {track.durationLabel && (
-        <Text style={styles.chantDuration}>🕐 {track.durationLabel}</Text>
-      )}
-    </Pressable>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -475,54 +441,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: Colors.border,
-  },
-  // Chant grid
-  chantGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  chantCard: {
-    width: "48%",
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    position: "relative",
-    overflow: "hidden",
-  },
-  proBadge: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  proBadgeText: {
-    color: Colors.cream,
-    fontSize: 9,
-    fontFamily: Fonts.bold,
-  },
-  chantTitle: {
-    color: Colors.cream,
-    fontSize: 13,
-    fontFamily: Fonts.semiBold,
-    marginTop: 10,
-    lineHeight: 17,
-  },
-  chantSubtitle: {
-    color: Colors.muted,
-    fontSize: 10.5,
-    fontFamily: Fonts.italic,
-    marginTop: 3,
-  },
-  chantDuration: {
-    color: Colors.muted,
-    fontSize: 10.5,
-    fontFamily: Fonts.regular,
-    marginTop: 10,
   },
   // Bottom nav
   bottomNav: {

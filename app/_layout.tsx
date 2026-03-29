@@ -62,7 +62,7 @@ export default function RootLayout() {
           const track = TRACKS.find((t) => t.id === data.trackId);
           if (track) {
             setTrack(track);
-            router.navigate("/chant" as any);
+            router.navigate("/player" as any);
           }
         } else if (actionIdentifier === ACTION_SNOOZE) {
           // Reschedule a one-time notification for snoozeMinutes from now.
@@ -87,6 +87,7 @@ export default function RootLayout() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="reminders" />
       <Stack.Screen name="create-reminder" />
+      <Stack.Screen name="player" />
     </Stack>
   );
 }

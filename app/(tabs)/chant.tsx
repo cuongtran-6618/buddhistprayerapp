@@ -1,16 +1,16 @@
-import { PlayerScreen } from "@/components/player-screen";
+import { ChantListScreen } from "@/components/chant-list-screen";
 import { usePlayerStore } from "@/store/player-store";
 import { router } from "expo-router";
 
 export default function Chant() {
-  const currentTrack = usePlayerStore((s) => s.currentTrack);
-
-  if (!currentTrack) return null;
+  const setTrack = usePlayerStore((s) => s.setTrack);
 
   return (
-    <PlayerScreen
-      track={currentTrack}
-      onBack={() => router.navigate("/home" as any)}
+    <ChantListScreen
+      onChantSelect={(track) => {
+        setTrack(track);
+        router.navigate("/player" as any);
+      }}
     />
   );
 }
