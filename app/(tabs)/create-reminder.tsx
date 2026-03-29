@@ -3,5 +3,12 @@ import { router, useLocalSearchParams } from "expo-router";
 
 export default function CreateReminder() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  return <CreateReminderScreen onBack={() => router.back()} reminderId={id} />;
+  const goToReminders = () => router.navigate("/reminders" as any);
+  return (
+    <CreateReminderScreen
+      onBack={goToReminders}
+      onSave={goToReminders}
+      reminderId={id}
+    />
+  );
 }

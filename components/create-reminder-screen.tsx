@@ -47,12 +47,13 @@ import {
 
 interface CreateReminderScreenProps {
   onBack: () => void;
+  onSave?: () => void;
   reminderId?: string;
 }
 
 const SNOOZE_OPTIONS: Array<5 | 10 | 15> = [5, 10, 15];
 
-export function CreateReminderScreen({ onBack, reminderId }: CreateReminderScreenProps) {
+export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateReminderScreenProps) {
   const addReminder = useRemindersStore((s) => s.addReminder);
   const updateReminder = useRemindersStore((s) => s.updateReminder);
   const reminders = useRemindersStore((s) => s.reminders);
@@ -124,7 +125,7 @@ export function CreateReminderScreen({ onBack, reminderId }: CreateReminderScree
     }
 
     setSaving(false);
-    router.back();
+    if (onSave) { onSave(); } else { router.back(); }
   }
 
   return (
