@@ -18,11 +18,12 @@ import {
 
 interface PlayerScreenProps {
   onBack: () => void;
+  onComplete?: () => void;
   track: Track;
 }
 
-export function PlayerScreen({ onBack, track }: PlayerScreenProps) {
-  const player = useAudioPlayer(track);
+export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
+  const player = useAudioPlayer(track, onComplete);
   const scrollRef = useRef<ScrollView>(null);
 
   // Seek gesture — drag thumb along the bar; audio jumps on finger release.

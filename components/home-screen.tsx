@@ -2,6 +2,16 @@ import { BellIcon } from "@/components/icons/bell-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track, TRACKS } from "@/constants/tracks";
+import {
+  ScheduleItemData,
+  computeMonthProgress,
+  computeScheduleStatus,
+  computeStreak,
+  computeTodayProgress,
+  getTodayKey,
+  useChantingHistoryStore,
+} from "@/store/chanting-history-store";
+import { useRemindersStore } from "@/store/reminders-store";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import {
@@ -18,12 +28,6 @@ interface HomeScreenProps {
   onRemindersPress: () => void;
 }
 
-const schedule = [
-  { time: "05:00", label: "Công phu khuya", chant: "Thần Chú Thủ Lăng Nghiêm", done: true,  current: false, trackId: null },
-  { time: "11:00", label: "Công phu trưa",  chant: "Chú Đại Bi",                done: true,  current: false, trackId: "chu-dai-bi" },
-  { time: "17:30", label: "Công phu chiều", chant: "Kinh A Di Đà",               done: false, current: true,  trackId: "chu-dai-bi" },
-  { time: "21:00", label: "Công phu tối",   chant: "Sám Hối Phát Nguyện",        done: false, current: false, trackId: null },
-];
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -48,6 +52,14 @@ function GlowView({ style, children }: { style?: object; children: React.ReactNo
 
 export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps) {
   const g = getGreeting();
+  const reminders = useRemindersStore((s) => s.reminders);
+  const history = useChantingHistoryStore((s) => s.history);
+
+  const todayCompletions = history[getTodayKey()] ?? {};
+  const scheduleItems = computeScheduleStatus(reminders, todayCompletions);
+  const { done, total } = computeTodayProgress(reminders, todayCompletions);
+  const streak = computeStreak(history);
+  const monthPct = computeMonthProgress(history);
 
   return (
     <View style={styles.container}>
@@ -91,13 +103,13 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
             <Text style={styles.streakFire}>🔥</Text>
             <View style={styles.streakInfo}>
               <Text style={styles.streakTitle}>
-                12 ngày <Text style={styles.streakHighlight}>liên tiếp</Text>
+                {streak} ngày <Text style={styles.streakHighlight}>liên tiếp</Text>
               </Text>
-              <Text style={styles.streakSub}>12-day streak • 3 buổi hôm nay</Text>
+              <Text style={styles.streakSub}>{streak}-day streak • {done} buổi hôm nay</Text>
             </View>
             <View style={styles.streakRight}>
               <Text style={styles.streakMonth}>THÁNG NÀY</Text>
-              <Text style={styles.streakPercent}>86%</Text>
+              <Text style={styles.streakPercent}>{monthPct}%</Text>
             </View>
           </LinearGradient>
         </GlowView>
@@ -106,20 +118,29 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Thời Khóa Hôm Nay</Text>
-            <Text style={styles.sectionAction}>Chỉnh sửa</Text>
+            <Pressable onPress={onRemindersPress}>
+              <Text style={styles.sectionAction}>Chỉnh sửa</Text>
+            </Pressable>
           </View>
-          <View style={styles.scheduleList}>
-            {schedule.map((item, i) => {
-              const track = item.trackId ? TRACKS.find((t) => t.id === item.trackId) : undefined;
-              return (
-                <ScheduleItem
-                  key={i}
-                  item={item}
-                  onPress={item.current && track ? () => onChantSelect(track) : undefined}
-                />
-              );
-            })}
-          </View>
+          {scheduleItems.length === 0 ? (
+            <Pressable style={styles.emptySchedule} onPress={onRemindersPress}>
+              <Text style={styles.emptyScheduleText}>Chưa có lịch tụng kinh</Text>
+              <Text style={styles.emptyScheduleHint}>Nhấn để thêm nhắc nhở →</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.scheduleList}>
+              {scheduleItems.map((item) => {
+                const track = TRACKS.find((t) => t.id === item.trackId);
+                return (
+                  <ScheduleItem
+                    key={item.id}
+                    item={item}
+                    onPress={item.current && track ? () => onChantSelect(track) : undefined}
+                  />
+                );
+              })}
+            </View>
+          )}
         </View>
 
         <View style={{ height: 16 }} />
@@ -128,7 +149,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
   );
 }
 
-function ScheduleItem({ item, onPress }: { item: (typeof schedule)[0]; onPress?: () => void }) {
+function ScheduleItem({ item, onPress }: { item: ScheduleItemData; onPress?: () => void }) {
   const glowAnim = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
@@ -166,7 +187,8 @@ function ScheduleItem({ item, onPress }: { item: (typeof schedule)[0]; onPress?:
   );
 }
 
-function ScheduleItemContent({ item }: { item: (typeof schedule)[0] }) {
+function ScheduleItemContent({ item }: { item: ScheduleItemData }) {
+  const trackTitle = TRACKS.find((t) => t.id === item.trackId)?.title ?? item.trackId;
   return (
     <>
       <Text style={[styles.scheduleTime, item.current && styles.scheduleTimeCurrent]}>
@@ -189,7 +211,7 @@ function ScheduleItemContent({ item }: { item: (typeof schedule)[0] }) {
             item.current && styles.scheduleChantCurrent,
           ]}
         >
-          {item.chant}
+          {trackTitle}
         </Text>
       </View>
       <View>
@@ -349,6 +371,26 @@ const styles = StyleSheet.create({
   sectionAction: {
     color: Colors.gold,
     fontSize: 12.5,
+    fontFamily: Fonts.regular,
+  },
+  // Empty schedule state
+  emptySchedule: {
+    padding: 24,
+    borderRadius: 14,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: "center",
+    gap: 6,
+  },
+  emptyScheduleText: {
+    color: Colors.creamMuted,
+    fontSize: 14,
+    fontFamily: Fonts.semiBold,
+  },
+  emptyScheduleHint: {
+    color: Colors.gold,
+    fontSize: 12,
     fontFamily: Fonts.regular,
   },
   // Schedule
