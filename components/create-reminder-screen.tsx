@@ -116,7 +116,14 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
       await cancelReminderNotification(existing.notificationId);
     }
 
-    const notificationId = await scheduleReminderNotification(reminder);
+    let notificationId: string | null = null;
+    try {
+      notificationId = await scheduleReminderNotification(reminder);
+    } catch {
+      Alert.alert("Lỗi", "Không thể lên lịch thông báo. Vui lòng thử lại.");
+      setSaving(false);
+      return;
+    }
 
     if (existing) {
       updateReminder({ ...reminder, notificationId });

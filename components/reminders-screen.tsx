@@ -21,6 +21,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
 import {
+  Alert,
   FlatList,
   Pressable,
   StyleSheet,
@@ -33,19 +34,28 @@ export function RemindersScreen() {
   const { reminders, updateReminder, removeReminder } = useRemindersStore();
 
   async function handleToggle(reminder: Reminder) {
-    if (reminder.enabled) {
-      // Disable — cancel the scheduled notification.
-      await cancelReminderNotification(reminder.notificationId);
-      updateReminder({ ...reminder, enabled: false, notificationId: null });
-    } else {
-      // Enable — reschedule the notification.
-      const notificationId = await scheduleReminderNotification(reminder);
-      updateReminder({ ...reminder, enabled: true, notificationId });
+    try {
+      if (reminder.enabled) {
+        // Disable — cancel the scheduled notification.
+        await cancelReminderNotification(reminder.notificationId);
+        updateReminder({ ...reminder, enabled: false, notificationId: null });
+      } else {
+        // Enable — reschedule the notification.
+        const notificationId = await scheduleReminderNotification(reminder);
+        updateReminder({ ...reminder, enabled: true, notificationId });
+      }
+    } catch {
+      Alert.alert("Lỗi", "Không thể cập nhật thông báo. Vui lòng thử lại.");
     }
   }
 
   async function handleDelete(reminder: Reminder) {
-    await cancelReminderNotification(reminder.notificationId);
+    try {
+      await cancelReminderNotification(reminder.notificationId);
+    } catch {
+      // Cancel failure is non-fatal — still remove the reminder from the store
+      // so the user isn't stuck with a zombie reminder they can't delete.
+    }
     removeReminder(reminder.id);
   }
 

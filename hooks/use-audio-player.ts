@@ -4,6 +4,7 @@
  */
 import { Track } from '@/constants/tracks';
 import { setAudioModeAsync, useAudioPlayerStatus, useAudioPlayer as useExpoAudioPlayer } from 'expo-audio';
+import { useNavigation } from 'expo-router';
 import { useEffect, useRef } from 'react';
 
 export interface AudioPlayer {
@@ -21,10 +22,27 @@ export function useAudioPlayer(track: Track | null, onComplete?: () => void): Au
   const status = useAudioPlayerStatus(player);
   const wasPlayingRef = useRef(false);
   const completedRef = useRef(false);
+  // Ref so the focus-effect cleanup always reads current playing state without
+  // needing status.playing as a dependency (which would re-subscribe on every
+  // playing-state change and fire stale cleanups mid-navigation).
+  const playingRef = useRef(status.playing);
+  playingRef.current = status.playing;
 
   useEffect(() => {
     setAudioModeAsync({ playsInSilentMode: true });
   }, []);
+
+  // Pause when the user navigates away. `beforeRemove` fires synchronously
+  // before React begins unmounting the screen — guaranteed before expo-audio's
+  // useReleasingSharedObject cleanup destroys the native player instance.
+  const navigation = useNavigation();
+  useEffect(() => {
+    return navigation.addListener('beforeRemove', () => {
+      if (playingRef.current) {
+        player.pause();
+      }
+    });
+  }, [navigation, player]);
 
   // Reload when track changes; reset completion guards
   useEffect(() => {
