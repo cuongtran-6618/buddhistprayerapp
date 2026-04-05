@@ -1,8 +1,8 @@
 import { LotusIcon } from "@/components/icons/lotus-icon";
+import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track, TRACKS } from "@/constants/tracks";
-import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 interface ChantListScreenProps {
@@ -36,12 +36,9 @@ function ChantRow({ track, onPress }: { track: Track; onPress: () => void }) {
         <View style={styles.rowTitleRow}>
           <Text style={styles.rowTitle}>{track.title}</Text>
           {track.isPremium && (
-            <LinearGradient
-              colors={[Colors.gold, Colors.red]}
-              style={styles.proBadge}
-            >
+            <GoldGradient style={styles.proBadge}>
               <Text style={styles.proBadgeText}>PRO</Text>
-            </LinearGradient>
+            </GoldGradient>
           )}
         </View>
         <Text style={styles.rowSubtitle}>{track.subtitle}</Text>
@@ -50,14 +47,9 @@ function ChantRow({ track, onPress }: { track: Track; onPress: () => void }) {
         )}
       </View>
       <Pressable onPress={onPress} style={styles.playButton}>
-        <LinearGradient
-          colors={[Colors.gold, Colors.red]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.playButtonGradient}
-        >
+        <GoldGradient style={styles.playButtonGradient}>
           <Text style={styles.playIcon}>▶</Text>
-        </LinearGradient>
+        </GoldGradient>
       </Pressable>
     </View>
   );

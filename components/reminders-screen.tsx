@@ -8,6 +8,8 @@
  *   - Tap "+" to navigate to CreateReminderScreen.
  */
 
+import { i18n } from "@/app/lib/i18n";
+import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { TRACKS } from "@/constants/tracks";
@@ -17,7 +19,6 @@ import {
 } from "@/hooks/use-notifications";
 import { useRemindersStore } from "@/store/reminders-store";
 import { Reminder } from "@/types/reminder";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
 import {
@@ -45,7 +46,7 @@ export function RemindersScreen() {
         updateReminder({ ...reminder, enabled: true, notificationId });
       }
     } catch {
-      Alert.alert("Lỗi", "Không thể cập nhật thông báo. Vui lòng thử lại.");
+      Alert.alert(i18n.t("errors.notification_update"), i18n.t("errors.notification_update_body"));
     }
   }
 
@@ -63,7 +64,7 @@ export function RemindersScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Nhắc Nhở</Text>
+        <Text style={styles.headerTitle}>{i18n.t("reminders.title")}</Text>
       </View>
 
       {/* List */}
@@ -93,14 +94,9 @@ export function RemindersScreen() {
         style={styles.fab}
         onPress={() => router.push("/create-reminder" as any)}
       >
-        <LinearGradient
-          colors={[Colors.gold, Colors.red]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.fabGradient}
-        >
+        <GoldGradient style={styles.fabGradient}>
           <Text style={styles.fabPlus}>+</Text>
-        </LinearGradient>
+        </GoldGradient>
       </Pressable>
     </View>
   );
@@ -168,10 +164,8 @@ function EmptyState() {
   return (
     <View style={styles.emptyInner}>
       <Text style={styles.emptyIcon}>🔔</Text>
-      <Text style={styles.emptyTitle}>Chưa có nhắc nhở</Text>
-      <Text style={styles.emptyBody}>
-        Nhấn <Text style={styles.emptyHighlight}>+</Text> để tạo nhắc nhở cầu nguyện hàng ngày.
-      </Text>
+      <Text style={styles.emptyTitle}>{i18n.t("reminders.empty_title")}</Text>
+      <Text style={styles.emptyBody}>{i18n.t("reminders.empty_body")}</Text>
     </View>
   );
 }

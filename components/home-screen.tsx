@@ -1,3 +1,4 @@
+import { i18n } from "@/app/lib/i18n";
 import { BellIcon } from "@/components/icons/bell-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
@@ -12,6 +13,7 @@ import {
   useChantingHistoryStore,
 } from "@/store/chanting-history-store";
 import { useRemindersStore } from "@/store/reminders-store";
+import { GoldGradient } from "@/components/ui/gold-gradient";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import {
@@ -81,14 +83,9 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
             <Pressable style={styles.iconButton} onPress={onRemindersPress}>
               <BellIcon size={18} />
             </Pressable>
-            <LinearGradient
-              colors={[Colors.gold, Colors.red]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.avatarButton}
-            >
+            <GoldGradient style={styles.avatarButton}>
               <Text style={styles.avatarEmoji}>🙏</Text>
-            </LinearGradient>
+            </GoldGradient>
           </View>
         </View>
 
@@ -117,15 +114,15 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
         {/* Today's schedule */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Thời Khóa Hôm Nay</Text>
+            <Text style={styles.sectionTitle}>{i18n.t("home.todays_schedule")}</Text>
             <Pressable onPress={onRemindersPress}>
-              <Text style={styles.sectionAction}>Chỉnh sửa</Text>
+              <Text style={styles.sectionAction}>{i18n.t("home.edit")}</Text>
             </Pressable>
           </View>
           {scheduleItems.length === 0 ? (
             <Pressable style={styles.emptySchedule} onPress={onRemindersPress}>
-              <Text style={styles.emptyScheduleText}>Chưa có lịch tụng kinh</Text>
-              <Text style={styles.emptyScheduleHint}>Nhấn để thêm nhắc nhở →</Text>
+              <Text style={styles.emptyScheduleText}>{i18n.t("home.no_reminders")}</Text>
+              <Text style={styles.emptyScheduleHint}>{i18n.t("home.no_reminders_hint")}</Text>
             </Pressable>
           ) : (
             <View style={styles.scheduleList}>
@@ -220,12 +217,9 @@ function ScheduleItemContent({ item }: { item: ScheduleItemData }) {
             <Text style={styles.doneCheck}>✓</Text>
           </View>
         ) : !item.done ? (
-          <LinearGradient
-            colors={[Colors.gold, Colors.red]}
-            style={styles.playButton}
-          >
+          <GoldGradient style={styles.playButton}>
             <Text style={styles.playIcon}>▶</Text>
-          </LinearGradient>
+          </GoldGradient>
         ) : (
           <View style={styles.pendingCircle} />
         )}

@@ -2,13 +2,11 @@
   "ios": {
     "CFBundleDisplayName": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
     "NSContactsUsageDescription": "Ứng dụng này sử dụng ngôn ngữ tiếng Việt",
-    "Localizable.strings": {
-      "HELLO_NOTIFICATION_KEY": "Xin chào thế giới"
-    }
+    "HELLO_NOTIFICATION_KEY": "Xin chào thế giới"
   },
   "android": {
     "app_name": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
-    "HELLO_NOTIFICATION_KEY": "Xin chào thế giới    "
+    "HELLO_NOTIFICATION_KEY": "Xin chào thế giới"
   },
   "onboarding": {
     "welcome": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
@@ -25,5 +23,43 @@
     "signupText": "Bạn chưa có tài khoản?",
     "signupLink": "Đăng ký"
   },
-
+  "home": {
+    "todays_schedule": "Thời Khóa Hôm Nay",
+    "edit": "Chỉnh sửa",
+    "no_reminders": "Chưa có lịch tụng kinh",
+    "no_reminders_hint": "Nhấn để thêm nhắc nhở →"
+  },
+  "player": {
+    "now_chanting": "Đang Tụng"
+  },
+  "reminders": {
+    "title": "Nhắc Nhở",
+    "empty_title": "Chưa có nhắc nhở",
+    "empty_body": "Nhấn + để tạo nhắc nhở cầu nguyện hàng ngày."
+  },
+  "create_reminder": {
+    "title_new": "Nhắc Nhở Mới",
+    "title_edit": "Chỉnh Sửa Nhắc Nhở",
+    "field_title": "Tiêu Đề",
+    "field_time": "Thời Gian",
+    "field_chant": "Kinh / Chú",
+    "field_snooze": "Thời Gian Snooze",
+    "daily_hint": "Hàng ngày lúc",
+    "placeholder_title": "Vd: Công phu khuya",
+    "save": "Lưu Nhắc Nhở",
+    "update": "Cập Nhật Nhắc Nhở",
+    "saving": "Đang lưu…",
+    "snooze_minutes": "%{count} phút"
+  },
+  "errors": {
+    "missing_title": "Thiếu tiêu đề",
+    "missing_title_body": "Vui lòng nhập tiêu đề nhắc nhở.",
+    "notification_permission": "Quyền thông báo",
+    "notification_permission_body": "Vui lòng cho phép ứng dụng gửi thông báo trong Cài đặt để sử dụng nhắc nhở.",
+    "notification_schedule": "Lỗi",
+    "notification_schedule_body": "Không thể lên lịch thông báo. Vui lòng thử lại.",
+    "notification_update": "Lỗi",
+    "notification_update_body": "Không thể cập nhật thông báo. Vui lòng thử lại.",
+    "ok": "OK"
+  }
 }

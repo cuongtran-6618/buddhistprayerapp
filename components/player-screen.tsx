@@ -1,14 +1,17 @@
 import { LotusIcon } from "@/components/icons/lotus-icon";
+import { GoldGradient } from "@/components/ui/gold-gradient";
+import { i18n } from "@/app/lib/i18n";
+import { SCRIPT_LINE_HEIGHT } from "@/constants/animation";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
-import { useAudioPlayer } from "@/hooks/use-audio-player";
-import { useSeekGesture } from "@/hooks/use-seek-gesture";
+import { AudioPlayer, useAudioPlayer } from "@/hooks/use-audio-player";
+import { PlayerAnimations, usePlayerAnimations } from "@/hooks/use-player-animations";
+import { UseSeekGestureResult, useSeekGesture } from "@/hooks/use-seek-gesture";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
-  Easing,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -24,250 +27,246 @@ interface PlayerScreenProps {
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
   const player = useAudioPlayer(track, onComplete);
+  const anims  = usePlayerAnimations(player.playing);
   const scrollRef = useRef<ScrollView>(null);
 
-  // Seek gesture — drag thumb along the bar; audio jumps on finger release.
   const seek = useSeekGesture({
     durationMs:      player.durationMs,
     currentProgress: player.progress,
     onSeek:          player.seekTo,
   });
 
-  // Elapsed display follows the drag position while scrubbing.
+  // Auto-scroll lyrics to the active line
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: player.activeLineIndex * SCRIPT_LINE_HEIGHT, animated: true });
+  }, [player.activeLineIndex]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.atmosphereTop}    pointerEvents="none" />
+      <View style={styles.atmosphereBottom} pointerEvents="none" />
+
+      <Header track={track} onBack={onBack} />
+      <MandalaSection  track={track} player={player} anims={anims} />
+      <TrackInfo       track={track} />
+      <ChantScrollSection track={track} player={player} anims={anims} scrollRef={scrollRef} />
+      <ProgressSection seek={seek} player={player} />
+      <ControlsSection player={player} />
+    </View>
+  );
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function Header({ track, onBack }: { track: Track; onBack: () => void }) {
+  return (
+    <View style={styles.header}>
+      <Pressable onPress={onBack} style={styles.headerButton}>
+        <Text style={styles.headerButtonText}>←</Text>
+      </Pressable>
+      <View style={styles.headerCenter}>
+        <Text style={styles.headerLabel}>{i18n.t("player.now_chanting")}</Text>
+        <Text style={styles.headerSub}>{track.subtitle}</Text>
+      </View>
+      <Pressable style={styles.headerButton}>
+        <Text style={styles.headerButtonText}>⋯</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function MandalaSection({
+  track,
+  player,
+  anims,
+}: {
+  track: Track;
+  player: AudioPlayer;
+  anims: PlayerAnimations;
+}) {
+  return (
+    <View style={styles.mandalaContainer}>
+      <Animated.View style={[styles.outerRing, { transform: [{ rotate: anims.outerRotateDeg }] }]}>
+        {Array.from({ length: 12 }).map((_, i) => (
+          <View
+            key={i}
+            style={[
+              styles.mandalaTick,
+              { transform: [{ rotate: `${i * 30}deg` }, { translateY: -75 }] },
+            ]}
+          />
+        ))}
+      </Animated.View>
+
+      <Animated.View style={[styles.middleRing, { transform: [{ rotate: anims.middleRotateDeg }] }]} />
+
+      <Animated.View style={[styles.centerLotus, { transform: [{ scale: anims.breatheAnim }] }]}>
+        <LotusIcon size={40} color={player.playing ? Colors.goldBright : Colors.gold} />
+      </Animated.View>
+    </View>
+  );
+}
+
+function TrackInfo({ track }: { track: Track }) {
+  return (
+    <View style={styles.trackInfo}>
+      <Text style={styles.trackTitle}>{track.title}</Text>
+      <Text style={styles.trackSub}>{track.subtitle}</Text>
+    </View>
+  );
+}
+
+function ChantScrollSection({
+  track,
+  player,
+  anims,
+  scrollRef,
+}: {
+  track: Track;
+  player: AudioPlayer;
+  anims: PlayerAnimations;
+  scrollRef: React.RefObject<ScrollView>;
+}) {
+  return (
+    <View style={styles.chantContainer}>
+      <LinearGradient colors={[Colors.bg, "transparent"]} style={styles.fadeTop}    pointerEvents="none" />
+      <LinearGradient colors={["transparent", Colors.bg]} style={styles.fadeBottom} pointerEvents="none" />
+      <ScrollView
+        ref={scrollRef}
+        style={styles.chantScroll}
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
+      >
+        {track.script.map((line, i) => {
+          const isActive = i === player.activeLineIndex;
+          const isPast   = i < player.activeLineIndex;
+          const dist     = Math.abs(i - player.activeLineIndex);
+          const opacity  = dist > 3 ? 0.15 : dist > 2 ? 0.3 : dist > 1 ? 0.5 : dist > 0 ? 0.7 : 1;
+          const scale    = isActive ? 1.04 : Math.max(0.97, 1 - dist * 0.015);
+
+          return (
+            <Animated.View
+              key={i}
+              style={[
+                styles.chantLine,
+                {
+                  opacity:   isActive && player.playing ? anims.activeGlowAnim : opacity,
+                  transform: [{ scale }],
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.chantText,
+                  isActive && styles.chantTextActive,
+                  isPast && !isActive && styles.chantTextPast,
+                ]}
+              >
+                {line.text}
+              </Text>
+            </Animated.View>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+}
+
+function ProgressSection({
+  seek,
+  player,
+}: {
+  seek: UseSeekGestureResult;
+  player: AudioPlayer;
+}) {
   const displayMs  = Math.floor(seek.displayProgress * player.durationMs);
   const displayMin = Math.floor(displayMs / 60000);
   const displaySec = Math.floor((displayMs % 60000) / 1000);
   const totalMin   = Math.floor(player.durationMs / 60000);
   const totalSec   = Math.floor((player.durationMs % 60000) / 1000);
 
-  // Mandala / breathing animations
-  const breatheAnim    = useRef(new Animated.Value(1)).current;
-  const outerRotate    = useRef(new Animated.Value(0)).current;
-  const middleRotate   = useRef(new Animated.Value(0)).current;
-  const activeGlowAnim = useRef(new Animated.Value(0.6)).current;
-
-  const outerRotateAnim  = useRef<Animated.CompositeAnimation | null>(null);
-  const middleRotateAnim = useRef<Animated.CompositeAnimation | null>(null);
-  const breatheLoopAnim  = useRef<Animated.CompositeAnimation | null>(null);
-  const glowLoopAnim     = useRef<Animated.CompositeAnimation | null>(null);
-
-  useEffect(() => {
-    if (player.playing) {
-      breatheLoopAnim.current = Animated.loop(
-        Animated.sequence([
-          Animated.timing(breatheAnim, { toValue: 1.04, duration: 2000, useNativeDriver: true }),
-          Animated.timing(breatheAnim, { toValue: 1,    duration: 2000, useNativeDriver: true }),
-        ])
-      );
-      breatheLoopAnim.current.start();
-
-      outerRotateAnim.current = Animated.loop(
-        Animated.timing(outerRotate, { toValue: 1, duration: 20000, easing: Easing.linear, useNativeDriver: true })
-      );
-      outerRotateAnim.current.start();
-
-      middleRotateAnim.current = Animated.loop(
-        Animated.timing(middleRotate, { toValue: 1, duration: 15000, easing: Easing.linear, useNativeDriver: true })
-      );
-      middleRotateAnim.current.start();
-
-      glowLoopAnim.current = Animated.loop(
-        Animated.sequence([
-          Animated.timing(activeGlowAnim, { toValue: 1,   duration: 1000, useNativeDriver: true }),
-          Animated.timing(activeGlowAnim, { toValue: 0.6, duration: 1000, useNativeDriver: true }),
-        ])
-      );
-      glowLoopAnim.current.start();
-    } else {
-      breatheLoopAnim.current?.stop();
-      outerRotateAnim.current?.stop();
-      middleRotateAnim.current?.stop();
-      glowLoopAnim.current?.stop();
-      Animated.timing(breatheAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
-    }
-  }, [player.playing]);
-
-  // Auto-scroll to active line
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ y: player.activeLineIndex * 44, animated: true });
-  }, [player.activeLineIndex]);
-
-  const outerRotateDeg  = outerRotate.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
-  const middleRotateDeg = middleRotate.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "-360deg"] });
-
   return (
-    <View style={styles.container}>
-      {/* Background atmosphere */}
-      <View style={styles.atmosphereTop} pointerEvents="none" />
-      <View style={styles.atmosphereBottom} pointerEvents="none" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable onPress={onBack} style={styles.headerButton}>
-          <Text style={styles.headerButtonText}>←</Text>
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerLabel}>Đang Tụng</Text>
-          <Text style={styles.headerSub}>{track.subtitle}</Text>
-        </View>
-        <Pressable style={styles.headerButton}>
-          <Text style={styles.headerButtonText}>⋯</Text>
-        </Pressable>
-      </View>
-
-      {/* Mandala album art */}
-      <View style={styles.mandalaContainer}>
-        <Animated.View style={[styles.outerRing, { transform: [{ rotate: outerRotateDeg }] }]}>
-          {Array.from({ length: 12 }).map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.mandalaTick,
-                { transform: [{ rotate: `${i * 30}deg` }, { translateY: -75 }] },
-              ]}
-            />
-          ))}
-        </Animated.View>
-
-        <Animated.View style={[styles.middleRing, { transform: [{ rotate: middleRotateDeg }] }]} />
-
-        <Animated.View style={[styles.centerLotus, { transform: [{ scale: breatheAnim }] }]}>
-          <LotusIcon size={40} color={player.playing ? Colors.goldBright : Colors.gold} />
-        </Animated.View>
-      </View>
-
-      {/* Track info */}
-      <View style={styles.trackInfo}>
-        <Text style={styles.trackTitle}>{track.title}</Text>
-        <Text style={styles.trackSub}>{track.subtitle}</Text>
-      </View>
-
-      {/* Scrolling script lines */}
-      <View style={styles.chantContainer}>
-        <LinearGradient colors={[Colors.bg, "transparent"]} style={styles.fadeTop} pointerEvents="none" />
-        <LinearGradient colors={["transparent", Colors.bg]} style={styles.fadeBottom} pointerEvents="none" />
-        <ScrollView
-          ref={scrollRef}
-          style={styles.chantScroll}
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
-        >
-          {track.script.map((line, i) => {
-            const isActive = i === player.activeLineIndex;
-            const isPast   = i < player.activeLineIndex;
-            const dist     = Math.abs(i - player.activeLineIndex);
-            const opacity  = dist > 3 ? 0.15 : dist > 2 ? 0.3 : dist > 1 ? 0.5 : dist > 0 ? 0.7 : 1;
-            const scale    = isActive ? 1.04 : Math.max(0.97, 1 - dist * 0.015);
-
-            return (
-              <Animated.View
-                key={i}
-                style={[
-                  styles.chantLine,
-                  {
-                    opacity: isActive && player.playing ? activeGlowAnim : opacity,
-                    transform: [{ scale }],
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.chantText,
-                    isActive && styles.chantTextActive,
-                    isPast && !isActive && styles.chantTextPast,
-                  ]}
-                >
-                  {line.text}
-                </Text>
-              </Animated.View>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* Progress / seek */}
-      <View style={styles.progressSection}>
-        {/*
-          seekArea is the full-width gesture target (28 px tall so it's easy
-          to tap). overflow: "visible" lets the thumb render outside the 3 px
-          track. panHandlers attach the PanResponder; onLayout captures the
-          rendered width so the hook can convert touch X → 0–1 progress.
-        */}
-        <View
-          style={styles.seekArea}
-          onLayout={seek.handleLayout}
-          {...seek.panHandlers}
-        >
-          {/* 3 px track — clips gradient fill to rounded corners */}
-          <View style={styles.progressTrack}>
-            <LinearGradient
-              colors={[Colors.red, Colors.gold]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.progressFill, { width: `${seek.displayProgress * 100}%` }]}
-            />
-          </View>
-
-          {/* Scrubber thumb — grows slightly while dragging */}
-          <View
-            style={[
-              styles.scrubberThumb,
-              seek.isDragging && styles.scrubberThumbDragging,
-              {
-                left: `${seek.displayProgress * 100}%` as `${number}%`,
-                transform: [{ translateX: seek.isDragging ? -7 : -6 }],
-              },
-            ]}
+    <View style={styles.progressSection}>
+      {/*
+        seekArea is the full-width gesture target (28 px tall so it's easy
+        to tap). overflow: "visible" lets the thumb render outside the 3 px
+        track. panHandlers attach the PanResponder; onLayout captures the
+        rendered width so the hook can convert touch X → 0–1 progress.
+      */}
+      <View
+        style={styles.seekArea}
+        onLayout={seek.handleLayout}
+        {...seek.panHandlers}
+      >
+        {/* 3 px track — clips gradient fill to rounded corners */}
+        <View style={styles.progressTrack}>
+          <LinearGradient
+            colors={[Colors.red, Colors.gold]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[styles.progressFill, { width: `${seek.displayProgress * 100}%` }]}
           />
         </View>
 
-        {/* Time labels — elapsed label tracks drag position while scrubbing */}
-        <View style={styles.progressTimes}>
-          <Text style={[styles.progressTime, seek.isDragging && styles.progressTimeActive]}>
-            {displayMin}:{String(displaySec).padStart(2, "0")}
-          </Text>
-          <Text style={styles.progressTime}>
-            {totalMin}:{String(totalSec).padStart(2, "0")}
-          </Text>
-        </View>
+        {/* Scrubber thumb — grows slightly while dragging */}
+        <View
+          style={[
+            styles.scrubberThumb,
+            seek.isDragging && styles.scrubberThumbDragging,
+            {
+              left: `${seek.displayProgress * 100}%` as `${number}%`,
+              transform: [{ translateX: seek.isDragging ? -7 : -6 }],
+            },
+          ]}
+        />
       </View>
 
-      {/* Controls */}
-      <View style={styles.controls}>
-        <Pressable style={styles.controlBtnSm}>
-          <Text style={styles.controlBtnEmoji}>🔀</Text>
-        </Pressable>
-        <Pressable
-          style={styles.controlBtnMd}
-          onPress={() => player.seekToLine(player.activeLineIndex - 1)}
-        >
-          <Text style={styles.controlBtnEmoji}>⏮</Text>
-        </Pressable>
-
-        <Pressable onPress={player.togglePlay} style={styles.playBtnWrapper}>
-          <LinearGradient
-            colors={[Colors.gold, Colors.red]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={[styles.playBtn, player.playing && styles.playBtnActive]}
-          >
-            <Text style={styles.playBtnIcon}>{player.playing ? "⏸" : "▶"}</Text>
-          </LinearGradient>
-        </Pressable>
-
-        <Pressable
-          style={styles.controlBtnMd}
-          onPress={() => player.seekToLine(player.activeLineIndex + 1)}
-        >
-          <Text style={styles.controlBtnEmoji}>⏭</Text>
-        </Pressable>
-        <Pressable style={styles.controlBtnSm}>
-          <Text style={styles.controlBtnEmoji}>🔁</Text>
-        </Pressable>
+      {/* Time labels — elapsed label tracks drag position while scrubbing */}
+      <View style={styles.progressTimes}>
+        <Text style={[styles.progressTime, seek.isDragging && styles.progressTimeActive]}>
+          {displayMin}:{String(displaySec).padStart(2, "0")}
+        </Text>
+        <Text style={styles.progressTime}>
+          {totalMin}:{String(totalSec).padStart(2, "0")}
+        </Text>
       </View>
     </View>
   );
 }
+
+function ControlsSection({ player }: { player: AudioPlayer }) {
+  return (
+    <View style={styles.controls}>
+      <Pressable style={styles.controlBtnSm}>
+        <Text style={styles.controlBtnEmoji}>🔀</Text>
+      </Pressable>
+      <Pressable
+        style={styles.controlBtnMd}
+        onPress={() => player.seekToLine(player.activeLineIndex - 1)}
+      >
+        <Text style={styles.controlBtnEmoji}>⏮</Text>
+      </Pressable>
+
+      <Pressable onPress={player.togglePlay} style={styles.playBtnWrapper}>
+        <GoldGradient style={[styles.playBtn, player.playing && styles.playBtnActive]}>
+          <Text style={styles.playBtnIcon}>{player.playing ? "⏸" : "▶"}</Text>
+        </GoldGradient>
+      </Pressable>
+
+      <Pressable
+        style={styles.controlBtnMd}
+        onPress={() => player.seekToLine(player.activeLineIndex + 1)}
+      >
+        <Text style={styles.controlBtnEmoji}>⏭</Text>
+      </Pressable>
+      <Pressable style={styles.controlBtnSm}>
+        <Text style={styles.controlBtnEmoji}>🔁</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   container: {
@@ -423,7 +422,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 28,
     alignItems: "center",
-    height: 44,
+    height: SCRIPT_LINE_HEIGHT,
     justifyContent: "center",
   },
   chantText: {
@@ -445,8 +444,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingBottom: 8,
   },
-  // Tall hit target — easier to touch than a 3 px bar.
-  // overflow: "visible" lets the thumb render outside the track bounds.
   seekArea: {
     height: 28,
     justifyContent: "center",
@@ -463,10 +460,6 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 2,
   },
-  // Thumb circle — always visible on the bar.
-  // Geometry: seekArea h=28, track centred → track top=12.5.
-  // Normal  (h=12): top=8  → centre at 8+6=14  ✓
-  // Dragging (h=14): top=7  → centre at 7+7=14  ✓
   scrubberThumb: {
     position: "absolute",
     width: 12,
@@ -491,7 +484,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: Fonts.regular,
   },
-  // Highlight the elapsed label while the user is dragging.
   progressTimeActive: {
     color: Colors.goldBright,
   },

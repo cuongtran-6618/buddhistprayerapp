@@ -10,6 +10,7 @@
  *     without seeking so playback is uninterrupted.
  */
 
+import { SEEK_CONFIRM_THRESHOLD } from "@/constants/animation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   GestureResponderEvent,
@@ -153,7 +154,7 @@ export function useSeekGesture({
   // to the real playback position.
   useEffect(() => {
     if (drag.seekTargetProgress === null) return;
-    if (Math.abs(currentProgress - drag.seekTargetProgress) < 0.01) {
+    if (Math.abs(currentProgress - drag.seekTargetProgress) < SEEK_CONFIRM_THRESHOLD) {
       setDrag((prev) => {
         // Guard against a stale closure clearing a newer seek.
         if (prev.seekTargetProgress === null) return prev;

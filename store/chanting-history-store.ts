@@ -3,6 +3,8 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { Reminder } from "@/types/reminder";
+import { STREAK_MAX_DAYS } from "@/constants/animation";
+import { formatDateKey } from "@/utils/date";
 
 // { "2026-03-29": { "chu-dai-bi": 2, "nam-mo": 1 } }
 type DayRecord = { [trackId: string]: number };
@@ -15,8 +17,7 @@ interface ChantingHistoryStore {
 }
 
 export function getTodayKey(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return formatDateKey(new Date());
 }
 
 export const useChantingHistoryStore = create<ChantingHistoryStore>()(
@@ -121,8 +122,8 @@ export function computeStreak(history: HistoryMap): number {
     cursor.setDate(cursor.getDate() - 1);
   }
 
-  while (streak < 365) {
-    const key = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}-${String(cursor.getDate()).padStart(2, "0")}`;
+  while (streak < STREAK_MAX_DAYS) {
+    const key = formatDateKey(cursor);
     if (!hasCompletion(key)) break;
     streak++;
     cursor.setDate(cursor.getDate() - 1);
@@ -139,7 +140,7 @@ export function computeMonthProgress(history: HistoryMap): number {
 
   let daysWithCompletion = 0;
   for (let day = 1; day <= today; day++) {
-    const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const key = formatDateKey(new Date(year, month, day));
     const record = history[key];
     if (record && Object.values(record).some((c) => c > 0)) daysWithCompletion++;
   }

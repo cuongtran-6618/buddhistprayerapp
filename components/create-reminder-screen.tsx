@@ -16,7 +16,9 @@
  * Supabase later without any changes here.
  */
 
+import { i18n } from "@/app/lib/i18n";
 import { LotusIcon } from "@/components/icons/lotus-icon";
+import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
@@ -25,15 +27,12 @@ import {
   requestNotificationPermission,
   scheduleReminderNotification,
 } from "@/hooks/use-notifications";
+import { useReminderForm } from "@/hooks/use-reminder-form";
 import { useTracks } from "@/hooks/use-tracks";
 import { useRemindersStore } from "@/store/reminders-store";
-import { Reminder } from "@/types/reminder";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
-import { LinearGradient } from "expo-linear-gradient";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
   Alert,
   Platform,
@@ -51,40 +50,28 @@ interface CreateReminderScreenProps {
   reminderId?: string;
 }
 
-const SNOOZE_OPTIONS: Array<5 | 10 | 15> = [5, 10, 15];
+const SNOOZE_OPTIONS: (5 | 10 | 15)[] = [5, 10, 15];
 
 export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateReminderScreenProps) {
-  const addReminder = useRemindersStore((s) => s.addReminder);
+  const addReminder    = useRemindersStore((s) => s.addReminder);
   const updateReminder = useRemindersStore((s) => s.updateReminder);
-  const reminders = useRemindersStore((s) => s.reminders);
-  const tracks = useTracks();
+  const reminders      = useRemindersStore((s) => s.reminders);
+  const tracks         = useTracks();
 
   const existing = reminderId ? reminders.find((r) => r.id === reminderId) : undefined;
 
-  // Form state — pre-populate when editing
-  const [title, setTitle] = useState(existing?.title ?? "");
-  const [time, setTime] = useState<Date>(() => {
-    const d = new Date();
-    d.setHours(existing?.hour ?? d.getHours());
-    d.setMinutes(existing?.minute ?? d.getMinutes());
-    d.setSeconds(0);
-    d.setMilliseconds(0);
-    return d;
-  });
-  const [selectedTrack, setSelectedTrack] = useState<Track>(
-    tracks.find((t) => t.id === existing?.trackId) ?? tracks[0]
-  );
-  const [snoozeMinutes, setSnoozeMinutes] = useState<5 | 10 | 15>(existing?.snoozeMinutes ?? 10);
-  const [saving, setSaving] = useState(false);
-
-  function handleTimeChange(_event: DateTimePickerEvent, selected?: Date) {
-    if (selected) setTime(selected);
-  }
+  const {
+    title, setTitle,
+    time, handleTimeChange,
+    selectedTrack, setSelectedTrack,
+    snoozeMinutes, setSnoozeMinutes,
+    saving, setSaving,
+  } = useReminderForm(tracks, existing);
 
   async function handleSave() {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      Alert.alert("Thiếu tiêu đề", "Vui lòng nhập tiêu đề nhắc nhở.");
+      Alert.alert(i18n.t("errors.missing_title"), i18n.t("errors.missing_title_body"));
       return;
     }
 
@@ -93,9 +80,9 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
     const granted = await requestNotificationPermission();
     if (!granted) {
       Alert.alert(
-        "Quyền thông báo",
-        "Vui lòng cho phép ứng dụng gửi thông báo trong Cài đặt để sử dụng nhắc nhở.",
-        [{ text: "OK" }]
+        i18n.t("errors.notification_permission"),
+        i18n.t("errors.notification_permission_body"),
+        [{ text: i18n.t("errors.ok") }]
       );
       setSaving(false);
       return;
@@ -120,7 +107,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
     try {
       notificationId = await scheduleReminderNotification(reminder);
     } catch {
-      Alert.alert("Lỗi", "Không thể lên lịch thông báo. Vui lòng thử lại.");
+      Alert.alert(i18n.t("errors.notification_schedule"), i18n.t("errors.notification_schedule_body"));
       setSaving(false);
       return;
     }
@@ -142,7 +129,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
         <Pressable style={styles.backButton} onPress={onBack}>
           <Text style={styles.backArrow}>←</Text>
         </Pressable>
-        <Text style={styles.headerTitle}>{existing ? "Chỉnh Sửa Nhắc Nhở" : "Nhắc Nhở Mới"}</Text>
+        <Text style={styles.headerTitle}>{existing ? i18n.t("create_reminder.title_edit") : i18n.t("create_reminder.title_new")}</Text>
         <View style={styles.headerRight} />
       </View>
 
@@ -153,10 +140,10 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
         keyboardShouldPersistTaps="handled"
       >
         {/* ── Title ── */}
-        <Field label="Tiêu Đề">
+        <Field label={i18n.t("create_reminder.field_title")}>
           <TextInput
             style={styles.textInput}
-            placeholder="Vd: Công phu khuya"
+            placeholder={i18n.t("create_reminder.placeholder_title")}
             placeholderTextColor={Colors.muted}
             value={title}
             onChangeText={setTitle}
@@ -169,9 +156,9 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
             iOS compact: renders as a small tappable label in-flow; tapping opens
             an OS overlay — no layout shift, no Done button needed.
             Android default: opens the native time-picker dialog. */}
-        <Field label="Thời Gian">
+        <Field label={i18n.t("create_reminder.field_time")}>
           <View style={styles.timeField}>
-            <Text style={styles.timeDailyHint}>Hàng ngày lúc</Text>
+            <Text style={styles.timeDailyHint}>{i18n.t("create_reminder.daily_hint")}</Text>
             <DateTimePicker
               value={time}
               mode="time"
@@ -186,7 +173,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
         {/* ── Chant selector ──
             Vertical list of full-width cards; scales to any number of tracks.
             Track data comes from useTracks() — swap for Supabase in that hook. */}
-        <Field label="Kinh / Chú">
+        <Field label={i18n.t("create_reminder.field_chant")}>
           <View style={styles.trackList}>
             {tracks.map((track) => (
               <TrackRow
@@ -200,7 +187,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
         </Field>
 
         {/* ── Snooze ── */}
-        <Field label="Thời Gian Snooze">
+        <Field label={i18n.t("create_reminder.field_snooze")}>
           <View style={styles.snoozeRow}>
             {SNOOZE_OPTIONS.map((opt) => (
               <Pressable
@@ -217,7 +204,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
                     snoozeMinutes === opt && styles.snoozePillTextActive,
                   ]}
                 >
-                  {opt} phút
+                  {i18n.t("create_reminder.snooze_minutes", { count: opt })}
                 </Text>
               </Pressable>
             ))}
@@ -228,16 +215,11 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
 
         {/* Save button */}
         <Pressable style={styles.saveButton} onPress={handleSave} disabled={saving}>
-          <LinearGradient
-            colors={[Colors.gold, Colors.red]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.saveGradient}
-          >
+          <GoldGradient style={styles.saveGradient}>
             <Text style={styles.saveText}>
-              {saving ? "Đang lưu…" : existing ? "Cập Nhật Nhắc Nhở" : "Lưu Nhắc Nhở"}
+              {saving ? i18n.t("create_reminder.saving") : existing ? i18n.t("create_reminder.update") : i18n.t("create_reminder.save")}
             </Text>
-          </LinearGradient>
+          </GoldGradient>
         </Pressable>
 
         <View style={{ height: 40 }} />
@@ -308,12 +290,9 @@ function TrackRow({
 
       {/* PRO badge */}
       {track.isPremium && (
-        <LinearGradient
-          colors={[Colors.gold, Colors.red]}
-          style={styles.trackRowProBadge}
-        >
+        <GoldGradient style={styles.trackRowProBadge}>
           <Text style={styles.trackRowProText}>PRO</Text>
-        </LinearGradient>
+        </GoldGradient>
       )}
     </Pressable>
   );

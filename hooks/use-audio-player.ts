@@ -2,6 +2,7 @@
  * The hook wraps Expo's audio player functionality to provide a clean API for playing prayer tracks with synchronized lyrics/timing. 
  * It's designed to work with the app's Track objects that contain audio files and scripts (lyrics with timestamps).
  */
+import { COMPLETION_THRESHOLD_MS } from '@/constants/animation';
 import { Track } from '@/constants/tracks';
 import { setAudioModeAsync, useAudioPlayerStatus, useAudioPlayer as useExpoAudioPlayer } from 'expo-audio';
 import { useNavigation } from 'expo-router';
@@ -64,7 +65,7 @@ export function useAudioPlayer(track: Track | null, onComplete?: () => void): Au
       wasPlayingRef.current &&
       !(status.playing ?? false) &&
       durationMs > 0 &&
-      currentMs >= durationMs - 1000;
+      currentMs >= durationMs - COMPLETION_THRESHOLD_MS;
     if (finished && !completedRef.current) {
       completedRef.current = true;
       onComplete();
