@@ -57,7 +57,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
 
   const todayCompletions = history[getTodayKey()] ?? {};
   const scheduleItems = computeScheduleStatus(reminders, todayCompletions);
-  const { done, total } = computeTodayProgress(reminders, todayCompletions);
+  const { done } = computeTodayProgress(reminders, todayCompletions);
   const streak = computeStreak(history);
   const monthPct = computeMonthProgress(history);
 
@@ -135,7 +135,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
                   <ScheduleItem
                     key={item.id}
                     item={item}
-                    onPress={item.current && track ? () => onChantSelect(track) : undefined}
+                    onPress={!item.done && track ? () => onChantSelect(track) : undefined}
                   />
                 );
               })}
@@ -181,9 +181,9 @@ function ScheduleItem({ item, onPress }: { item: ScheduleItemData; onPress?: () 
   }
 
   return (
-    <View style={styles.scheduleItem}>
+    <Pressable onPress={onPress} style={styles.scheduleItem}>
       <ScheduleItemContent item={item} />
-    </View>
+    </Pressable>
   );
 }
 
@@ -219,7 +219,7 @@ function ScheduleItemContent({ item }: { item: ScheduleItemData }) {
           <View style={styles.doneCircle}>
             <Text style={styles.doneCheck}>✓</Text>
           </View>
-        ) : item.current ? (
+        ) : !item.done ? (
           <LinearGradient
             colors={[Colors.gold, Colors.red]}
             style={styles.playButton}
