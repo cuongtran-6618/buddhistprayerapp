@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "buddhistprayerapp",
+    "name": "Chu Dai Bi",
     "slug": "buddhistprayerapp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,6 +16,7 @@
       }
     },
     "android": {
+      "package": "com.tiikeritran.buddhistprayerapp",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

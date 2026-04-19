@@ -3,6 +3,7 @@ import { BellIcon } from "@/components/icons/bell-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track, TRACKS } from "@/constants/tracks";
+import { useAnalytics } from "@/hooks/use-analytics";
 import {
   ScheduleItemData,
   computeMonthProgress,
@@ -53,6 +54,7 @@ function GlowView({ style, children }: { style?: object; children: React.ReactNo
 }
 
 export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps) {
+  const analytics = useAnalytics();
   const g = getGreeting();
   const reminders = useRemindersStore((s) => s.reminders);
   const history = useChantingHistoryStore((s) => s.history);
@@ -132,7 +134,10 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
                   <ScheduleItem
                     key={item.id}
                     item={item}
-                    onPress={!item.done && track ? () => onChantSelect(track) : undefined}
+                    onPress={!item.done && track ? () => {
+                      analytics.trackChantSelected(track.id, 'home');
+                      onChantSelect(track);
+                    } : undefined}
                   />
                 );
               })}

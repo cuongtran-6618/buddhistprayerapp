@@ -3,6 +3,7 @@ import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track, TRACKS } from "@/constants/tracks";
+import { useAnalytics } from "@/hooks/use-analytics";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 interface ChantListScreenProps {
@@ -10,6 +11,8 @@ interface ChantListScreenProps {
 }
 
 export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
+  const analytics = useAnalytics();
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -20,7 +23,14 @@ export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
         <Text style={styles.heading}>Kinh Thường Tụng</Text>
         <View style={styles.list}>
           {TRACKS.map((track) => (
-            <ChantRow key={track.id} track={track} onPress={() => onChantSelect(track)} />
+            <ChantRow
+              key={track.id}
+              track={track}
+              onPress={() => {
+                analytics.trackChantSelected(track.id, 'chant_list');
+                onChantSelect(track);
+              }}
+            />
           ))}
         </View>
       </ScrollView>

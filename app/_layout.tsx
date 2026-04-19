@@ -9,8 +9,10 @@ import {
 } from "@expo-google-fonts/be-vietnam-pro";
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as Notifications from "expo-notifications";
+import { AppState } from "react-native";
+import { PostHogProvider, usePostHog } from "posthog-react-native";
 
 import { TRACKS } from "@/constants/tracks";
 import { usePlayerStore } from "@/store/player-store";
@@ -23,17 +25,10 @@ import {
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    BeVietnamPro_300Light_Italic,
-    BeVietnamPro_400Regular,
-    BeVietnamPro_400Regular_Italic,
-    BeVietnamPro_500Medium,
-    BeVietnamPro_600SemiBold,
-    BeVietnamPro_700Bold,
-  });
-
+function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
+  const posthog = usePostHog();
   const setTrack = usePlayerStore((s) => s.setTrack);
+  const sessionStart = useRef<number | null>(null);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -41,7 +36,23 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
-  // Register notification category and wire up the response listener once.
+  useEffect(() => {
+    sessionStart.current = Date.now();
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        sessionStart.current = Date.now();
+      } else if (state === "background" || state === "inactive") {
+        if (sessionStart.current) {
+          posthog.capture("app_session", {
+            duration_ms: Date.now() - sessionStart.current,
+          });
+          sessionStart.current = null;
+        }
+      }
+    });
+    return () => sub.remove();
+  }, [posthog]);
+
   useEffect(() => {
     setupNotificationCategory();
 
@@ -58,14 +69,13 @@ export default function RootLayout() {
           actionIdentifier === ACTION_ACCEPT ||
           actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
         ) {
-          // Open the player for the associated track.
           const track = TRACKS.find((t) => t.id === data.trackId);
           if (track) {
+            posthog.capture("reminder_opened");
             setTrack(track);
             router.navigate("/player" as any);
           }
         } else if (actionIdentifier === ACTION_SNOOZE) {
-          // Reschedule a one-time notification for snoozeMinutes from now.
           const minutes = data.snoozeMinutes ?? 10;
           snoozeReminder(
             minutes,
@@ -78,16 +88,34 @@ export default function RootLayout() {
     );
 
     return () => subscription.remove();
-  }, []);
+  }, [posthog, setTrack]);
 
   if (!fontsLoaded) return null;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="reminders" />
-      <Stack.Screen name="create-reminder" />
       <Stack.Screen name="player" />
     </Stack>
+  );
+}
+
+export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    BeVietnamPro_300Light_Italic,
+    BeVietnamPro_400Regular,
+    BeVietnamPro_400Regular_Italic,
+    BeVietnamPro_500Medium,
+    BeVietnamPro_600SemiBold,
+    BeVietnamPro_700Bold,
+  });
+
+  return (
+    <PostHogProvider
+      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY!}
+      options={{ host: process.env.EXPO_PUBLIC_POSTHOG_HOST }}
+    >
+      <AppShell fontsLoaded={fontsLoaded ?? false} />
+    </PostHogProvider>
   );
 }

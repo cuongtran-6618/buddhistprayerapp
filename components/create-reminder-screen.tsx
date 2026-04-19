@@ -22,6 +22,7 @@ import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
+import { useAnalytics } from "@/hooks/use-analytics";
 import {
   cancelReminderNotification,
   requestNotificationPermission,
@@ -53,6 +54,7 @@ interface CreateReminderScreenProps {
 const SNOOZE_OPTIONS: (5 | 10 | 15)[] = [5, 10, 15];
 
 export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateReminderScreenProps) {
+  const analytics      = useAnalytics();
   const addReminder    = useRemindersStore((s) => s.addReminder);
   const updateReminder = useRemindersStore((s) => s.updateReminder);
   const reminders      = useRemindersStore((s) => s.reminders);
@@ -116,6 +118,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
       updateReminder({ ...reminder, notificationId });
     } else {
       addReminder({ ...reminder, notificationId });
+      analytics.trackReminderCreated();
     }
 
     setSaving(false);

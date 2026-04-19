@@ -84,7 +84,7 @@ export const TRACKS: Track[] = [
       //{ text: '', startMs:  0},
     ],
   },
-  {
+  /*{
     id: 'nam-mo-a-di-da-phat',
     title: 'Nam Mô A Di Đà Phật',
     subtitle: 'Amitabha Recitation',
@@ -112,5 +112,5 @@ export const TRACKS: Track[] = [
     durationLabel: '22 phút',
     isPremium: true,
     script: [],
-  },
+  },*/
 ];

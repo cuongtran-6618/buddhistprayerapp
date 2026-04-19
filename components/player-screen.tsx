@@ -6,10 +6,12 @@ import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { AudioPlayer, useAudioPlayer } from "@/hooks/use-audio-player";
+import { useAnalytics } from "@/hooks/use-analytics";
 import { PlayerAnimations, usePlayerAnimations } from "@/hooks/use-player-animations";
 import { UseSeekGestureResult, useSeekGesture } from "@/hooks/use-seek-gesture";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   Animated,
   Pressable,
@@ -26,7 +28,21 @@ interface PlayerScreenProps {
 }
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
-  const player = useAudioPlayer(track, onComplete);
+  const analytics = useAnalytics();
+  const completedRef = useRef(false);
+  const progressRef = useRef(0);
+  const durationRef = useRef(0);
+
+  const handleComplete = useCallback(() => {
+    completedRef.current = true;
+    analytics.trackChantCompleted(track.id, durationRef.current);
+    onComplete?.();
+  }, [onComplete, analytics, track.id]);
+
+  const player = useAudioPlayer(track, handleComplete);
+  progressRef.current = player.progress;
+  durationRef.current = player.durationMs;
+
   const anims  = usePlayerAnimations(player.playing);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -35,6 +51,15 @@ export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
     currentProgress: player.progress,
     onSeek:          player.seekTo,
   });
+
+  useEffect(() => {
+    analytics.trackChantStarted(track.id);
+    return () => {
+      if (!completedRef.current) {
+        analytics.trackChantAbandoned(track.id, Math.round(progressRef.current * 100));
+      }
+    };
+  }, [analytics, track.id]);
 
   // Auto-scroll lyrics to the active line
   useEffect(() => {
@@ -51,7 +76,7 @@ export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
       <TrackInfo       track={track} />
       <ChantScrollSection track={track} player={player} anims={anims} scrollRef={scrollRef} />
       <ProgressSection seek={seek} player={player} />
-      <ControlsSection player={player} />
+      <ControlsSection player={player} trackId={track.id} />
     </View>
   );
 }
@@ -234,33 +259,41 @@ function ProgressSection({
   );
 }
 
-function ControlsSection({ player }: { player: AudioPlayer }) {
+function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: string }) {
+  const analytics = useAnalytics();
+
   return (
     <View style={styles.controls}>
       <Pressable style={styles.controlBtnSm}>
-        <Text style={styles.controlBtnEmoji}>🔀</Text>
+        <Ionicons name="shuffle" size={20} color={Colors.goldDim} />
       </Pressable>
       <Pressable
         style={styles.controlBtnMd}
-        onPress={() => player.seekToLine(player.activeLineIndex - 1)}
+        onPress={() => {
+          player.seekToLine(player.activeLineIndex - 1);
+          analytics.trackChantSeeked(trackId, "backward");
+        }}
       >
-        <Text style={styles.controlBtnEmoji}>⏮</Text>
+        <Ionicons name="play-skip-back" size={22} color={Colors.gold} />
       </Pressable>
 
       <Pressable onPress={player.togglePlay} style={styles.playBtnWrapper}>
         <GoldGradient style={[styles.playBtn, player.playing && styles.playBtnActive]}>
-          <Text style={styles.playBtnIcon}>{player.playing ? "⏸" : "▶"}</Text>
+          <Ionicons name={player.playing ? "pause" : "play"} size={28} color={Colors.cream} />
         </GoldGradient>
       </Pressable>
 
       <Pressable
         style={styles.controlBtnMd}
-        onPress={() => player.seekToLine(player.activeLineIndex + 1)}
+        onPress={() => {
+          player.seekToLine(player.activeLineIndex + 1);
+          analytics.trackChantSeeked(trackId, "forward");
+        }}
       >
-        <Text style={styles.controlBtnEmoji}>⏭</Text>
+        <Ionicons name="play-skip-forward" size={22} color={Colors.gold} />
       </Pressable>
       <Pressable style={styles.controlBtnSm}>
-        <Text style={styles.controlBtnEmoji}>🔁</Text>
+        <Ionicons name="repeat" size={20} color={Colors.goldDim} />
       </Pressable>
     </View>
   );
@@ -498,25 +531,22 @@ const styles = StyleSheet.create({
   controlBtnSm: {
     width: 44,
     height: 44,
-    borderRadius: 12,
+    borderRadius: 22,
     backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: Colors.goldDim,
     alignItems: "center",
     justifyContent: "center",
   },
   controlBtnMd: {
     width: 50,
     height: 50,
-    borderRadius: 14,
+    borderRadius: 25,
     backgroundColor: Colors.card,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: Colors.gold,
     alignItems: "center",
     justifyContent: "center",
-  },
-  controlBtnEmoji: {
-    fontSize: 20,
   },
   playBtnWrapper: {
     borderRadius: 34,

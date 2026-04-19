@@ -13,6 +13,7 @@ import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { TRACKS } from "@/constants/tracks";
+import { useAnalytics } from "@/hooks/use-analytics";
 import {
   cancelReminderNotification,
   scheduleReminderNotification,
@@ -32,6 +33,7 @@ import {
 } from "react-native";
 
 export function RemindersScreen() {
+  const analytics = useAnalytics();
   const { reminders, updateReminder, removeReminder } = useRemindersStore();
 
   async function handleToggle(reminder: Reminder) {
@@ -40,10 +42,12 @@ export function RemindersScreen() {
         // Disable — cancel the scheduled notification.
         await cancelReminderNotification(reminder.notificationId);
         updateReminder({ ...reminder, enabled: false, notificationId: null });
+        analytics.trackReminderToggled(reminder.id, false);
       } else {
         // Enable — reschedule the notification.
         const notificationId = await scheduleReminderNotification(reminder);
         updateReminder({ ...reminder, enabled: true, notificationId });
+        analytics.trackReminderToggled(reminder.id, true);
       }
     } catch {
       Alert.alert(i18n.t("errors.notification_update"), i18n.t("errors.notification_update_body"));
@@ -57,6 +61,7 @@ export function RemindersScreen() {
       // Cancel failure is non-fatal — still remove the reminder from the store
       // so the user isn't stuck with a zombie reminder they can't delete.
     }
+    analytics.trackReminderDeleted(reminder.id);
     removeReminder(reminder.id);
   }
 

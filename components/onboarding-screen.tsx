@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
+import { useAnalytics } from "@/hooks/use-analytics";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -45,6 +46,7 @@ function LoginLink({ text, link }: { text: string; link: string }) {
 }
 
 export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
+  const analytics = useAnalytics();
   const [step, setStep] = useState(0);
   const [animating, setAnimating] = useState(false);
 
@@ -96,7 +98,14 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   };
 
   const goBack = () => { if (step > 0 && !animating) transitionToStep(step - 1); };
-  const advance = () => { if (!isLastSlide) transitionToStep(step + 1); else onNext(); };
+  const advance = () => {
+    if (!isLastSlide) {
+      transitionToStep(step + 1);
+    } else {
+      analytics.trackOnboardingCompleted();
+      onNext();
+    }
+  };
 
   const slide = slides[step];
   const isFirstSlide = step === 0;
@@ -116,7 +125,7 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
           </Pressable>
         )}
         {!isLastSlide && (
-          <Pressable onPress={onNext}>
+          <Pressable onPress={() => { analytics.trackOnboardingSkipped(step); onNext(); }}>
             <Text style={styles.skipText}>{i18n.t("onboarding.skip")}</Text>
           </Pressable>
         )}
