@@ -11,8 +11,6 @@
  */
 
 import * as Notifications from "expo-notifications";
-import { Platform } from "react-native";
-
 import { TRACKS } from "@/constants/tracks";
 import { Reminder } from "@/types/reminder";
 
@@ -66,18 +64,15 @@ export async function setupNotificationCategory(): Promise<void> {
     },
   ]);
 
-  // On Android, set the default notification handler so heads-up banners appear.
-  if (Platform.OS === "android") {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-        shouldShowBanner: true,
-        shouldShowList: true,
-      }),
-    });
-  }
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
 }
 
 // ─── Schedule / cancel ───────────────────────────────────────────────────

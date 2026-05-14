@@ -221,12 +221,10 @@ function ScheduleItemContent({ item }: { item: ScheduleItemData }) {
           <View style={styles.doneCircle}>
             <Text style={styles.doneCheck}>✓</Text>
           </View>
-        ) : !item.done ? (
+        ) : (
           <GoldGradient style={styles.playButton}>
             <Text style={styles.playIcon}>▶</Text>
           </GoldGradient>
-        ) : (
-          <View style={styles.pendingCircle} />
         )}
       </View>
     </>
@@ -475,13 +473,6 @@ const styles = StyleSheet.create({
   playIcon: {
     color: Colors.cream,
     fontSize: 13,
-  },
-  pendingCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
   // Bottom nav
   bottomNav: {

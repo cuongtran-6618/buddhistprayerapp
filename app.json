@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "buddhistprayerapp",
+      "bundleIdentifier": "com.tiikeritran.buddhistprayerapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -62,6 +62,14 @@
       ],
       "expo-font",
       "expo-audio",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#8B1A1A",
+          "sounds": []
+        }
+      ],
       "@react-native-community/datetimepicker"
     ],
     "experiments": {
