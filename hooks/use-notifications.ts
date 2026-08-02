@@ -11,7 +11,6 @@
  */
 
 import * as Notifications from "expo-notifications";
-import { TRACKS } from "@/constants/tracks";
 import { Reminder } from "@/types/reminder";
 
 // ─── Category identifier ───────────────────────────────────────────────────
@@ -86,10 +85,10 @@ export async function setupNotificationCategory(): Promise<void> {
  * without querying any store.
  */
 export async function scheduleReminderNotification(
-  reminder: Reminder
+  reminder: Reminder,
+  trackTitle: string
 ): Promise<string> {
-  const track = TRACKS.find((t) => t.id === reminder.trackId);
-  const body = track ? track.title : "Time to pray";
+  const body = trackTitle || "Time to pray";
 
   const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
@@ -135,10 +134,10 @@ export async function snoozeReminder(
   snoozeMinutes: number,
   trackId: string,
   reminderTitle: string,
-  reminderId: string
+  reminderId: string,
+  trackTitle: string
 ): Promise<void> {
-  const track = TRACKS.find((t) => t.id === trackId);
-  const body = track ? track.title : "Time to pray";
+  const body = trackTitle || "Time to pray";
 
   await Notifications.scheduleNotificationAsync({
     content: {

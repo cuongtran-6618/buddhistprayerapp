@@ -45,7 +45,8 @@ export function RemindersScreen() {
         analytics.trackReminderToggled(reminder.id, false);
       } else {
         // Enable — reschedule the notification.
-        const notificationId = await scheduleReminderNotification(reminder);
+        const trackTitle = TRACKS.find((t) => t.id === reminder.trackId)?.title ?? "";
+        const notificationId = await scheduleReminderNotification(reminder, trackTitle);
         updateReminder({ ...reminder, enabled: true, notificationId });
         analytics.trackReminderToggled(reminder.id, true);
       }

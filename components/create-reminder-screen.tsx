@@ -107,7 +107,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
 
     let notificationId: string | null = null;
     try {
-      notificationId = await scheduleReminderNotification(reminder);
+      notificationId = await scheduleReminderNotification(reminder, selectedTrack.title);
     } catch {
       Alert.alert(i18n.t("errors.notification_schedule"), i18n.t("errors.notification_schedule_body"));
       setSaving(false);

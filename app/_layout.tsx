@@ -81,7 +81,8 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
             minutes,
             data.trackId ?? "",
             notification.request.content.title ?? "",
-            data.reminderId ?? ""
+            data.reminderId ?? "",
+            notification.request.content.body ?? ""
           );
         }
       }

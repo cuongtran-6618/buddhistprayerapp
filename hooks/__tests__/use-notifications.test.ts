@@ -73,13 +73,13 @@ describe("scheduleReminderNotification", () => {
 
   it("returns the notification ID string from expo-notifications", async () => {
     (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue("notif-123");
-    const id = await scheduleReminderNotification(makeReminder());
+    const id = await scheduleReminderNotification(makeReminder(), "Chú Đại Bi");
     expect(id).toBe("notif-123");
   });
 
   it("calls scheduleNotificationAsync with reminder hour and minute", async () => {
     (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue("notif-456");
-    await scheduleReminderNotification(makeReminder({ hour: 5, minute: 30 }));
+    await scheduleReminderNotification(makeReminder({ hour: 5, minute: 30 }), "Chú Đại Bi");
     const call = (Notifications.scheduleNotificationAsync as jest.Mock).mock.calls[0][0];
     expect(call.trigger.hour).toBe(5);
     expect(call.trigger.minute).toBe(30);
@@ -88,17 +88,31 @@ describe("scheduleReminderNotification", () => {
 
   it("includes reminderId and trackId in the notification data payload", async () => {
     (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue("notif-789");
-    await scheduleReminderNotification(makeReminder({ id: "r42", trackId: "track-b" }));
+    await scheduleReminderNotification(makeReminder({ id: "r42", trackId: "track-b" }), "Nam Mô");
     const call = (Notifications.scheduleNotificationAsync as jest.Mock).mock.calls[0][0];
     expect(call.content.data.reminderId).toBe("r42");
     expect(call.content.data.trackId).toBe("track-b");
+  });
+
+  it("uses the provided trackTitle as the notification body", async () => {
+    (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue("notif-title");
+    await scheduleReminderNotification(makeReminder(), "Kinh Từ Bi");
+    const call = (Notifications.scheduleNotificationAsync as jest.Mock).mock.calls[0][0];
+    expect(call.content.body).toBe("Kinh Từ Bi");
+  });
+
+  it("falls back to 'Time to pray' when trackTitle is empty", async () => {
+    (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue("notif-fallback");
+    await scheduleReminderNotification(makeReminder(), "");
+    const call = (Notifications.scheduleNotificationAsync as jest.Mock).mock.calls[0][0];
+    expect(call.content.body).toBe("Time to pray");
   });
 
   it("propagates errors thrown by expo-notifications", async () => {
     (Notifications.scheduleNotificationAsync as jest.Mock).mockRejectedValue(
       new Error("Permission denied")
     );
-    await expect(scheduleReminderNotification(makeReminder())).rejects.toThrow("Permission denied");
+    await expect(scheduleReminderNotification(makeReminder(), "Chú Đại Bi")).rejects.toThrow("Permission denied");
   });
 });
 
