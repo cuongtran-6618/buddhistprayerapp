@@ -14,7 +14,7 @@ import * as Notifications from "expo-notifications";
 import { AppState } from "react-native";
 import { PostHogProvider, usePostHog } from "posthog-react-native";
 
-import { TRACKS } from "@/constants/tracks";
+import { useTracks } from "@/hooks/use-tracks";
 import { usePlayerStore } from "@/store/player-store";
 import {
   ACTION_ACCEPT,
@@ -28,6 +28,7 @@ SplashScreen.preventAutoHideAsync();
 function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
   const posthog = usePostHog();
   const setTrack = usePlayerStore((s) => s.setTrack);
+  const { getTrackById } = useTracks();
   const sessionStart = useRef<number | null>(null);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
           actionIdentifier === ACTION_ACCEPT ||
           actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
         ) {
-          const track = TRACKS.find((t) => t.id === data.trackId);
+          const track = getTrackById(data.trackId ?? "");
           if (track) {
             posthog.capture("reminder_opened");
             setTrack(track);

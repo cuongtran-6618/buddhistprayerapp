@@ -2,8 +2,9 @@ import { LotusIcon } from "@/components/icons/lotus-icon";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
-import { Track, TRACKS } from "@/constants/tracks";
+import { Track } from "@/constants/tracks";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { useTracks } from "@/hooks/use-tracks";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 interface ChantListScreenProps {
@@ -12,6 +13,7 @@ interface ChantListScreenProps {
 
 export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
   const analytics = useAnalytics();
+  const { tracks } = useTracks();
 
   return (
     <View style={styles.container}>
@@ -22,7 +24,7 @@ export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
       >
         <Text style={styles.heading}>Kinh Thường Tụng</Text>
         <View style={styles.list}>
-          {TRACKS.map((track) => (
+          {tracks.map((track) => (
             <ChantRow
               key={track.id}
               track={track}

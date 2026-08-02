@@ -1,14 +1,15 @@
 import { useMemo } from "react";
 
-import { Track, TRACKS } from "@/constants/tracks";
+import { Track } from "@/constants/tracks";
 import { ScheduleItemData, computeScheduleStatus, computeTodayProgress } from "@/lib/schedule";
+import { useTracks } from "@/hooks/use-tracks";
 import {
   computeMonthProgress,
   computeStreak,
-  getTodayKey,
   useChantingHistoryStore,
 } from "@/store/chanting-history-store";
 import { useRemindersStore } from "@/store/reminders-store";
+import { formatDateKey } from "@/utils/date";
 
 export interface DashboardScheduleItem extends ScheduleItemData {
   trackTitle: string;
@@ -34,13 +35,14 @@ function getGreeting(): { vi: string; en: string } {
 export function useDashboard(): DashboardData {
   const reminders = useRemindersStore((s) => s.reminders);
   const history = useChantingHistoryStore((s) => s.history);
+  const { getTrackById } = useTracks();
 
   return useMemo(() => {
-    const todayCompletions = history[getTodayKey()] ?? {};
+    const todayCompletions = history[formatDateKey(new Date())] ?? {};
     const baseItems = computeScheduleStatus(reminders, todayCompletions);
 
     const scheduleItems: DashboardScheduleItem[] = baseItems.map((item) => {
-      const track = TRACKS.find((t) => t.id === item.trackId) ?? null;
+      const track = getTrackById(item.trackId);
       return { ...item, trackTitle: track?.title ?? item.trackId, track };
     });
 

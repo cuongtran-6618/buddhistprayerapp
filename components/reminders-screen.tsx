@@ -12,8 +12,8 @@ import { i18n } from "@/app/lib/i18n";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
-import { TRACKS } from "@/constants/tracks";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { useTracks } from "@/hooks/use-tracks";
 import {
   cancelReminderNotification,
   scheduleReminderNotification,
@@ -35,6 +35,7 @@ import {
 export function RemindersScreen() {
   const analytics = useAnalytics();
   const { reminders, updateReminder, removeReminder } = useRemindersStore();
+  const { getTrackById } = useTracks();
 
   async function handleToggle(reminder: Reminder) {
     try {
@@ -45,8 +46,10 @@ export function RemindersScreen() {
         analytics.capture({ type: 'reminder_toggled', reminderId: reminder.id, enabled: false });
       } else {
         // Enable — reschedule the notification.
-        const trackTitle = TRACKS.find((t) => t.id === reminder.trackId)?.title ?? "";
-        const notificationId = await scheduleReminderNotification(reminder, trackTitle);
+        const notificationId = await scheduleReminderNotification(
+          reminder,
+          getTrackById(reminder.trackId)?.title ?? ""
+        );
         updateReminder({ ...reminder, enabled: true, notificationId });
         analytics.capture({ type: 'reminder_toggled', reminderId: reminder.id, enabled: true });
       }
@@ -87,6 +90,7 @@ export function RemindersScreen() {
         renderItem={({ item }) => (
           <ReminderRow
             reminder={item}
+            trackTitle={getTrackById(item.trackId)?.title ?? item.trackId}
             onToggle={() => handleToggle(item)}
             onDelete={() => handleDelete(item)}
             onEdit={() => router.push(`/create-reminder?id=${item.id}` as any)}
@@ -112,16 +116,17 @@ export function RemindersScreen() {
 
 function ReminderRow({
   reminder,
+  trackTitle,
   onToggle,
   onDelete,
   onEdit,
 }: {
   reminder: Reminder;
+  trackTitle: string;
   onToggle: () => void;
   onDelete: () => void;
   onEdit: () => void;
 }) {
-  const track = TRACKS.find((t) => t.id === reminder.trackId);
   const hourStr = String(reminder.hour).padStart(2, "0");
   const minStr = String(reminder.minute).padStart(2, "0");
 
@@ -145,7 +150,7 @@ function ReminderRow({
             {reminder.title}
           </Text>
           <Text style={styles.rowMeta} numberOfLines={1}>
-            {track?.title ?? reminder.trackId} · Snooze {reminder.snoozeMinutes} phút
+            {trackTitle} · Snooze {reminder.snoozeMinutes} phút
           </Text>
         </View>
       </Pressable>

@@ -1,7 +1,8 @@
 import * as store from "../chanting-history-store";
-import { computeMonthProgress, computeStreak, getTodayKey } from "../chanting-history-store";
+import { computeMonthProgress, computeStreak } from "../chanting-history-store";
 import { computeScheduleStatus, computeTodayProgress } from "@/lib/schedule";
 import { Reminder } from "@/types/reminder";
+import { formatDateKey } from "@/utils/date";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -29,11 +30,11 @@ function makeReminder(overrides: Partial<Reminder> = {}): Reminder {
   };
 }
 
-// ─── getTodayKey ──────────────────────────────────────────────────────────────
+// ─── formatDateKey ────────────────────────────────────────────────────────────
 
-describe("getTodayKey", () => {
+describe("formatDateKey", () => {
   it("returns today in YYYY-MM-DD format", () => {
-    const key = getTodayKey();
+    const key = formatDateKey(new Date());
     expect(key).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     const today = new Date();
     expect(key).toBe(dateKey(today));
@@ -54,7 +55,7 @@ describe("computeStreak", () => {
   });
 
   it("returns 1 when only today has a completion", () => {
-    const today = getTodayKey();
+    const today = formatDateKey(new Date());
     expect(computeStreak({ [today]: { "track-a": 1 } })).toBe(1);
   });
 

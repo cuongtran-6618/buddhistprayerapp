@@ -15,7 +15,7 @@ interface ChantingHistoryStore {
   getCompletionsForDate: (dateKey: string) => DayRecord;
 }
 
-export function getTodayKey(): string {
+function getTodayKey(): string {
   return formatDateKey(new Date());
 }
 

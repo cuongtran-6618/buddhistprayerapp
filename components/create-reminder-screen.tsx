@@ -33,7 +33,7 @@ import { useTracks } from "@/hooks/use-tracks";
 import { useRemindersStore } from "@/store/reminders-store";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Platform,
@@ -58,7 +58,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
   const addReminder    = useRemindersStore((s) => s.addReminder);
   const updateReminder = useRemindersStore((s) => s.updateReminder);
   const reminders      = useRemindersStore((s) => s.reminders);
-  const tracks         = useTracks();
+  const { tracks }     = useTracks();
 
   const existing = reminderId ? reminders.find((r) => r.id === reminderId) : undefined;
 
@@ -67,8 +67,9 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
     time, handleTimeChange,
     selectedTrack, setSelectedTrack,
     snoozeMinutes, setSnoozeMinutes,
-    saving, setSaving,
   } = useReminderForm(tracks, existing);
+
+  const [saving, setSaving] = useState(false);
 
   async function handleSave() {
     const trimmedTitle = title.trim();

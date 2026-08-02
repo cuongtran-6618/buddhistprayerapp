@@ -23,8 +23,6 @@ export interface ReminderFormState {
   setSelectedTrack: (track: Track) => void;
   snoozeMinutes: 5 | 10 | 15;
   setSnoozeMinutes: (v: 5 | 10 | 15) => void;
-  saving: boolean;
-  setSaving: (v: boolean) => void;
 }
 
 export function useReminderForm(
@@ -50,8 +48,6 @@ export function useReminderForm(
     existing?.snoozeMinutes ?? 10
   );
 
-  const [saving, setSaving] = useState(false);
-
   function handleTimeChange(_event: DateTimePickerEvent, selected?: Date) {
     if (selected) setTime(selected);
   }
@@ -65,7 +61,5 @@ export function useReminderForm(
     setSelectedTrack,
     snoozeMinutes,
     setSnoozeMinutes,
-    saving,
-    setSaving,
   };
 }
