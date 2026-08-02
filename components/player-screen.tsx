@@ -7,11 +7,12 @@ import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { AudioPlayer, useAudioPlayer } from "@/hooks/use-audio-player";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { useChantSession } from "@/hooks/use-chant-session";
 import { PlayerAnimations, usePlayerAnimations } from "@/hooks/use-player-animations";
 import { UseSeekGestureResult, useSeekGesture } from "@/hooks/use-seek-gesture";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Animated,
   Pressable,
@@ -28,20 +29,10 @@ interface PlayerScreenProps {
 }
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
-  const analytics = useAnalytics();
-  const completedRef = useRef(false);
-  const progressRef = useRef(0);
-  const durationRef = useRef(0);
-
-  const handleComplete = useCallback(() => {
-    completedRef.current = true;
-    analytics.trackChantCompleted(track.id, durationRef.current);
-    onComplete?.();
-  }, [onComplete, analytics, track.id]);
-
-  const player = useAudioPlayer(track, handleComplete);
-  progressRef.current = player.progress;
-  durationRef.current = player.durationMs;
+  const session = useChantSession(track, onComplete);
+  const player = useAudioPlayer(track, session.handleComplete);
+  session.progressRef.current = player.progress;
+  session.durationRef.current = player.durationMs;
 
   const anims  = usePlayerAnimations(player.playing);
   const scrollRef = useRef<ScrollView>(null);
@@ -51,15 +42,6 @@ export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
     currentProgress: player.progress,
     onSeek:          player.seekTo,
   });
-
-  useEffect(() => {
-    analytics.trackChantStarted(track.id);
-    return () => {
-      if (!completedRef.current) {
-        analytics.trackChantAbandoned(track.id, Math.round(progressRef.current * 100));
-      }
-    };
-  }, [analytics, track.id]);
 
   // Auto-scroll lyrics to the active line
   useEffect(() => {
@@ -271,7 +253,7 @@ function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: st
         style={styles.controlBtnMd}
         onPress={() => {
           player.seekToLine(player.activeLineIndex - 1);
-          analytics.trackChantSeeked(trackId, "backward");
+          analytics.capture({ type: 'chant_seeked', trackId, direction: 'backward' });
         }}
       >
         <Ionicons name="play-skip-back" size={22} color={Colors.gold} />
@@ -287,7 +269,7 @@ function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: st
         style={styles.controlBtnMd}
         onPress={() => {
           player.seekToLine(player.activeLineIndex + 1);
-          analytics.trackChantSeeked(trackId, "forward");
+          analytics.capture({ type: 'chant_seeked', trackId, direction: 'forward' });
         }}
       >
         <Ionicons name="play-skip-forward" size={22} color={Colors.gold} />

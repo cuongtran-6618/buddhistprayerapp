@@ -112,7 +112,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
                     key={item.id}
                     item={item}
                     onPress={!item.done && track ? () => {
-                      analytics.trackChantSelected(item.trackId, 'home');
+                      analytics.capture({ type: 'chant_selected', trackId: item.trackId, source: 'home' });
                       onChantSelect(track);
                     } : undefined}
                   />

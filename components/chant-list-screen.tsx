@@ -27,7 +27,7 @@ export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
               key={track.id}
               track={track}
               onPress={() => {
-                analytics.trackChantSelected(track.id, 'chant_list');
+                analytics.capture({ type: 'chant_selected', trackId: track.id, source: 'chant_list' });
                 onChantSelect(track);
               }}
             />

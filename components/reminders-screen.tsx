@@ -42,13 +42,13 @@ export function RemindersScreen() {
         // Disable — cancel the scheduled notification.
         await cancelReminderNotification(reminder.notificationId);
         updateReminder({ ...reminder, enabled: false, notificationId: null });
-        analytics.trackReminderToggled(reminder.id, false);
+        analytics.capture({ type: 'reminder_toggled', reminderId: reminder.id, enabled: false });
       } else {
         // Enable — reschedule the notification.
         const trackTitle = TRACKS.find((t) => t.id === reminder.trackId)?.title ?? "";
         const notificationId = await scheduleReminderNotification(reminder, trackTitle);
         updateReminder({ ...reminder, enabled: true, notificationId });
-        analytics.trackReminderToggled(reminder.id, true);
+        analytics.capture({ type: 'reminder_toggled', reminderId: reminder.id, enabled: true });
       }
     } catch {
       Alert.alert(i18n.t("errors.notification_update"), i18n.t("errors.notification_update_body"));
@@ -62,7 +62,7 @@ export function RemindersScreen() {
       // Cancel failure is non-fatal — still remove the reminder from the store
       // so the user isn't stuck with a zombie reminder they can't delete.
     }
-    analytics.trackReminderDeleted(reminder.id);
+    analytics.capture({ type: 'reminder_deleted', reminderId: reminder.id });
     removeReminder(reminder.id);
   }
 

@@ -1,11 +1,6 @@
 import * as store from "../chanting-history-store";
-import {
-  computeMonthProgress,
-  computeScheduleStatus,
-  computeStreak,
-  computeTodayProgress,
-  getTodayKey,
-} from "../chanting-history-store";
+import { computeMonthProgress, computeStreak, getTodayKey } from "../chanting-history-store";
+import { computeScheduleStatus, computeTodayProgress } from "@/lib/schedule";
 import { Reminder } from "@/types/reminder";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

@@ -118,7 +118,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
       updateReminder({ ...reminder, notificationId });
     } else {
       addReminder({ ...reminder, notificationId });
-      analytics.trackReminderCreated();
+      analytics.capture({ type: 'reminder_created' });
     }
 
     setSaving(false);

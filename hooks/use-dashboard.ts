@@ -1,12 +1,10 @@
 import { useMemo } from "react";
 
 import { Track, TRACKS } from "@/constants/tracks";
+import { ScheduleItemData, computeScheduleStatus, computeTodayProgress } from "@/lib/schedule";
 import {
-  ScheduleItemData,
   computeMonthProgress,
-  computeScheduleStatus,
   computeStreak,
-  computeTodayProgress,
   getTodayKey,
   useChantingHistoryStore,
 } from "@/store/chanting-history-store";

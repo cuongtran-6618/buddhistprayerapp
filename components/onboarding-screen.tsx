@@ -102,7 +102,7 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
     if (!isLastSlide) {
       transitionToStep(step + 1);
     } else {
-      analytics.trackOnboardingCompleted();
+      analytics.capture({ type: 'onboarding_completed' });
       onNext();
     }
   };
@@ -125,7 +125,7 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
           </Pressable>
         )}
         {!isLastSlide && (
-          <Pressable onPress={() => { analytics.trackOnboardingSkipped(step); onNext(); }}>
+          <Pressable onPress={() => { analytics.capture({ type: 'onboarding_skipped', step }); onNext(); }}>
             <Text style={styles.skipText}>{i18n.t("onboarding.skip")}</Text>
           </Pressable>
         )}
