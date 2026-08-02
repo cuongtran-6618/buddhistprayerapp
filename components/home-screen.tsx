@@ -2,18 +2,9 @@ import { i18n } from "@/app/lib/i18n";
 import { BellIcon } from "@/components/icons/bell-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
-import { Track, TRACKS } from "@/constants/tracks";
+import { Track } from "@/constants/tracks";
 import { useAnalytics } from "@/hooks/use-analytics";
-import {
-  ScheduleItemData,
-  computeMonthProgress,
-  computeScheduleStatus,
-  computeStreak,
-  computeTodayProgress,
-  getTodayKey,
-  useChantingHistoryStore,
-} from "@/store/chanting-history-store";
-import { useRemindersStore } from "@/store/reminders-store";
+import { DashboardScheduleItem, useDashboard } from "@/hooks/use-dashboard";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
@@ -32,13 +23,6 @@ interface HomeScreenProps {
 }
 
 
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 6) return { vi: "Khuya tĩnh lặng", en: "Peaceful night" };
-  if (h < 12) return { vi: "Buổi sáng an lành", en: "Good morning" };
-  if (h < 17) return { vi: "Buổi trưa bình an", en: "Good afternoon" };
-  return { vi: "Buổi tối thanh tịnh", en: "Good evening" };
-}
 
 function GlowView({ style, children }: { style?: object; children: React.ReactNode }) {
   const glowAnim = useRef(new Animated.Value(0.6)).current;
@@ -55,15 +39,8 @@ function GlowView({ style, children }: { style?: object; children: React.ReactNo
 
 export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps) {
   const analytics = useAnalytics();
-  const g = getGreeting();
-  const reminders = useRemindersStore((s) => s.reminders);
-  const history = useChantingHistoryStore((s) => s.history);
-
-  const todayCompletions = history[getTodayKey()] ?? {};
-  const scheduleItems = computeScheduleStatus(reminders, todayCompletions);
-  const { done } = computeTodayProgress(reminders, todayCompletions);
-  const streak = computeStreak(history);
-  const monthPct = computeMonthProgress(history);
+  const { scheduleItems, streak, todayProgress, monthPct, greeting: g } = useDashboard();
+  const { done } = todayProgress;
 
   return (
     <View style={styles.container}>
@@ -129,13 +106,13 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
           ) : (
             <View style={styles.scheduleList}>
               {scheduleItems.map((item) => {
-                const track = TRACKS.find((t) => t.id === item.trackId);
+                const { track } = item;
                 return (
                   <ScheduleItem
                     key={item.id}
                     item={item}
                     onPress={!item.done && track ? () => {
-                      analytics.trackChantSelected(track.id, 'home');
+                      analytics.trackChantSelected(item.trackId, 'home');
                       onChantSelect(track);
                     } : undefined}
                   />
@@ -151,7 +128,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
   );
 }
 
-function ScheduleItem({ item, onPress }: { item: ScheduleItemData; onPress?: () => void }) {
+function ScheduleItem({ item, onPress }: { item: DashboardScheduleItem; onPress?: () => void }) {
   const glowAnim = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
@@ -189,8 +166,8 @@ function ScheduleItem({ item, onPress }: { item: ScheduleItemData; onPress?: () 
   );
 }
 
-function ScheduleItemContent({ item }: { item: ScheduleItemData }) {
-  const trackTitle = TRACKS.find((t) => t.id === item.trackId)?.title ?? item.trackId;
+function ScheduleItemContent({ item }: { item: DashboardScheduleItem }) {
+  const { trackTitle } = item;
   return (
     <>
       <Text style={[styles.scheduleTime, item.current && styles.scheduleTimeCurrent]}>
