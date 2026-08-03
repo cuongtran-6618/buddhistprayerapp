@@ -36,15 +36,6 @@ const slides = [
   },
 ];
 
-function LoginLink({ text, link }: { text: string; link: string }) {
-  return (
-    <View style={styles.loginRow}>
-      <Text style={styles.loginText}>{text} </Text>
-      <Text style={styles.loginLink}>{link}</Text>
-    </View>
-  );
-}
-
 export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   const analytics = useAnalytics();
   const [step, setStep] = useState(0);
@@ -201,13 +192,6 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
           </LinearGradient>
         </Pressable>
 
-        {/* Login/signup links on last slide */}
-        {isLastSlide && (
-          <View>
-            <LoginLink text={i18n.t("onboarding.loginText")} link={i18n.t("onboarding.loginLink")} />
-            <LoginLink text={i18n.t("onboarding.signupText")} link={i18n.t("onboarding.signupLink")} />
-          </View>
-        )}
       </View>
     </View>
   );
@@ -344,20 +328,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: Fonts.bold,
     letterSpacing: 0.5,
-  },
-  loginRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 14,
-  },
-  loginText: {
-    color: Colors.muted,
-    fontSize: 12,
-    fontFamily: Fonts.regular,
-  },
-  loginLink: {
-    color: Colors.gold,
-    fontSize: 12,
-    fontFamily: Fonts.regular,
   },
 });
