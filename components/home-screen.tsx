@@ -10,10 +10,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
+  BackHandler,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from "react-native";
 
@@ -41,6 +44,23 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
   const analytics = useAnalytics();
   const { scheduleItems, streak, todayProgress, monthPct, greeting: g } = useDashboard();
   const { done } = todayProgress;
+
+  const backPressedOnce = useRef(false);
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    const onBackPress = () => {
+      if (backPressedOnce.current) {
+        BackHandler.exitApp();
+        return true;
+      }
+      backPressedOnce.current = true;
+      ToastAndroid.show(i18n.t("home.exit_hint"), ToastAndroid.SHORT);
+      setTimeout(() => { backPressedOnce.current = false; }, 2000);
+      return true;
+    };
+    const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+    return () => sub.remove();
+  }, []);
 
   return (
     <View style={styles.container}>

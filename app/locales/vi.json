@@ -8,6 +8,12 @@
     "app_name": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
     "HELLO_NOTIFICATION_KEY": "Xin chào thế giới"
   },
+  "welcome": {
+    "eyebrow": "NHẬT TỤNG KINH",
+    "title": "Nuôi Dưỡng\nTâm Hồn",
+    "body": "Kinh điển và lời cầu nguyện thiêng liêng,\nluôn đồng hành cùng bạn.",
+    "cta": "Bắt Đầu Tu Hành 🪷"
+  },
   "onboarding": {
     "welcome": "Chào mừng bạn đến với ứng dụng cầu nguyện Phật giáo",
     "description": "Ứng dụng này giúp bạn dễ dàng truy cập các bài kinh và lời cầu nguyện Phật giáo yêu thích của mình.",
@@ -17,17 +23,14 @@
     "chantingDaily": "Tụng Kinh hàng ngày",
     "chantingDailyDescription": "Tụng Kinh hàng ngày giúp bạn duy trì sự kết nối với lời dạy của Đức Phật và nuôi dưỡng tâm hồn của bạn.",
     "prayerReminders": "Nhắc nhở thời khóa",
-    "prayerRemindersDescription": "Đặt nhắc nhở để không bao giờ bỏ lỡ thời khóa tu hành.",
-    "loginText": "Bạn đã có tài khoản?",
-    "loginLink": "Đăng nhập",
-    "signupText": "Bạn chưa có tài khoản?",
-    "signupLink": "Đăng ký"
+    "prayerRemindersDescription": "Đặt nhắc nhở để không bao giờ bỏ lỡ thời khóa tu hành."
   },
   "home": {
     "todays_schedule": "Thời Khóa Hôm Nay",
     "edit": "Chỉnh sửa",
     "no_reminders": "Chưa có lịch tụng kinh",
-    "no_reminders_hint": "Nhấn để thêm nhắc nhở →"
+    "no_reminders_hint": "Nhấn để thêm nhắc nhở →",
+    "exit_hint": "Nhấn lại để thoát"
   },
   "player": {
     "now_chanting": "Đang Tụng"
