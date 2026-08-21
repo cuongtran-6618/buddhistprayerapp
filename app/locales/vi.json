@@ -30,7 +30,19 @@
     "edit": "Chỉnh sửa",
     "no_reminders": "Chưa có lịch tụng kinh",
     "no_reminders_hint": "Nhấn để thêm nhắc nhở →",
-    "exit_hint": "Nhấn lại để thoát"
+    "exit_hint": "Nhấn lại để thoát",
+    "streak_days": "ngày",
+    "streak_highlight": "liên tiếp",
+    "streak_sub": "%{streak} ngày liên tiếp • %{done} buổi hôm nay",
+    "this_month": "THÁNG NÀY",
+    "greeting_night_label": "KHUYA TĨNH LẶNG",
+    "greeting_night": "Khuya tĩnh lặng",
+    "greeting_morning_label": "BUỔI SÁNG AN LÀNH",
+    "greeting_morning": "Buổi sáng an lành",
+    "greeting_afternoon_label": "BUỔI TRƯA BÌNH AN",
+    "greeting_afternoon": "Buổi trưa bình an",
+    "greeting_evening_label": "BUỔI TỐI THANH TỊNH",
+    "greeting_evening": "Buổi tối thanh tịnh"
   },
   "player": {
     "now_chanting": "Đang Tụng"
@@ -44,10 +56,24 @@
     "share_error": "Không Thể Chia Sẻ",
     "share_error_body": "Đã có lỗi xảy ra khi chia sẻ. Vui lòng thử lại."
   },
+  "chant": {
+    "heading": "Kinh Thường Tụng"
+  },
+  "tabs": {
+    "home": "Trang Chủ",
+    "chant": "Kinh",
+    "reminders": "Nhắc Nhở"
+  },
+  "notifications": {
+    "open_prayer": "Mở Kinh",
+    "snooze": "Báo Lại",
+    "time_to_pray": "Đến giờ tụng kinh"
+  },
   "reminders": {
     "title": "Nhắc Nhở",
     "empty_title": "Chưa có nhắc nhở",
-    "empty_body": "Nhấn + để tạo nhắc nhở cầu nguyện hàng ngày."
+    "empty_body": "Nhấn + để tạo nhắc nhở cầu nguyện hàng ngày.",
+    "snooze_label": "Báo lại sau %{count} phút"
   },
   "create_reminder": {
     "title_new": "Nhắc Nhở Mới",
@@ -55,7 +81,7 @@
     "field_title": "Tiêu Đề",
     "field_time": "Thời Gian",
     "field_chant": "Kinh / Chú",
-    "field_snooze": "Thời Gian Snooze",
+    "field_snooze": "Thời Gian Báo Lại",
     "daily_hint": "Hàng ngày lúc",
     "placeholder_title": "Vd: Công phu khuya",
     "save": "Lưu Nhắc Nhở",

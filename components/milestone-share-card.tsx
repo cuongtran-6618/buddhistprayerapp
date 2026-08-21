@@ -1,4 +1,4 @@
-import { i18n } from "@/app/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
@@ -18,6 +18,7 @@ interface MilestoneShareCardProps {
 
 export const MilestoneShareCard = forwardRef<View, MilestoneShareCardProps>(
   function MilestoneShareCard({ streak, grid }, ref) {
+    const i18n = useI18n();
     return (
       <View ref={ref} style={styles.card} collapsable={false}>
         <LinearGradient

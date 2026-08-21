@@ -30,7 +30,19 @@
     "edit": "Edit",
     "no_reminders": "No chanting schedule",
     "no_reminders_hint": "Tap to add a reminder →",
-    "exit_hint": "Press back again to exit"
+    "exit_hint": "Press back again to exit",
+    "streak_days": "days",
+    "streak_highlight": "in a row",
+    "streak_sub": "%{streak}-day streak • %{done} sessions today",
+    "this_month": "THIS MONTH",
+    "greeting_night_label": "PEACEFUL NIGHT",
+    "greeting_night": "Still of the night",
+    "greeting_morning_label": "GOOD MORNING",
+    "greeting_morning": "Good morning",
+    "greeting_afternoon_label": "GOOD AFTERNOON",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening_label": "GOOD EVENING",
+    "greeting_evening": "Good evening"
   },
   "player": {
     "now_chanting": "Now Chanting"
@@ -44,10 +56,24 @@
     "share_error": "Couldn't Share",
     "share_error_body": "Something went wrong while sharing. Please try again."
   },
+  "chant": {
+    "heading": "Daily Sutras"
+  },
+  "tabs": {
+    "home": "Home",
+    "chant": "Chant",
+    "reminders": "Reminders"
+  },
+  "notifications": {
+    "open_prayer": "Open Prayer",
+    "snooze": "Snooze",
+    "time_to_pray": "Time to pray"
+  },
   "reminders": {
     "title": "Reminders",
     "empty_title": "No reminders yet",
-    "empty_body": "Tap + to create a daily prayer reminder."
+    "empty_body": "Tap + to create a daily prayer reminder.",
+    "snooze_label": "Snooze %{count} min"
   },
   "create_reminder": {
     "title_new": "New Reminder",

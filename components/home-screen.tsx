@@ -1,10 +1,11 @@
-import { i18n } from "@/app/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import { BellIcon } from "@/components/icons/bell-icon";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { DashboardScheduleItem, useDashboard } from "@/hooks/use-dashboard";
+import { useAppStore } from "@/store/app-store";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
@@ -41,7 +42,9 @@ function GlowView({ style, children }: { style?: object; children: React.ReactNo
 }
 
 export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps) {
+  const i18n = useI18n();
   const analytics = useAnalytics();
+  const { language, setLanguage } = useAppStore();
   const { scheduleItems, streak, todayProgress, monthPct, greeting: g } = useDashboard();
   const { done } = todayProgress;
 
@@ -75,10 +78,16 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greetingEn}>{g.en}</Text>
-            <Text style={styles.greetingVi}>{g.vi}</Text>
+            <Text style={styles.greetingEn}>{g.label}</Text>
+            <Text style={styles.greetingVi}>{g.main}</Text>
           </View>
           <View style={styles.headerActions}>
+            <Pressable
+              style={styles.langButton}
+              onPress={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
+            >
+              <Text style={styles.langButtonText}>{language.toUpperCase()}</Text>
+            </Pressable>
             <Pressable style={styles.iconButton} onPress={onRemindersPress}>
               <BellIcon size={18} />
             </Pressable>
@@ -99,12 +108,12 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
             <Text style={styles.streakFire}>🔥</Text>
             <View style={styles.streakInfo}>
               <Text style={styles.streakTitle}>
-                {streak} ngày <Text style={styles.streakHighlight}>liên tiếp</Text>
+                {streak} {i18n.t("home.streak_days")} <Text style={styles.streakHighlight}>{i18n.t("home.streak_highlight")}</Text>
               </Text>
-              <Text style={styles.streakSub}>{streak}-day streak • {done} buổi hôm nay</Text>
+              <Text style={styles.streakSub}>{i18n.t("home.streak_sub", { streak, done })}</Text>
             </View>
             <View style={styles.streakRight}>
-              <Text style={styles.streakMonth}>THÁNG NÀY</Text>
+              <Text style={styles.streakMonth}>{i18n.t("home.this_month")}</Text>
               <Text style={styles.streakPercent}>{monthPct}%</Text>
             </View>
           </LinearGradient>
@@ -283,6 +292,22 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     alignItems: "center",
     justifyContent: "center",
+  },
+  langButton: {
+    height: 40,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  langButtonText: {
+    color: Colors.gold,
+    fontSize: 11,
+    fontFamily: Fonts.semiBold,
+    letterSpacing: 1,
   },
   avatarButton: {
     width: 40,

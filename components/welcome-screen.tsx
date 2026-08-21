@@ -5,7 +5,7 @@ import { usePulsingRings } from "@/hooks/use-pulsing-rings";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
-import { i18n } from "../app/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 
 interface WelcomeScreenProps {
   onStart: () => void;
@@ -14,6 +14,7 @@ interface WelcomeScreenProps {
 const RING_SIZES = [220, 180, 145];
 
 export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
+  const i18n = useI18n();
   const analytics = useAnalytics();
 
   const ringAnims = usePulsingRings(RING_SIZES);

@@ -1,7 +1,7 @@
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { MilestoneShareModal } from "@/components/milestone-share-modal";
 import { GoldGradient } from "@/components/ui/gold-gradient";
-import { i18n } from "@/app/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import { SCRIPT_LINE_HEIGHT } from "@/constants/animation";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
@@ -82,6 +82,7 @@ export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function Header({ track, onBack }: { track: Track; onBack: () => void }) {
+  const i18n = useI18n();
   return (
     <View style={styles.header}>
       <Pressable onPress={onBack} style={styles.headerButton}>

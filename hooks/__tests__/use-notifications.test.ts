@@ -7,6 +7,15 @@ import {
 
 // ─── Mock expo-notifications ──────────────────────────────────────────────────
 
+jest.mock("@/lib/i18n", () => ({
+  i18n: {
+    t: (key: string, _vars?: object) => {
+      const map: Record<string, string> = { "notifications.time_to_pray": "Time to pray" };
+      return map[key] ?? key;
+    },
+  },
+}));
+
 jest.mock("expo-notifications", () => ({
   getPermissionsAsync: jest.fn(),
   requestPermissionsAsync: jest.fn(),

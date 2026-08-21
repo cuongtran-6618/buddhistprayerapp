@@ -5,6 +5,7 @@ import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useTracks } from "@/hooks/use-tracks";
+import { useI18n } from "@/lib/i18n";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 interface ChantListScreenProps {
@@ -12,6 +13,7 @@ interface ChantListScreenProps {
 }
 
 export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
+  const i18n = useI18n();
   const analytics = useAnalytics();
   const { tracks } = useTracks();
 
@@ -22,7 +24,7 @@ export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.heading}>Kinh Thường Tụng</Text>
+        <Text style={styles.heading}>{i18n.t("chant.heading")}</Text>
         <View style={styles.list}>
           {tracks.map((track) => (
             <ChantRow

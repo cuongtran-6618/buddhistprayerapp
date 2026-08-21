@@ -1,4 +1,4 @@
-import { i18n } from "@/app/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import { MilestoneShareCard } from "@/components/milestone-share-card";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
@@ -16,6 +16,7 @@ interface MilestoneShareModalProps {
 }
 
 export function MilestoneShareModal({ streak, onClose }: MilestoneShareModalProps) {
+  const i18n = useI18n();
   const analytics = useAnalytics();
   const history = useChantingHistoryStore((s) => s.history);
   const cardRef = useRef<View>(null);

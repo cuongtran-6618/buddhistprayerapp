@@ -16,7 +16,7 @@
  * Supabase later without any changes here.
  */
 
-import { i18n } from "@/app/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
@@ -54,6 +54,7 @@ interface CreateReminderScreenProps {
 const SNOOZE_OPTIONS: (5 | 10 | 15)[] = [5, 10, 15];
 
 export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateReminderScreenProps) {
+  const i18n = useI18n();
   const analytics      = useAnalytics();
   const addReminder    = useRemindersStore((s) => s.addReminder);
   const updateReminder = useRemindersStore((s) => s.updateReminder);

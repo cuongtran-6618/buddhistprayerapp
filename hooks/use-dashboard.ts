@@ -10,6 +10,7 @@ import {
 } from "@/store/chanting-history-store";
 import { useRemindersStore } from "@/store/reminders-store";
 import { formatDateKey } from "@/utils/date";
+import { useI18n } from "@/lib/i18n";
 
 export interface DashboardScheduleItem extends ScheduleItemData {
   trackTitle: string;
@@ -21,18 +22,19 @@ export interface DashboardData {
   streak: number;
   todayProgress: { done: number; total: number };
   monthPct: number;
-  greeting: { vi: string; en: string };
+  greeting: { label: string; main: string };
 }
 
-function getGreeting(): { vi: string; en: string } {
+function getGreeting(t: (key: string) => string): { label: string; main: string } {
   const h = new Date().getHours();
-  if (h < 6) return { vi: "Khuya tĩnh lặng", en: "Peaceful night" };
-  if (h < 12) return { vi: "Buổi sáng an lành", en: "Good morning" };
-  if (h < 17) return { vi: "Buổi trưa bình an", en: "Good afternoon" };
-  return { vi: "Buổi tối thanh tịnh", en: "Good evening" };
+  if (h < 6) return { label: t("home.greeting_night_label"), main: t("home.greeting_night") };
+  if (h < 12) return { label: t("home.greeting_morning_label"), main: t("home.greeting_morning") };
+  if (h < 17) return { label: t("home.greeting_afternoon_label"), main: t("home.greeting_afternoon") };
+  return { label: t("home.greeting_evening_label"), main: t("home.greeting_evening") };
 }
 
 export function useDashboard(): DashboardData {
+  const i18n = useI18n();
   const reminders = useRemindersStore((s) => s.reminders);
   const history = useChantingHistoryStore((s) => s.history);
   const { getTrackById } = useTracks();
@@ -51,7 +53,7 @@ export function useDashboard(): DashboardData {
       streak: computeStreak(history),
       todayProgress: computeTodayProgress(reminders, todayCompletions),
       monthPct: computeMonthProgress(history),
-      greeting: getGreeting(),
+      greeting: getGreeting(i18n.t),
     };
-  }, [reminders, history]);
+  }, [reminders, history, i18n.locale]);
 }

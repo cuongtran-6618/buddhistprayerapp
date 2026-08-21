@@ -8,7 +8,7 @@
  *   - Tap "+" to navigate to CreateReminderScreen.
  */
 
-import { i18n } from "@/app/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
@@ -33,6 +33,7 @@ import {
 } from "react-native";
 
 export function RemindersScreen() {
+  const i18n = useI18n();
   const analytics = useAnalytics();
   const { reminders, updateReminder, removeReminder } = useRemindersStore();
   const { getTrackById } = useTracks();
@@ -127,6 +128,7 @@ function ReminderRow({
   onDelete: () => void;
   onEdit: () => void;
 }) {
+  const i18n = useI18n();
   const hourStr = String(reminder.hour).padStart(2, "0");
   const minStr = String(reminder.minute).padStart(2, "0");
 
@@ -150,7 +152,7 @@ function ReminderRow({
             {reminder.title}
           </Text>
           <Text style={styles.rowMeta} numberOfLines={1}>
-            {trackTitle} · Snooze {reminder.snoozeMinutes} phút
+            {trackTitle} · {i18n.t("reminders.snooze_label", { count: reminder.snoozeMinutes })}
           </Text>
         </View>
       </Pressable>
@@ -172,6 +174,7 @@ function ReminderRow({
 }
 
 function EmptyState() {
+  const i18n = useI18n();
   return (
     <View style={styles.emptyInner}>
       <Text style={styles.emptyIcon}>🔔</Text>

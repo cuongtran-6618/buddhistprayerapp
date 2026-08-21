@@ -11,7 +11,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { i18n } from '../app/lib/i18n';
+import { useI18n } from "@/lib/i18n";
 
 interface OnboardingScreenProps {
   onNext: () => void;
@@ -19,26 +19,15 @@ interface OnboardingScreenProps {
 
 const RING_SIZES = [180, 160, 140];
 
-const slides = [
-  {
-    icon: "🪷",
-    title: i18n.t("onboarding.welcome"),
-    body: i18n.t("onboarding.description"),
-  },
-  {
-    icon: "🎵",
-    title: i18n.t("onboarding.chantingDaily"),
-    body: i18n.t("onboarding.chantingDailyDescription"),
-  },
-  {
-    icon: "🔔",
-    title: i18n.t("onboarding.prayerReminders"),
-    body: i18n.t("onboarding.prayerRemindersDescription"),
-  },
-];
-
 export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
+  const i18n = useI18n();
   const analytics = useAnalytics();
+
+  const slides = [
+    { icon: "🪷", title: i18n.t("onboarding.welcome"), body: i18n.t("onboarding.description") },
+    { icon: "🎵", title: i18n.t("onboarding.chantingDaily"), body: i18n.t("onboarding.chantingDailyDescription") },
+    { icon: "🔔", title: i18n.t("onboarding.prayerReminders"), body: i18n.t("onboarding.prayerRemindersDescription") },
+  ];
   const [step, setStep] = useState(0);
   const [animating, setAnimating] = useState(false);
 

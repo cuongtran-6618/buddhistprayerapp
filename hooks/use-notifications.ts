@@ -12,6 +12,7 @@
 
 import * as Notifications from "expo-notifications";
 import { Reminder } from "@/types/reminder";
+import { i18n } from "@/lib/i18n";
 
 // ─── Category identifier ───────────────────────────────────────────────────
 
@@ -53,12 +54,12 @@ export async function setupNotificationCategory(): Promise<void> {
   await Notifications.setNotificationCategoryAsync(PRAYER_REMINDER_CATEGORY, [
     {
       identifier: ACTION_ACCEPT,
-      buttonTitle: "Open Prayer",
+      buttonTitle: i18n.t("notifications.open_prayer"),
       options: { opensAppToForeground: true },
     },
     {
       identifier: ACTION_SNOOZE,
-      buttonTitle: "Snooze",
+      buttonTitle: i18n.t("notifications.snooze"),
       options: { opensAppToForeground: false },
     },
   ]);
@@ -88,7 +89,7 @@ export async function scheduleReminderNotification(
   reminder: Reminder,
   trackTitle: string
 ): Promise<string> {
-  const body = trackTitle || "Time to pray";
+  const body = trackTitle || i18n.t("notifications.time_to_pray");
 
   const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
@@ -137,7 +138,7 @@ export async function snoozeReminder(
   reminderId: string,
   trackTitle: string
 ): Promise<void> {
-  const body = trackTitle || "Time to pray";
+  const body = trackTitle || i18n.t("notifications.time_to_pray");
 
   await Notifications.scheduleNotificationAsync({
     content: {

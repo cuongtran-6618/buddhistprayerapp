@@ -1,9 +1,11 @@
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
+import { useI18n } from "@/lib/i18n";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
+  const i18n = useI18n();
   return (
     <Tabs
       screenOptions={{
@@ -33,7 +35,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: "Home",
+          title: i18n.t("tabs.home"),
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "home" : "home-outline"} size={size} color={color} />
           ),
@@ -43,7 +45,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="chant"
         options={{
-          title: "Chant",
+          title: i18n.t("tabs.chant"),
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "musical-notes" : "musical-notes-outline"} size={size} color={color} />
           ),
@@ -52,7 +54,7 @@ export default function TabsLayout() {
        <Tabs.Screen
         name="reminders"
         options={{
-          title: "Reminders",
+          title: i18n.t("tabs.reminders"),
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "notifications" : "notifications-outline"} size={size} color={color} />
           ),
