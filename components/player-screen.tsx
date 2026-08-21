@@ -1,4 +1,5 @@
 import { LotusIcon } from "@/components/icons/lotus-icon";
+import { MilestoneShareModal } from "@/components/milestone-share-modal";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { i18n } from "@/app/lib/i18n";
 import { SCRIPT_LINE_HEIGHT } from "@/constants/animation";
@@ -10,9 +11,10 @@ import { useAnalytics } from "@/hooks/use-analytics";
 import { useChantSession } from "@/hooks/use-chant-session";
 import { PlayerAnimations, usePlayerAnimations } from "@/hooks/use-player-animations";
 import { UseSeekGestureResult, useSeekGesture } from "@/hooks/use-seek-gesture";
+import { useChantingHistoryStore } from "@/store/chanting-history-store";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
   Pressable,
@@ -29,7 +31,16 @@ interface PlayerScreenProps {
 }
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
-  const session = useChantSession(track, onComplete);
+  const checkMilestone = useChantingHistoryStore((s) => s.checkMilestone);
+  const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(null);
+
+  const handleComplete = useCallback(() => {
+    onComplete?.();
+    const crossed = checkMilestone();
+    if (crossed) setCelebratedMilestone(crossed);
+  }, [onComplete, checkMilestone]);
+
+  const session = useChantSession(track, handleComplete);
   const player = useAudioPlayer(track, session.handleComplete);
   session.progressRef.current = player.progress;
   session.durationRef.current = player.durationMs;
@@ -59,6 +70,11 @@ export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
       <ChantScrollSection track={track} player={player} anims={anims} scrollRef={scrollRef} />
       <ProgressSection seek={seek} player={player} />
       <ControlsSection player={player} trackId={track.id} />
+
+      <MilestoneShareModal
+        streak={celebratedMilestone}
+        onClose={() => setCelebratedMilestone(null)}
+      />
     </View>
   );
 }

@@ -1,5 +1,11 @@
 import * as store from "../chanting-history-store";
-import { computeMonthProgress, computeStreak } from "../chanting-history-store";
+import {
+  computeHeatmapGrid,
+  computeMilestoneCrossing,
+  computeMonthProgress,
+  computeStreak,
+} from "../chanting-history-store";
+import { HEATMAP_MAX_DAYS, getNextMilestone } from "@/constants/milestones";
 import { computeScheduleStatus, computeTodayProgress } from "@/lib/schedule";
 import { Reminder } from "@/types/reminder";
 import { formatDateKey } from "@/utils/date";
@@ -93,6 +99,96 @@ describe("computeStreak", () => {
       [daysAgo(1)]: { "track-a": 1 },
     };
     expect(computeStreak(history)).toBe(2);
+  });
+});
+
+// ─── getNextMilestone ─────────────────────────────────────────────────────────
+
+describe("getNextMilestone", () => {
+  it("walks through the base milestones in order", () => {
+    expect(getNextMilestone(0)).toBe(7);
+    expect(getNextMilestone(6)).toBe(7);
+    expect(getNextMilestone(7)).toBe(21);
+    expect(getNextMilestone(20)).toBe(21);
+    expect(getNextMilestone(21)).toBe(49);
+    expect(getNextMilestone(48)).toBe(49);
+    expect(getNextMilestone(49)).toBe(108);
+    expect(getNextMilestone(107)).toBe(108);
+  });
+
+  it("repeats every 108 days once past the base milestones", () => {
+    expect(getNextMilestone(108)).toBe(216);
+    expect(getNextMilestone(216)).toBe(324);
+  });
+});
+
+// ─── computeMilestoneCrossing ─────────────────────────────────────────────────
+
+describe("computeMilestoneCrossing", () => {
+  it("reports no crossing when streak hasn't reached the next milestone", () => {
+    const result = computeMilestoneCrossing(6, 0);
+    expect(result).toEqual({ crossed: null, celebratedForCurrentRun: 0 });
+  });
+
+  it("reports a crossing exactly at a milestone", () => {
+    expect(computeMilestoneCrossing(7, 0)).toEqual({ crossed: 7, celebratedForCurrentRun: 7 });
+    expect(computeMilestoneCrossing(108, 49)).toEqual({ crossed: 108, celebratedForCurrentRun: 108 });
+  });
+
+  it("does not re-report a milestone already celebrated this run", () => {
+    expect(computeMilestoneCrossing(10, 7)).toEqual({ crossed: null, celebratedForCurrentRun: 7 });
+    expect(computeMilestoneCrossing(108, 108)).toEqual({ crossed: null, celebratedForCurrentRun: 108 });
+  });
+
+  it("resets the marker and re-celebrates from scratch when the streak breaks and rebuilds", () => {
+    // Previously celebrated 21, but the streak broke and only just got back to 7
+    expect(computeMilestoneCrossing(7, 21)).toEqual({ crossed: 7, celebratedForCurrentRun: 7 });
+  });
+
+  it("resets the marker without celebrating if the rebuilt streak hasn't reached a milestone yet", () => {
+    expect(computeMilestoneCrossing(3, 21)).toEqual({ crossed: null, celebratedForCurrentRun: 0 });
+  });
+});
+
+// ─── computeHeatmapGrid ────────────────────────────────────────────────────────
+
+describe("computeHeatmapGrid", () => {
+  function countCells(grid: ReturnType<typeof computeHeatmapGrid>) {
+    return grid.reduce((sum, col) => sum + col.filter((c) => c !== null).length, 0);
+  }
+
+  it("returns an empty grid for a zero-length streak", () => {
+    expect(computeHeatmapGrid({}, 0)).toEqual([]);
+  });
+
+  it("places each cell on its correct weekday row", () => {
+    const grid = computeHeatmapGrid({}, 3);
+    for (const column of grid) {
+      column.forEach((cell, row) => {
+        if (cell) expect(cell.weekday).toBe(row);
+      });
+    }
+  });
+
+  it("marks days with a completion as filled and days without as unfilled", () => {
+    const history = { [formatDateKey(new Date())]: { "track-a": 1 } };
+    const grid = computeHeatmapGrid(history, 2);
+    const today = formatDateKey(new Date());
+    const flat = grid.flat().filter((c): c is NonNullable<typeof c> => c !== null);
+    const todayCell = flat.find((c) => c.dateKey === today);
+    const otherCell = flat.find((c) => c.dateKey !== today);
+    expect(todayCell?.filled).toBe(true);
+    expect(otherCell?.filled).toBe(false);
+  });
+
+  it("caps the grid at HEATMAP_MAX_DAYS for long streaks", () => {
+    const grid = computeHeatmapGrid({}, HEATMAP_MAX_DAYS + 50);
+    expect(countCells(grid)).toBe(HEATMAP_MAX_DAYS);
+  });
+
+  it("renders exactly streakLength cells when under the cap", () => {
+    const grid = computeHeatmapGrid({}, 10);
+    expect(countCells(grid)).toBe(10);
   });
 });
 

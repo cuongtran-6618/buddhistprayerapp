@@ -35,6 +35,15 @@
   "player": {
     "now_chanting": "Đang Tụng"
   },
+  "milestone": {
+    "title": "%{count} Ngày Liên Tiếp!",
+    "subtitle": "Sự tu tập của bạn đang vững mạnh hơn.",
+    "day_streak": "ngày liên tiếp",
+    "share": "Chia sẻ",
+    "maybe_later": "Để sau",
+    "share_error": "Không Thể Chia Sẻ",
+    "share_error_body": "Đã có lỗi xảy ra khi chia sẻ. Vui lòng thử lại."
+  },
   "reminders": {
     "title": "Nhắc Nhở",
     "empty_title": "Chưa có nhắc nhở",

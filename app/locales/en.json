@@ -35,6 +35,15 @@
   "player": {
     "now_chanting": "Now Chanting"
   },
+  "milestone": {
+    "title": "%{count}-Day Streak!",
+    "subtitle": "Your practice is growing strong.",
+    "day_streak": "day streak",
+    "share": "Share",
+    "maybe_later": "Maybe later",
+    "share_error": "Couldn't Share",
+    "share_error_body": "Something went wrong while sharing. Please try again."
+  },
   "reminders": {
     "title": "Reminders",
     "empty_title": "No reminders yet",
