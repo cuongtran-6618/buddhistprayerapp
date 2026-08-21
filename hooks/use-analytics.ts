@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { usePostHog } from 'posthog-react-native';
 
 // Event names match existing PostHog event names exactly.
@@ -13,14 +12,17 @@ export type AnalyticsEvent =
   | { type: 'chant_selected'; trackId: string; source: 'home' | 'chant_list' }
   | { type: 'reminder_created' }
   | { type: 'reminder_deleted'; reminderId: string }
-  | { type: 'reminder_toggled'; reminderId: string; enabled: boolean };
+  | { type: 'reminder_toggled'; reminderId: string; enabled: boolean }
+  | { type: 'milestone_reached'; streak: number }
+  | { type: 'share_modal_shown'; streak: number }
+  | { type: 'share_sheet_opened'; streak: number };
 
 export function useAnalytics() {
   const posthog = usePostHog();
-  return useMemo(() => ({
+  return {
     capture: (event: AnalyticsEvent) => {
       const { type, ...properties } = event;
       posthog.capture(type, properties);
     },
-  }), [posthog]);
+  };
 }

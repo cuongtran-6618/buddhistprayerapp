@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { usePulsingRings } from "@/hooks/use-pulsing-rings";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -41,35 +42,13 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   const [step, setStep] = useState(0);
   const [animating, setAnimating] = useState(false);
 
-  // Pulse animations for the 3 decorative rings
-  const ringAnim0 = useRef(new Animated.Value(1)).current;
-  const ringAnim1 = useRef(new Animated.Value(1)).current;
-  const ringAnim2 = useRef(new Animated.Value(1)).current;
-  const ringAnims = [ringAnim0, ringAnim1, ringAnim2];
+  const ringAnims = usePulsingRings(RING_SIZES);
 
   // Icon fade/scale
   const iconOpacity = useRef(new Animated.Value(1)).current;
   const iconScale = useRef(new Animated.Value(1)).current;
   const textOpacity = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    ringAnims.forEach((anim, i) => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(anim, {
-            toValue: 1.05,
-            duration: (3 + i) * 1000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: (3 + i) * 1000,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    });
-  }, []);
 
   const transitionToStep = (newStep: number) => {
     setAnimating(true);

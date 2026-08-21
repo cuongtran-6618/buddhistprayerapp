@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { usePulsingRings } from "@/hooks/use-pulsing-rings";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
@@ -15,9 +16,7 @@ const RING_SIZES = [220, 180, 145];
 export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
   const analytics = useAnalytics();
 
-  const ringAnim0 = useRef(new Animated.Value(1)).current;
-  const ringAnim1 = useRef(new Animated.Value(1)).current;
-  const ringAnim2 = useRef(new Animated.Value(1)).current;
+  const ringAnims = usePulsingRings(RING_SIZES);
   const contentOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -26,30 +25,13 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
       duration: 700,
       useNativeDriver: true,
     }).start();
-
-    [ringAnim0, ringAnim1, ringAnim2].forEach((anim, i) => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(anim, {
-            toValue: 1.06,
-            duration: (3 + i) * 1000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: (3 + i) * 1000,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    });
   }, []);
 
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.content, { opacity: contentOpacity }]}>
         <View style={styles.ringContainer}>
-          {[ringAnim0, ringAnim1, ringAnim2].map((anim, i) => (
+          {ringAnims.map((anim, i) => (
             <Animated.View
               key={i}
               style={[

@@ -74,7 +74,7 @@ function clamp(value: number, lo: number, hi: number): number {
 }
 
 /** Convert milliseconds → "M:SS" label. */
-export function msToLabel(ms: number): string {
+function msToLabel(ms: number): string {
   const totalSec = Math.floor(ms / 1000);
   const min = Math.floor(totalSec / 60);
   const sec = totalSec % 60;
