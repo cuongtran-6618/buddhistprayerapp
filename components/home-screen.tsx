@@ -27,6 +27,22 @@ interface HomeScreenProps {
   onHistoryPress: () => void;
 }
 
+function usePulseOpacity(duration: number, enabled = true): Animated.Value {
+  const anim = useRef(new Animated.Value(0.6)).current;
+  useEffect(() => {
+    if (!enabled) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, { toValue: 1, duration, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0.6, duration, useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [enabled]);
+  return anim;
+}
+
 function GlowView({
   style,
   children,
@@ -34,23 +50,7 @@ function GlowView({
   style?: object;
   children: React.ReactNode;
 }) {
-  const glowAnim = useRef(new Animated.Value(0.6)).current;
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0.6,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-  }, []);
+  const glowAnim = usePulseOpacity(2000);
   return (
     <Animated.View style={[style, { opacity: glowAnim }]}>
       {children}
@@ -217,26 +217,7 @@ function ScheduleItem({
   item: DashboardScheduleItem;
   onPress?: () => void;
 }) {
-  const glowAnim = useRef(new Animated.Value(0.6)).current;
-
-  useEffect(() => {
-    if (item.current) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, {
-            toValue: 1,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 0.6,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-        ]),
-      ).start();
-    }
-  }, [item.current]);
+  const glowAnim = usePulseOpacity(1500, item.current);
 
   if (item.current) {
     return (
