@@ -80,8 +80,14 @@ export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.atmosphereTop}    pointerEvents="none" />
-      <View style={styles.atmosphereBottom} pointerEvents="none" />
+      <LinearGradient
+        colors={["rgba(139,26,26,0.55)", "rgba(80,25,5,0.25)", "rgba(200,135,42,0.06)"]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.atmosphere}
+        pointerEvents="none"
+      />
 
       <Header track={track} onBack={onBack} />
       <MandalaSection  track={track} player={player} anims={anims} />
@@ -317,21 +323,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
     paddingTop: 50,
   },
-  atmosphereTop: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 300,
-    backgroundColor: "rgba(139,26,26,0.12)",
-  },
-  atmosphereBottom: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 300,
-    backgroundColor: "rgba(200,135,42,0.04)",
+  atmosphere: {
+    ...StyleSheet.absoluteFillObject,
   },
   header: {
     flexDirection: "row",
