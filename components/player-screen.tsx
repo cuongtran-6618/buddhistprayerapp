@@ -92,9 +92,6 @@ function Header({ track, onBack }: { track: Track; onBack: () => void }) {
         <Text style={styles.headerLabel}>{i18n.t("player.now_chanting")}</Text>
         <Text style={styles.headerSub}>{track.subtitle}</Text>
       </View>
-      <Pressable style={styles.headerButton}>
-        <Text style={styles.headerButtonText}>⋯</Text>
-      </Pressable>
     </View>
   );
 }
