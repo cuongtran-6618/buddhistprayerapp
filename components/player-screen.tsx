@@ -92,9 +92,7 @@ function Header({ track, onBack }: { track: Track; onBack: () => void }) {
         <Text style={styles.headerLabel}>{i18n.t("player.now_chanting")}</Text>
         <Text style={styles.headerSub}>{track.subtitle}</Text>
       </View>
-      <Pressable style={styles.headerButton}>
-        <Text style={styles.headerButtonText}>⋯</Text>
-      </Pressable>
+      <View style={styles.headerButton} />
     </View>
   );
 }
@@ -263,9 +261,6 @@ function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: st
 
   return (
     <View style={styles.controls}>
-      <Pressable style={styles.controlBtnSm}>
-        <Ionicons name="shuffle" size={20} color={Colors.goldDim} />
-      </Pressable>
       <Pressable
         style={styles.controlBtnMd}
         onPress={() => {
@@ -290,9 +285,6 @@ function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: st
         }}
       >
         <Ionicons name="play-skip-forward" size={22} color={Colors.gold} />
-      </Pressable>
-      <Pressable style={styles.controlBtnSm}>
-        <Ionicons name="repeat" size={20} color={Colors.goldDim} />
       </Pressable>
     </View>
   );
@@ -527,16 +519,6 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 36,
   },
-  controlBtnSm: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.goldDim,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   controlBtnMd: {
     width: 50,
     height: 50,
@@ -564,8 +546,5 @@ const styles = StyleSheet.create({
   },
   playBtnActive: {
     shadowOpacity: 0.5,
-  },
-  playBtnIcon: {
-    fontSize: 26,
   },
 });

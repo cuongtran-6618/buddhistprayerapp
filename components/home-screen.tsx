@@ -1,14 +1,14 @@
-import { useI18n } from "@/lib/i18n";
 import { BellIcon } from "@/components/icons/bell-icon";
+import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { DashboardScheduleItem, useDashboard } from "@/hooks/use-dashboard";
+import { useI18n } from "@/lib/i18n";
 import { useAppStore } from "@/store/app-store";
-import { GoldGradient } from "@/components/ui/gold-gradient";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Animated,
   BackHandler,
@@ -27,26 +27,52 @@ interface HomeScreenProps {
   onHistoryPress: () => void;
 }
 
-
-
-function GlowView({ style, children }: { style?: object; children: React.ReactNode }) {
+function GlowView({
+  style,
+  children,
+}: {
+  style?: object;
+  children: React.ReactNode;
+}) {
   const glowAnim = useRef(new Animated.Value(0.6)).current;
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(glowAnim, { toValue: 1, duration: 2000, useNativeDriver: true }),
-        Animated.timing(glowAnim, { toValue: 0.6, duration: 2000, useNativeDriver: true }),
-      ])
+        Animated.timing(glowAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0.6,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ]),
     ).start();
   }, []);
-  return <Animated.View style={[style, { opacity: glowAnim }]}>{children}</Animated.View>;
+  return (
+    <Animated.View style={[style, { opacity: glowAnim }]}>
+      {children}
+    </Animated.View>
+  );
 }
 
-export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: HomeScreenProps) {
+export function HomeScreen({
+  onChantSelect,
+  onRemindersPress,
+  onHistoryPress,
+}: HomeScreenProps) {
   const i18n = useI18n();
   const analytics = useAnalytics();
   const { language, setLanguage } = useAppStore();
-  const { scheduleItems, streak, todayProgress, monthPct, greeting: g } = useDashboard();
+  const {
+    scheduleItems,
+    streak,
+    todayProgress,
+    monthPct,
+    greeting: g,
+  } = useDashboard();
   const { done } = todayProgress;
 
   const backPressedOnce = useRef(false);
@@ -59,7 +85,9 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
       }
       backPressedOnce.current = true;
       ToastAndroid.show(i18n.t("home.exit_hint"), ToastAndroid.SHORT);
-      setTimeout(() => { backPressedOnce.current = false; }, 2000);
+      setTimeout(() => {
+        backPressedOnce.current = false;
+      }, 2000);
       return true;
     };
     const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
@@ -80,14 +108,15 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
         <View style={styles.header}>
           <View>
             <Text style={styles.greetingEn}>{g.label}</Text>
-            <Text style={styles.greetingVi}>{g.main}</Text>
           </View>
           <View style={styles.headerActions}>
             <Pressable
               style={styles.langButton}
-              onPress={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
+              onPress={() => setLanguage(language === "vi" ? "en" : "vi")}
             >
-              <Text style={styles.langButtonText}>{language.toUpperCase()}</Text>
+              <Text style={styles.langButtonText}>
+                {language.toUpperCase()}
+              </Text>
             </Pressable>
             <Pressable style={styles.iconButton} onPress={onRemindersPress}>
               <BellIcon size={18} />
@@ -110,12 +139,19 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
               <Text style={styles.streakFire}>🔥</Text>
               <View style={styles.streakInfo}>
                 <Text style={styles.streakTitle}>
-                  {streak} {i18n.t("home.streak_days")} <Text style={styles.streakHighlight}>{i18n.t("home.streak_highlight")}</Text>
+                  {streak} {i18n.t("home.streak_days")}{" "}
+                  <Text style={styles.streakHighlight}>
+                    {i18n.t("home.streak_highlight")}
+                  </Text>
                 </Text>
-                <Text style={styles.streakSub}>{i18n.t("home.streak_sub", { streak, done })}</Text>
+                <Text style={styles.streakSub}>
+                  {i18n.t("home.streak_sub", { streak, done })}
+                </Text>
               </View>
               <View style={styles.streakRight}>
-                <Text style={styles.streakMonth}>{i18n.t("home.this_month")}</Text>
+                <Text style={styles.streakMonth}>
+                  {i18n.t("home.this_month")}
+                </Text>
                 <Text style={styles.streakPercent}>{monthPct}%</Text>
               </View>
             </LinearGradient>
@@ -125,15 +161,21 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
         {/* Today's schedule */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{i18n.t("home.todays_schedule")}</Text>
+            <Text style={styles.sectionTitle}>
+              {i18n.t("home.todays_schedule")}
+            </Text>
             <Pressable onPress={onRemindersPress}>
               <Text style={styles.sectionAction}>{i18n.t("home.edit")}</Text>
             </Pressable>
           </View>
           {scheduleItems.length === 0 ? (
             <Pressable style={styles.emptySchedule} onPress={onRemindersPress}>
-              <Text style={styles.emptyScheduleText}>{i18n.t("home.no_reminders")}</Text>
-              <Text style={styles.emptyScheduleHint}>{i18n.t("home.no_reminders_hint")}</Text>
+              <Text style={styles.emptyScheduleText}>
+                {i18n.t("home.no_reminders")}
+              </Text>
+              <Text style={styles.emptyScheduleHint}>
+                {i18n.t("home.no_reminders_hint")}
+              </Text>
             </Pressable>
           ) : (
             <View style={styles.scheduleList}>
@@ -143,10 +185,18 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
                   <ScheduleItem
                     key={item.id}
                     item={item}
-                    onPress={!item.done && track ? () => {
-                      analytics.capture({ type: 'chant_selected', trackId: item.trackId, source: 'home' });
-                      onChantSelect(track);
-                    } : undefined}
+                    onPress={
+                      !item.done && track
+                        ? () => {
+                            analytics.capture({
+                              type: "chant_selected",
+                              trackId: item.trackId,
+                              source: "home",
+                            });
+                            onChantSelect(track);
+                          }
+                        : undefined
+                    }
                   />
                 );
               })}
@@ -156,21 +206,34 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
 
         <View style={{ height: 16 }} />
       </ScrollView>
-
     </View>
   );
 }
 
-function ScheduleItem({ item, onPress }: { item: DashboardScheduleItem; onPress?: () => void }) {
+function ScheduleItem({
+  item,
+  onPress,
+}: {
+  item: DashboardScheduleItem;
+  onPress?: () => void;
+}) {
   const glowAnim = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
     if (item.current) {
       Animated.loop(
         Animated.sequence([
-          Animated.timing(glowAnim, { toValue: 1, duration: 1500, useNativeDriver: true }),
-          Animated.timing(glowAnim, { toValue: 0.6, duration: 1500, useNativeDriver: true }),
-        ])
+          Animated.timing(glowAnim, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(glowAnim, {
+            toValue: 0.6,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+        ]),
       ).start();
     }
   }, [item.current]);
@@ -203,10 +266,20 @@ function ScheduleItemContent({ item }: { item: DashboardScheduleItem }) {
   const { trackTitle } = item;
   return (
     <>
-      <Text style={[styles.scheduleTime, item.current && styles.scheduleTimeCurrent]}>
+      <Text
+        style={[
+          styles.scheduleTime,
+          item.current && styles.scheduleTimeCurrent,
+        ]}
+      >
         {item.time}
       </Text>
-      <View style={[styles.scheduleDivider, item.current && styles.scheduleDividerCurrent]} />
+      <View
+        style={[
+          styles.scheduleDivider,
+          item.current && styles.scheduleDividerCurrent,
+        ]}
+      />
       <View style={styles.scheduleText}>
         <Text
           style={[
@@ -241,7 +314,6 @@ function ScheduleItemContent({ item }: { item: DashboardScheduleItem }) {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -275,12 +347,6 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     fontFamily: Fonts.medium,
     marginBottom: 4,
-  },
-  greetingVi: {
-    color: Colors.cream,
-    fontSize: 22,
-    fontFamily: Fonts.bold,
-    lineHeight: 27,
   },
   headerActions: {
     flexDirection: "row",
@@ -499,39 +565,5 @@ const styles = StyleSheet.create({
   playIcon: {
     color: Colors.cream,
     fontSize: 13,
-  },
-  // Bottom nav
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingTop: 10,
-    paddingBottom: 28,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    backgroundColor: Colors.surface,
-  },
-  tabItem: {
-    alignItems: "center",
-    gap: 4,
-    minWidth: 60,
-  },
-  tabIcon: {
-    fontSize: 20,
-  },
-  tabLabel: {
-    fontSize: 10,
-    fontFamily: Fonts.regular,
-    color: Colors.muted,
-  },
-  tabLabelActive: {
-    color: Colors.gold,
-    fontFamily: Fonts.semiBold,
-  },
-  tabDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: Colors.gold,
   },
 });
