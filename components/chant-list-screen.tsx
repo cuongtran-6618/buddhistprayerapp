@@ -137,13 +137,12 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.bold,
   },
   playButton: {
-    borderRadius: 18,
+    borderRadius: 10,
+    overflow: "hidden",
   },
   playButtonGradient: {
     width: 36,
     height: 36,
-    borderRadius: 18,
-    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },

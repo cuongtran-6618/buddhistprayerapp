@@ -3,7 +3,7 @@ import { Fonts } from "@/constants/fonts";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { usePulsingRings } from "@/hooks/use-pulsing-rings";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Pressable,

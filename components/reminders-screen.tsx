@@ -22,7 +22,6 @@ import { useRemindersStore } from "@/store/reminders-store";
 import { Reminder } from "@/types/reminder";
 import { router } from "expo-router";
 import React from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Alert,
   FlatList,
@@ -34,7 +33,6 @@ import {
 } from "react-native";
 
 export function RemindersScreen() {
-  const insets = useSafeAreaInsets();
   const i18n = useI18n();
   const analytics = useAnalytics();
   const { reminders, updateReminder, removeReminder } = useRemindersStore();
@@ -75,7 +73,7 @@ export function RemindersScreen() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+      <View style={styles.header}>
         <Text style={styles.headerTitle}>{i18n.t("reminders.title")}</Text>
       </View>
 
@@ -197,6 +195,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
+    paddingTop: 56,
     paddingBottom: 16,
     paddingHorizontal: 24,
   },
@@ -275,7 +274,7 @@ const styles = StyleSheet.create({
   deleteButton: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: 8,
     backgroundColor: "rgba(139,26,26,0.2)",
     alignItems: "center",
     justifyContent: "center",
@@ -306,12 +305,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 20,
   },
+  emptyHighlight: {
+    color: Colors.gold,
+    fontFamily: Fonts.bold,
+  },
   // FAB
   fab: {
     position: "absolute",
     right: 24,
     bottom: 36,
-    borderRadius: 28,
+    borderRadius: 20,
+    overflow: "hidden",
     shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
@@ -321,8 +325,6 @@ const styles = StyleSheet.create({
   fabGradient: {
     width: 56,
     height: 56,
-    borderRadius: 28,
-    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },

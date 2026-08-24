@@ -8,6 +8,7 @@ import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { AudioPlayer, useAudioPlayer } from "@/hooks/use-audio-player";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { useChantSession } from "@/hooks/use-chant-session";
 import { usePlayerAnimations } from "@/hooks/use-player-animations";
 import { useSeekGesture } from "@/hooks/use-seek-gesture";
 import { useChantingHistoryStore } from "@/store/chanting-history-store";
@@ -31,38 +32,18 @@ interface PlayerScreenProps {
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
   const checkMilestone = useChantingHistoryStore((s) => s.checkMilestone);
-  const analytics = useAnalytics();
   const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(null);
 
-  const completedRef = useRef(false);
-  const progressRef = useRef(0);
-  const durationRef = useRef(0);
-
   const handleComplete = useCallback(() => {
-    completedRef.current = true;
-    analytics.capture({ type: 'chant_completed', trackId: track.id, durationMs: durationRef.current });
+    onComplete?.();
     const crossed = checkMilestone();
     if (crossed) setCelebratedMilestone(crossed);
-    onComplete?.();
-  }, [onComplete, checkMilestone, analytics, track.id]);
+  }, [onComplete, checkMilestone]);
 
-  useEffect(() => {
-    completedRef.current = false;
-    analytics.capture({ type: 'chant_started', trackId: track.id });
-    return () => {
-      if (!completedRef.current) {
-        analytics.capture({
-          type: 'chant_abandoned',
-          trackId: track.id,
-          progressPercent: Math.round(progressRef.current * 100),
-        });
-      }
-    };
-  }, [analytics, track.id]);
-
-  const player = useAudioPlayer(track, handleComplete);
-  progressRef.current = player.progress;
-  durationRef.current = player.durationMs;
+  const session = useChantSession(track, handleComplete);
+  const player = useAudioPlayer(track, session.handleComplete);
+  session.progressRef.current = player.progress;
+  session.durationRef.current = player.durationMs;
 
   const anims  = usePlayerAnimations(player.playing);
   const scrollRef = useRef<ScrollView>(null);
@@ -111,7 +92,9 @@ function Header({ track, onBack }: { track: Track; onBack: () => void }) {
         <Text style={styles.headerLabel}>{i18n.t("player.now_chanting")}</Text>
         <Text style={styles.headerSub}>{track.subtitle}</Text>
       </View>
-      <View style={styles.headerButton} />
+      <Pressable style={styles.headerButton}>
+        <Text style={styles.headerButtonText}>⋯</Text>
+      </Pressable>
     </View>
   );
 }
@@ -142,13 +125,7 @@ function MandalaSection({
       <Animated.View style={[styles.middleRing, { transform: [{ rotate: anims.middleRotateDeg }] }]} />
 
       <Animated.View style={[styles.centerLotus, { transform: [{ scale: anims.breatheAnim }] }]}>
-        <LinearGradient
-          colors={["rgba(200,135,42,0.35)", "rgba(139,26,26,0.25)"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <LotusIcon size={30} color={player.playing ? Colors.goldBright : Colors.gold} />
+        <LotusIcon size={40} color={player.playing ? Colors.goldBright : Colors.gold} />
       </Animated.View>
     </View>
   );
@@ -286,6 +263,9 @@ function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: st
 
   return (
     <View style={styles.controls}>
+      <Pressable style={styles.controlBtnSm}>
+        <Ionicons name="shuffle" size={20} color={Colors.goldDim} />
+      </Pressable>
       <Pressable
         style={styles.controlBtnMd}
         onPress={() => {
@@ -310,6 +290,9 @@ function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: st
         }}
       >
         <Ionicons name="play-skip-forward" size={22} color={Colors.gold} />
+      </Pressable>
+      <Pressable style={styles.controlBtnSm}>
+        <Ionicons name="repeat" size={20} color={Colors.goldDim} />
       </Pressable>
     </View>
   );
@@ -349,7 +332,7 @@ const styles = StyleSheet.create({
   headerButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 12,
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
@@ -416,19 +399,19 @@ const styles = StyleSheet.create({
   },
   centerLotus: {
     position: "absolute",
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    overflow: "hidden",
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: "rgba(200,135,42,0.1)",
     borderWidth: 1,
-    borderColor: "rgba(200,135,42,0.5)",
+    borderColor: "rgba(200,135,42,0.35)",
     alignItems: "center",
     justifyContent: "center",
   },
   trackInfo: {
     alignItems: "center",
     paddingHorizontal: 32,
-    marginBottom: 20,
+    marginBottom: 4,
   },
   trackTitle: {
     color: Colors.cream,
@@ -544,6 +527,16 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 36,
   },
+  controlBtnSm: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.goldDim,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   controlBtnMd: {
     width: 50,
     height: 50,
@@ -566,11 +559,13 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },
   playBtnActive: {
     shadowOpacity: 0.5,
+  },
+  playBtnIcon: {
+    fontSize: 26,
   },
 });

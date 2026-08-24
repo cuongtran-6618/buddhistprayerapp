@@ -1,8 +1,8 @@
-import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { usePulsingRings } from "@/hooks/use-pulsing-rings";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { useI18n } from "@/lib/i18n";
@@ -66,9 +66,14 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           }}
           style={styles.ctaWrapper}
         >
-          <GoldGradient style={styles.ctaButton}>
+          <LinearGradient
+            colors={[Colors.gold, Colors.red]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.ctaButton}
+          >
             <Text style={styles.ctaText}>{i18n.t("welcome.cta")}</Text>
-          </GoldGradient>
+          </LinearGradient>
         </Pressable>
       </View>
     </View>

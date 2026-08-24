@@ -73,6 +73,14 @@ function clamp(value: number, lo: number, hi: number): number {
   return Math.min(Math.max(value, lo), hi);
 }
 
+/** Convert milliseconds → "M:SS" label. */
+function msToLabel(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${min}:${String(sec).padStart(2, "0")}`;
+}
+
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useSeekGesture({

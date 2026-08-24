@@ -10,4 +10,5 @@ export const Colors = {
   cream: "#F5E6D0",
   creamMuted: "#B8956A",
   muted: "#6B4E35",
+  accent: "#D4AF37",
 } as const;

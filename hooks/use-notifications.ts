@@ -16,7 +16,7 @@ import { i18n } from "@/lib/i18n";
 
 // ─── Category identifier ───────────────────────────────────────────────────
 
-const PRAYER_REMINDER_CATEGORY = "prayer-reminder";
+export const PRAYER_REMINDER_CATEGORY = "prayer-reminder";
 
 /** Action identifier for opening the prayer. */
 export const ACTION_ACCEPT = "ACCEPT";
