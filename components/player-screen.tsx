@@ -8,7 +8,6 @@ import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { AudioPlayer, useAudioPlayer } from "@/hooks/use-audio-player";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { useChantSession } from "@/hooks/use-chant-session";
 import { usePlayerAnimations } from "@/hooks/use-player-animations";
 import { useSeekGesture } from "@/hooks/use-seek-gesture";
 import { useChantingHistoryStore } from "@/store/chanting-history-store";
@@ -32,18 +31,38 @@ interface PlayerScreenProps {
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
   const checkMilestone = useChantingHistoryStore((s) => s.checkMilestone);
+  const analytics = useAnalytics();
   const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(null);
 
+  const completedRef = useRef(false);
+  const progressRef = useRef(0);
+  const durationRef = useRef(0);
+
   const handleComplete = useCallback(() => {
-    onComplete?.();
+    completedRef.current = true;
+    analytics.capture({ type: 'chant_completed', trackId: track.id, durationMs: durationRef.current });
     const crossed = checkMilestone();
     if (crossed) setCelebratedMilestone(crossed);
-  }, [onComplete, checkMilestone]);
+    onComplete?.();
+  }, [onComplete, checkMilestone, analytics, track.id]);
 
-  const session = useChantSession(track, handleComplete);
-  const player = useAudioPlayer(track, session.handleComplete);
-  session.progressRef.current = player.progress;
-  session.durationRef.current = player.durationMs;
+  useEffect(() => {
+    completedRef.current = false;
+    analytics.capture({ type: 'chant_started', trackId: track.id });
+    return () => {
+      if (!completedRef.current) {
+        analytics.capture({
+          type: 'chant_abandoned',
+          trackId: track.id,
+          progressPercent: Math.round(progressRef.current * 100),
+        });
+      }
+    };
+  }, [analytics, track.id]);
+
+  const player = useAudioPlayer(track, handleComplete);
+  progressRef.current = player.progress;
+  durationRef.current = player.durationMs;
 
   const anims  = usePlayerAnimations(player.playing);
   const scrollRef = useRef<ScrollView>(null);
