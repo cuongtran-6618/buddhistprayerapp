@@ -102,12 +102,12 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   shareButtonWrapper: {
-    borderRadius: 16,
+    borderRadius: 999,
   },
   shareButton: {
     paddingHorizontal: 48,
     paddingVertical: 14,
-    borderRadius: 16,
+    borderRadius: 999,
     alignItems: "center",
   },
   shareButtonText: {

@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 20,
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
-    borderRadius: 12,
+    borderRadius: 999,
     paddingVertical: 12,
     alignItems: "center",
   },
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   },
   // Save button
   saveButton: {
-    borderRadius: 16,
+    borderRadius: 999,
     overflow: "hidden",
     shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 4 },

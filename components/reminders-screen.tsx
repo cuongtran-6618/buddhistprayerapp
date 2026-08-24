@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   deleteButton: {
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: 16,
     backgroundColor: "rgba(139,26,26,0.2)",
     alignItems: "center",
     justifyContent: "center",
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 24,
     bottom: 36,
-    borderRadius: 20,
+    borderRadius: 28,
     overflow: "hidden",
     shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 4 },

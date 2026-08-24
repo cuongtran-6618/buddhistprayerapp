@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
   },
   ctaWrapper: {
-    borderRadius: 16,
+    borderRadius: 999,
     overflow: "hidden",
     shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 8 },
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     height: 56,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 16,
+    borderRadius: 999,
   },
   ctaText: {
     color: Colors.cream,

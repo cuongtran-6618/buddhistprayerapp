@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.bold,
   },
   playButton: {
-    borderRadius: 10,
+    borderRadius: 18,
     overflow: "hidden",
   },
   playButtonGradient: {
