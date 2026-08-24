@@ -142,7 +142,13 @@ function MandalaSection({
       <Animated.View style={[styles.middleRing, { transform: [{ rotate: anims.middleRotateDeg }] }]} />
 
       <Animated.View style={[styles.centerLotus, { transform: [{ scale: anims.breatheAnim }] }]}>
-        <LotusIcon size={40} color={player.playing ? Colors.goldBright : Colors.gold} />
+        <LinearGradient
+          colors={["rgba(200,135,42,0.35)", "rgba(139,26,26,0.25)"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+        <LotusIcon size={30} color={player.playing ? Colors.goldBright : Colors.gold} />
       </Animated.View>
     </View>
   );
@@ -410,19 +416,19 @@ const styles = StyleSheet.create({
   },
   centerLotus: {
     position: "absolute",
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: "rgba(200,135,42,0.1)",
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(200,135,42,0.35)",
+    borderColor: "rgba(200,135,42,0.5)",
     alignItems: "center",
     justifyContent: "center",
   },
   trackInfo: {
     alignItems: "center",
     paddingHorizontal: 32,
-    marginBottom: 4,
+    marginBottom: 20,
   },
   trackTitle: {
     color: Colors.cream,
