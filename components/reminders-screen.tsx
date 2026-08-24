@@ -305,10 +305,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 20,
   },
-  emptyHighlight: {
-    color: Colors.gold,
-    fontFamily: Fonts.bold,
-  },
   // FAB
   fab: {
     position: "absolute",

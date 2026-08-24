@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
-import { TRACKS } from "@/constants/tracks";
 import { useI18n } from "@/lib/i18n";
 import { formatDateKey } from "@/utils/date";
 import { computeStreak, useChantingHistoryStore } from "@/store/chanting-history-store";
@@ -134,9 +133,7 @@ export function HistoryScreen() {
   const { locale } = i18n;
   const insets = useSafeAreaInsets();
   const history = useChantingHistoryStore((s) => s.history);
-  const seedHistory = useChantingHistoryStore((s) => s.seedHistory);
   const { getTrackById } = useTracks();
-  const allTrackIds = TRACKS.map((t) => t.id);
 
   // Initialize to most recent date with data; fall back to today
   const initialDate = findMostRecentDate(useChantingHistoryStore.getState().history);
@@ -171,10 +168,6 @@ export function HistoryScreen() {
     };
   }, [history, getTrackById]);
 
-  const handleCalendarSelect = useCallback((dateKey: string) => {
-    setSelectedDate(dateKey);
-  }, []);
-
   const goToPrevMonth = useCallback(() => {
     if (calendarMonth === 0) {
       setCalendarYear(calendarYear - 1);
@@ -204,9 +197,6 @@ export function HistoryScreen() {
       <View style={styles.topSection}>
         <View style={styles.headerRow}>
           <Text style={styles.heading}>{i18n.t("history.heading")}</Text>
-          <Pressable style={styles.seedButton} onPress={() => seedHistory(90, allTrackIds)}>
-            <Text style={styles.seedButtonText}>Seed 3mo</Text>
-          </Pressable>
         </View>
 
         <View style={styles.summaryRow}>
@@ -230,7 +220,7 @@ export function HistoryScreen() {
             month={calendarMonth}
             history={history}
             selectedDate={selectedDate}
-            onSelectDate={handleCalendarSelect}
+            onSelectDate={setSelectedDate}
             onPrev={goToPrevMonth}
             onNext={goToNextMonth}
             locale={locale}
@@ -325,16 +315,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   heading: { fontFamily: Fonts.bold, fontSize: 22, color: Colors.cream },
-  seedButton: {
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  seedButtonText: { fontFamily: Fonts.medium, fontSize: 11, color: Colors.muted },
-
   summaryRow: { flexDirection: "row", gap: 8, marginBottom: 12 },
   statCard: {
     flex: 1,
