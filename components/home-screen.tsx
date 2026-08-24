@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 20,
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   langButton: {
     height: 40,
     paddingHorizontal: 10,
-    borderRadius: 12,
+    borderRadius: 20,
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
@@ -363,7 +363,8 @@ const styles = StyleSheet.create({
   avatarButton: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 20,
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -539,7 +540,8 @@ const styles = StyleSheet.create({
   playButton: {
     width: 28,
     height: 28,
-    borderRadius: 8,
+    borderRadius: 14,
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },
