@@ -20,7 +20,7 @@ import {
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
-export interface UseSeekGestureOptions {
+interface UseSeekGestureOptions {
   /** Total track length in milliseconds. */
   durationMs: number;
   /** Current playback progress as a 0–1 ratio (from useAudioPlayer). */
@@ -29,7 +29,7 @@ export interface UseSeekGestureOptions {
   onSeek: (ms: number) => void;
 }
 
-export interface UseSeekGestureResult {
+interface UseSeekGestureResult {
   /** Spread onto the seek-area View: `{...seek.panHandlers}` */
   panHandlers: object;
   /** Pass to the seek-area View's `onLayout` prop to capture its pixel width. */

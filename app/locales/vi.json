@@ -35,6 +35,7 @@
     "streak_highlight": "liên tiếp",
     "streak_sub": "%{streak} ngày liên tiếp • %{done} buổi hôm nay",
     "this_month": "THÁNG NÀY",
+    "progress_title": "Tiến Độ Tu Tập",
     "greeting_night_label": "KHUYA TĨNH LẶNG",
     "greeting_night": "Khuya tĩnh lặng",
     "greeting_morning_label": "BUỔI SÁNG AN LÀNH",
@@ -62,7 +63,18 @@
   "tabs": {
     "home": "Trang Chủ",
     "chant": "Kinh",
-    "reminders": "Nhắc Nhở"
+    "reminders": "Nhắc Nhở",
+    "history": "Lịch Sử"
+  },
+  "history": {
+    "heading": "Lịch Sử Tu Tập",
+    "stat_sessions": "Buổi tụng",
+    "stat_streak": "Ngày liên tiếp",
+    "stat_top": "Kinh thường nhất",
+    "empty_title": "Chưa có buổi tụng nào",
+    "empty_body": "Hoàn thành một buổi tụng kinh và nó sẽ hiện ở đây.",
+    "empty_day_title": "Không có buổi tụng nào vào ngày này",
+    "empty_day_body": "Chọn ngày khác để xem lịch sử tụng kinh."
   },
   "notifications": {
     "open_prayer": "Mở Kinh",

@@ -5,8 +5,6 @@ import { useAppStore } from "@/store/app-store";
 import en from '@/app/locales/en.json';
 import vi from '@/app/locales/vi.json';
 
-export const deviceLanguage = getLocales()?.[0]?.languageCode ?? "vi";
-
 export const i18n = new I18n({ en, vi });
 i18n.defaultLocale = "vi";
 i18n.locale = "vi";

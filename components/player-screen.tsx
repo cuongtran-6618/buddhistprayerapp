@@ -9,8 +9,8 @@ import { Track } from "@/constants/tracks";
 import { AudioPlayer, useAudioPlayer } from "@/hooks/use-audio-player";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useChantSession } from "@/hooks/use-chant-session";
-import { PlayerAnimations, usePlayerAnimations } from "@/hooks/use-player-animations";
-import { UseSeekGestureResult, useSeekGesture } from "@/hooks/use-seek-gesture";
+import { usePlayerAnimations } from "@/hooks/use-player-animations";
+import { useSeekGesture } from "@/hooks/use-seek-gesture";
 import { useChantingHistoryStore } from "@/store/chanting-history-store";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -106,7 +106,7 @@ function MandalaSection({
 }: {
   track: Track;
   player: AudioPlayer;
-  anims: PlayerAnimations;
+  anims: ReturnType<typeof usePlayerAnimations>;
 }) {
   return (
     <View style={styles.mandalaContainer}>
@@ -148,7 +148,7 @@ function ChantScrollSection({
 }: {
   track: Track;
   player: AudioPlayer;
-  anims: PlayerAnimations;
+  anims: ReturnType<typeof usePlayerAnimations>;
   scrollRef: React.RefObject<ScrollView>;
 }) {
   return (
@@ -200,7 +200,7 @@ function ProgressSection({
   seek,
   player,
 }: {
-  seek: UseSeekGestureResult;
+  seek: ReturnType<typeof useSeekGesture>;
   player: AudioPlayer;
 }) {
   const displayMs  = Math.floor(seek.displayProgress * player.durationMs);

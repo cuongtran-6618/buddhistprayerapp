@@ -1,5 +1,5 @@
-/** Height of a single script line row in the player scroll view (px) */
-export const SCRIPT_LINE_HEIGHT = 44;
+/** Height of a single script line row in the player scroll view (px) — sized for 2 wrapped lines */
+export const SCRIPT_LINE_HEIGHT = 60;
 
 /** Scale factor applied to the mandala lotus during the breathing animation when playing */
 export const BREATHING_SCALE_ACTIVE = 1.04;

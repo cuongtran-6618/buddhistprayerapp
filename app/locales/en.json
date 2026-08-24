@@ -35,6 +35,7 @@
     "streak_highlight": "in a row",
     "streak_sub": "%{streak}-day streak • %{done} sessions today",
     "this_month": "THIS MONTH",
+    "progress_title": "Your Progress",
     "greeting_night_label": "PEACEFUL NIGHT",
     "greeting_night": "Still of the night",
     "greeting_morning_label": "GOOD MORNING",
@@ -62,7 +63,18 @@
   "tabs": {
     "home": "Home",
     "chant": "Chant",
-    "reminders": "Reminders"
+    "reminders": "Reminders",
+    "history": "History"
+  },
+  "history": {
+    "heading": "History",
+    "stat_sessions": "Sessions",
+    "stat_streak": "Day streak",
+    "stat_top": "Top chant",
+    "empty_title": "No sessions yet",
+    "empty_body": "Complete a chanting session and it will appear here.",
+    "empty_day_title": "No chanting on this day",
+    "empty_day_body": "Select another day to view your history."
   },
   "notifications": {
     "open_prayer": "Open Prayer",

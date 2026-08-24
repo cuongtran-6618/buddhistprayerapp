@@ -8,7 +8,7 @@ import { DashboardScheduleItem, useDashboard } from "@/hooks/use-dashboard";
 import { useAppStore } from "@/store/app-store";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   BackHandler,
@@ -24,6 +24,7 @@ import {
 interface HomeScreenProps {
   onChantSelect: (track: Track) => void;
   onRemindersPress: () => void;
+  onHistoryPress: () => void;
 }
 
 
@@ -41,7 +42,7 @@ function GlowView({ style, children }: { style?: object; children: React.ReactNo
   return <Animated.View style={[style, { opacity: glowAnim }]}>{children}</Animated.View>;
 }
 
-export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps) {
+export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: HomeScreenProps) {
   const i18n = useI18n();
   const analytics = useAnalytics();
   const { language, setLanguage } = useAppStore();
@@ -98,26 +99,28 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
         </View>
 
         {/* Streak card */}
-        <GlowView style={styles.streakCard}>
-          <LinearGradient
-            colors={["rgba(200,135,42,0.25)", "rgba(139,26,26,0.2)"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.streakGradient}
-          >
-            <Text style={styles.streakFire}>🔥</Text>
-            <View style={styles.streakInfo}>
-              <Text style={styles.streakTitle}>
-                {streak} {i18n.t("home.streak_days")} <Text style={styles.streakHighlight}>{i18n.t("home.streak_highlight")}</Text>
-              </Text>
-              <Text style={styles.streakSub}>{i18n.t("home.streak_sub", { streak, done })}</Text>
-            </View>
-            <View style={styles.streakRight}>
-              <Text style={styles.streakMonth}>{i18n.t("home.this_month")}</Text>
-              <Text style={styles.streakPercent}>{monthPct}%</Text>
-            </View>
-          </LinearGradient>
-        </GlowView>
+        <Pressable onPress={onHistoryPress}>
+          <GlowView style={styles.streakCard}>
+            <LinearGradient
+              colors={["rgba(200,135,42,0.25)", "rgba(139,26,26,0.2)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.streakGradient}
+            >
+              <Text style={styles.streakFire}>🔥</Text>
+              <View style={styles.streakInfo}>
+                <Text style={styles.streakTitle}>
+                  {streak} {i18n.t("home.streak_days")} <Text style={styles.streakHighlight}>{i18n.t("home.streak_highlight")}</Text>
+                </Text>
+                <Text style={styles.streakSub}>{i18n.t("home.streak_sub", { streak, done })}</Text>
+              </View>
+              <View style={styles.streakRight}>
+                <Text style={styles.streakMonth}>{i18n.t("home.this_month")}</Text>
+                <Text style={styles.streakPercent}>{monthPct}%</Text>
+              </View>
+            </LinearGradient>
+          </GlowView>
+        </Pressable>
 
         {/* Today's schedule */}
         <View style={styles.section}>
@@ -153,6 +156,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress }: HomeScreenProps)
 
         <View style={{ height: 16 }} />
       </ScrollView>
+
     </View>
   );
 }

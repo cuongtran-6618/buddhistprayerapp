@@ -12,6 +12,7 @@ export default function Home() {
         router.navigate("/player" as any);
       }}
       onRemindersPress={() => router.navigate("/reminders" as any)}
+      onHistoryPress={() => router.navigate("/history" as any)}
     />
   );
 }

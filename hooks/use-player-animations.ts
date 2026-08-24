@@ -21,7 +21,7 @@ import {
 import { useEffect, useRef } from "react";
 import { Animated, Easing } from "react-native";
 
-export interface PlayerAnimations {
+interface PlayerAnimations {
   breatheAnim: Animated.Value;
   activeGlowAnim: Animated.Value;
   outerRotateDeg: Animated.AnimatedInterpolation<string>;

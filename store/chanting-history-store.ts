@@ -18,6 +18,8 @@ interface ChantingHistoryStore {
   getCompletionsForDate: (dateKey: string) => DayRecord;
   /** Checks the current streak against milestones and returns the newly-crossed one, if any. */
   checkMilestone: () => number | null;
+  /** DEV ONLY: seed N days of varied fake history ending today. */
+  seedHistory: (days: number, trackIds?: string[]) => void;
 }
 
 function getTodayKey(): string {
@@ -45,6 +47,26 @@ export const useChantingHistoryStore = create<ChantingHistoryStore>()(
 
       getCompletionsForDate: (dateKey) => {
         return get().history[dateKey] ?? {};
+      },
+
+      seedHistory: (days, trackIds = ['chu-dai-bi']) => {
+        const history: HistoryMap = {};
+        const cursor = new Date();
+        for (let i = 0; i < days; i++) {
+          // ~85% attendance rate — realistic for a motivated practitioner
+          if (Math.random() > 0.15) {
+            const daily: DayRecord = {};
+            // Pick 1–3 tracks randomly
+            const shuffled = [...trackIds].sort(() => Math.random() - 0.5);
+            const trackCount = Math.min(shuffled.length, Math.ceil(Math.random() * 3));
+            for (const id of shuffled.slice(0, trackCount)) {
+              daily[id] = Math.ceil(Math.random() * 2); // 1–2 completions each
+            }
+            history[formatDateKey(cursor)] = daily;
+          }
+          cursor.setDate(cursor.getDate() - 1);
+        }
+        set({ history, celebratedForCurrentRun: 0 });
       },
 
       checkMilestone: () => {
@@ -107,6 +129,7 @@ export interface HeatmapCell {
   dateKey: string;
   weekday: number; // 0 = Sun ... 6 = Sat
   filled: boolean;
+  count: number; // total completions that day (for intensity shading)
 }
 
 /**
@@ -124,8 +147,8 @@ export function computeHeatmapGrid(history: HistoryMap, streakLength: number): (
   for (let i = 0; i < days; i++) {
     const key = formatDateKey(cursor);
     const record = history[key];
-    const filled = record != null && Object.values(record).some((c) => c > 0);
-    cells.push({ dateKey: key, weekday: cursor.getDay(), filled });
+    const count = record != null ? Object.values(record).reduce((s, c) => s + c, 0) : 0;
+    cells.push({ dateKey: key, weekday: cursor.getDay(), filled: count > 0, count });
     cursor.setDate(cursor.getDate() + 1);
   }
 

@@ -17,7 +17,6 @@ export interface Track {
   audio: AudioSource;
   script: ScriptLine[];
   isPremium?: boolean;
-  sessionCount?: number;
   durationLabel?: string;  // display string e.g. "18 phút"; computed from audio at runtime
 }
 
@@ -31,7 +30,6 @@ export const TRACKS: Track[] = [
     // Swap to local once the file is in assets/audio/:
     audio: { type: 'local', asset: require('@/assets/audio/chu_dai_bi.mp3') },
     // audio: { type: 'remote', uri: '' },
-    sessionCount: 247,
     durationLabel: '18 phút',
     script: [
       { text: 'Nam mô Đại bi Hội Thượng Phật Bồ tát', startMs: 12000 },
@@ -189,12 +187,11 @@ export const TRACKS: Track[] = [
       { text: 'Án, tất điện đô, mạn đa ra,bạt đà dạ ta bà ha.', startMs: 553000 },
     ],
   },
-  /*{
+  {
     id: 'nam-mo-a-di-da-phat',
     title: 'Nam Mô A Di Đà Phật',
     subtitle: 'Amitabha Recitation',
     audio: { type: 'remote', uri: '' },
-    sessionCount: 183,
     durationLabel: '10 phút',
     script: [],
   },
@@ -203,7 +200,6 @@ export const TRACKS: Track[] = [
     title: 'Kinh Bát Nhã',
     subtitle: 'Heart Sutra',
     audio: { type: 'remote', uri: '' },
-    sessionCount: 95,
     durationLabel: '8 phút',
     isPremium: true,
     script: [],
@@ -213,9 +209,68 @@ export const TRACKS: Track[] = [
     title: 'Thần Chú Cầu An',
     subtitle: 'Protection Mantra',
     audio: { type: 'remote', uri: '' },
-    sessionCount: 61,
     durationLabel: '22 phút',
     isPremium: true,
     script: [],
-  },*/
+  },
+  {
+    id: 'kinh-phap-hoa',
+    title: 'Kinh Pháp Hoa',
+    subtitle: 'Lotus Sutra',
+    audio: { type: 'remote', uri: '' },
+    durationLabel: '30 phút',
+    isPremium: true,
+    script: [],
+  },
+  {
+    id: 'kinh-dia-tang',
+    title: 'Kinh Địa Tạng',
+    subtitle: 'Ksitigarbha Sutra',
+    audio: { type: 'remote', uri: '' },
+    durationLabel: '45 phút',
+    isPremium: true,
+    script: [],
+  },
+  {
+    id: 'bai-sam-hoi',
+    title: 'Bài Sám Hối',
+    subtitle: 'Repentance Chant',
+    audio: { type: 'remote', uri: '' },
+    durationLabel: '15 phút',
+    script: [],
+  },
+  {
+    id: 'kinh-vo-luong-tho',
+    title: 'Kinh Vô Lượng Thọ',
+    subtitle: 'Amitayus Sutra',
+    audio: { type: 'remote', uri: '' },
+    durationLabel: '60 phút',
+    isPremium: true,
+    script: [],
+  },
+  {
+    id: 'chú-dai-bi-ngan-gon',
+    title: 'Chú Đại Bi Ngắn',
+    subtitle: 'Short Great Compassion Mantra',
+    audio: { type: 'remote', uri: '' },
+    durationLabel: '5 phút',
+    script: [],
+  },
+  {
+    id: 'kinh-a-di-da',
+    title: 'Kinh A Di Đà',
+    subtitle: 'Amitabha Sutra',
+    audio: { type: 'remote', uri: '' },
+    durationLabel: '20 phút',
+    script: [],
+  },
+  {
+    id: 'thap-nhi-nguyen',
+    title: 'Thập Nhị Nguyện',
+    subtitle: 'Twelve Vows',
+    audio: { type: 'remote', uri: '' },
+    durationLabel: '12 phút',
+    isPremium: true,
+    script: [],
+  },
 ];

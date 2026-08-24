@@ -14,7 +14,7 @@ import { Reminder } from "@/types/reminder";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useState } from "react";
 
-export interface ReminderFormState {
+interface ReminderFormState {
   title: string;
   setTitle: (v: string) => void;
   time: Date;

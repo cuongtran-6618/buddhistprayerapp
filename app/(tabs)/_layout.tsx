@@ -61,6 +61,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="history"
+        options={{
+          title: i18n.t("tabs.history"),
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? "time" : "time-outline"} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="create-reminder"
         options={{
           title: "Create Reminder",
