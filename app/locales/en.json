@@ -97,6 +97,19 @@
     "saving": "Saving…",
     "snooze_minutes": "%{count} min"
   },
+  "a11y": {
+    "back": "Go back",
+    "open_reminders": "Open reminders",
+    "switch_language": "Switch language",
+    "prev_section": "Previous section",
+    "next_section": "Next section",
+    "play": "Play",
+    "pause": "Pause",
+    "add_reminder": "Add reminder",
+    "delete_reminder": "Delete reminder",
+    "prev_month": "Previous month",
+    "next_month": "Next month"
+  },
   "errors": {
     "missing_title": "Missing Title",
     "missing_title_body": "Please enter a reminder title.",

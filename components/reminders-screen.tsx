@@ -104,6 +104,8 @@ export function RemindersScreen() {
       <Pressable
         style={styles.fab}
         onPress={() => router.push("/create-reminder" as any)}
+        accessibilityLabel={i18n.t("a11y.add_reminder")}
+        accessibilityRole="button"
       >
         <GoldGradient style={styles.fabGradient}>
           <Text style={styles.fabPlus}>+</Text>
@@ -166,7 +168,7 @@ function ReminderRow({
       />
 
       {/* Delete */}
-      <Pressable style={styles.deleteButton} onPress={onDelete}>
+      <Pressable style={styles.deleteButton} onPress={onDelete} accessibilityLabel={i18n.t("a11y.delete_reminder")} accessibilityRole="button">
         <Text style={styles.deleteIcon}>✕</Text>
       </Pressable>
     </View>

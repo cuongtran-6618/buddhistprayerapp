@@ -55,6 +55,7 @@ function MonthCalendar({
   onNext: () => void;
   locale: string;
 }) {
+  const i18n = useI18n();
   const today = new Date();
   const todayKey = formatDateKey(today);
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
@@ -76,11 +77,11 @@ function MonthCalendar({
   return (
     <View>
       <View style={calStyles.navRow}>
-        <Pressable onPress={onPrev} hitSlop={16}>
+        <Pressable onPress={onPrev} hitSlop={16} accessibilityLabel={i18n.t("a11y.prev_month")} accessibilityRole="button">
           <Text style={calStyles.navArrow}>‹</Text>
         </Pressable>
         <Text style={calStyles.monthTitle}>{monthLabel}</Text>
-        <Pressable onPress={onNext} disabled={isCurrentMonth} hitSlop={16}>
+        <Pressable onPress={onNext} disabled={isCurrentMonth} hitSlop={16} accessibilityLabel={i18n.t("a11y.next_month")} accessibilityRole="button">
           <Text style={[calStyles.navArrow, isCurrentMonth && calStyles.navArrowDisabled]}>›</Text>
         </Pressable>
       </View>
@@ -204,9 +205,11 @@ export function HistoryScreen() {
       <View style={styles.topSection}>
         <View style={styles.headerRow}>
           <Text style={styles.heading}>{i18n.t("history.heading")}</Text>
-          <Pressable style={styles.seedButton} onPress={() => seedHistory(90, allTrackIds)}>
-            <Text style={styles.seedButtonText}>Seed 3mo</Text>
-          </Pressable>
+          {__DEV__ && (
+            <Pressable style={styles.seedButton} onPress={() => seedHistory(90, allTrackIds)}>
+              <Text style={styles.seedButtonText}>Seed 3mo</Text>
+            </Pressable>
+          )}
         </View>
 
         <View style={styles.summaryRow}>

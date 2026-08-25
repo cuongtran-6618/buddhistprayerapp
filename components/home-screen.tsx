@@ -85,10 +85,12 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
             <Pressable
               style={styles.langButton}
               onPress={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
+              accessibilityLabel={i18n.t("a11y.switch_language")}
+              accessibilityRole="button"
             >
               <Text style={styles.langButtonText}>{language.toUpperCase()}</Text>
             </Pressable>
-            <Pressable style={styles.iconButton} onPress={onRemindersPress}>
+            <Pressable style={styles.iconButton} onPress={onRemindersPress} accessibilityLabel={i18n.t("a11y.open_reminders")} accessibilityRole="button">
               <BellIcon size={18} />
             </Pressable>
             <GoldGradient style={styles.avatarButton}>

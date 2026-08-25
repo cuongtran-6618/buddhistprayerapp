@@ -95,7 +95,7 @@ function Header({ track, onBack }: { track: Track; onBack: () => void }) {
   const i18n = useI18n();
   return (
     <View style={styles.header}>
-      <Pressable onPress={onBack} style={styles.headerButton}>
+      <Pressable onPress={onBack} style={styles.headerButton} accessibilityLabel={i18n.t("a11y.back")} accessibilityRole="button">
         <Text style={styles.headerButtonText}>←</Text>
       </Pressable>
       <View style={styles.headerCenter}>
@@ -317,11 +317,14 @@ function ControlsSection({
   trackId: string;
 }) {
   const analytics = useAnalytics();
+  const i18n = useI18n();
 
   return (
     <View style={styles.controls}>
       <Pressable
         style={styles.controlBtnMd}
+        accessibilityLabel={i18n.t("a11y.prev_section")}
+        accessibilityRole="button"
         onPress={() => {
           player.seekToLine(player.activeLineIndex - 1);
           analytics.capture({
@@ -334,7 +337,12 @@ function ControlsSection({
         <Ionicons name="play-skip-back" size={22} color={Colors.gold} />
       </Pressable>
 
-      <Pressable onPress={player.togglePlay} style={styles.playBtnWrapper}>
+      <Pressable
+        onPress={player.togglePlay}
+        style={styles.playBtnWrapper}
+        accessibilityLabel={i18n.t(player.playing ? "a11y.pause" : "a11y.play")}
+        accessibilityRole="button"
+      >
         <GoldGradient
           style={[styles.playBtn, player.playing && styles.playBtnActive]}
         >
@@ -348,6 +356,8 @@ function ControlsSection({
 
       <Pressable
         style={styles.controlBtnMd}
+        accessibilityLabel={i18n.t("a11y.next_section")}
+        accessibilityRole="button"
         onPress={() => {
           player.seekToLine(player.activeLineIndex + 1);
           analytics.capture({

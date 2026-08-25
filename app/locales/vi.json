@@ -97,6 +97,19 @@
     "saving": "Đang lưu…",
     "snooze_minutes": "%{count} phút"
   },
+  "a11y": {
+    "back": "Quay lại",
+    "open_reminders": "Mở nhắc nhở",
+    "switch_language": "Đổi ngôn ngữ",
+    "prev_section": "Đoạn trước",
+    "next_section": "Đoạn tiếp theo",
+    "play": "Phát",
+    "pause": "Tạm dừng",
+    "add_reminder": "Thêm nhắc nhở",
+    "delete_reminder": "Xóa nhắc nhở",
+    "prev_month": "Tháng trước",
+    "next_month": "Tháng sau"
+  },
   "errors": {
     "missing_title": "Thiếu tiêu đề",
     "missing_title_body": "Vui lòng nhập tiêu đề nhắc nhở.",
