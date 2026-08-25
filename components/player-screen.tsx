@@ -1,16 +1,16 @@
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { MilestoneShareModal } from "@/components/milestone-share-modal";
 import { GoldGradient } from "@/components/ui/gold-gradient";
-import { useI18n } from "@/lib/i18n";
 import { SCRIPT_LINE_HEIGHT } from "@/constants/animation";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
-import { AudioPlayer, useAudioPlayer } from "@/hooks/use-audio-player";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { AudioPlayer, useAudioPlayer } from "@/hooks/use-audio-player";
 import { useChantSession } from "@/hooks/use-chant-session";
 import { usePlayerAnimations } from "@/hooks/use-player-animations";
 import { useSeekGesture } from "@/hooks/use-seek-gesture";
+import { useI18n } from "@/lib/i18n";
 import { useChantingHistoryStore } from "@/store/chanting-history-store";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,7 +32,9 @@ interface PlayerScreenProps {
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
   const checkMilestone = useChantingHistoryStore((s) => s.checkMilestone);
-  const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(null);
+  const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(
+    null,
+  );
 
   const handleComplete = useCallback(() => {
     onComplete?.();
@@ -45,29 +47,37 @@ export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
   session.progressRef.current = player.progress;
   session.durationRef.current = player.durationMs;
 
-  const anims  = usePlayerAnimations(player.playing);
+  const anims = usePlayerAnimations(player.playing);
   const scrollRef = useRef<ScrollView>(null);
 
   const seek = useSeekGesture({
-    durationMs:      player.durationMs,
+    durationMs: player.durationMs,
     currentProgress: player.progress,
-    onSeek:          player.seekTo,
+    onSeek: player.seekTo,
   });
 
   // Auto-scroll lyrics to the active line
   useEffect(() => {
-    scrollRef.current?.scrollTo({ y: player.activeLineIndex * SCRIPT_LINE_HEIGHT, animated: true });
+    scrollRef.current?.scrollTo({
+      y: player.activeLineIndex * SCRIPT_LINE_HEIGHT,
+      animated: true,
+    });
   }, [player.activeLineIndex]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.atmosphereTop}    pointerEvents="none" />
+      <View style={styles.atmosphereTop} pointerEvents="none" />
       <View style={styles.atmosphereBottom} pointerEvents="none" />
 
       <Header track={track} onBack={onBack} />
-      <MandalaSection  track={track} player={player} anims={anims} />
-      <TrackInfo       track={track} />
-      <ChantScrollSection track={track} player={player} anims={anims} scrollRef={scrollRef} />
+      <MandalaSection track={track} player={player} anims={anims} />
+      <TrackInfo track={track} />
+      <ChantScrollSection
+        track={track}
+        player={player}
+        anims={anims}
+        scrollRef={scrollRef}
+      />
       <ProgressSection seek={seek} player={player} />
       <ControlsSection player={player} trackId={track.id} />
 
@@ -107,7 +117,12 @@ function MandalaSection({
 }) {
   return (
     <View style={styles.mandalaContainer}>
-      <Animated.View style={[styles.outerRing, { transform: [{ rotate: anims.outerRotateDeg }] }]}>
+      <Animated.View
+        style={[
+          styles.outerRing,
+          { transform: [{ rotate: anims.outerRotateDeg }] },
+        ]}
+      >
         {Array.from({ length: 12 }).map((_, i) => (
           <View
             key={i}
@@ -119,10 +134,23 @@ function MandalaSection({
         ))}
       </Animated.View>
 
-      <Animated.View style={[styles.middleRing, { transform: [{ rotate: anims.middleRotateDeg }] }]} />
+      <Animated.View
+        style={[
+          styles.middleRing,
+          { transform: [{ rotate: anims.middleRotateDeg }] },
+        ]}
+      />
 
-      <Animated.View style={[styles.centerLotus, { transform: [{ scale: anims.breatheAnim }] }]}>
-        <LotusIcon size={40} color={player.playing ? Colors.goldBright : Colors.gold} />
+      <Animated.View
+        style={[
+          styles.centerLotus,
+          { transform: [{ scale: anims.breatheAnim }] },
+        ]}
+      >
+        <LotusIcon
+          size={40}
+          color={player.playing ? Colors.goldBright : Colors.gold}
+        />
       </Animated.View>
     </View>
   );
@@ -150,8 +178,16 @@ function ChantScrollSection({
 }) {
   return (
     <View style={styles.chantContainer}>
-      <LinearGradient colors={[Colors.bg, "transparent"]} style={styles.fadeTop}    pointerEvents="none" />
-      <LinearGradient colors={["transparent", Colors.bg]} style={styles.fadeBottom} pointerEvents="none" />
+      <LinearGradient
+        colors={[Colors.bg, "transparent"]}
+        style={styles.fadeTop}
+        pointerEvents="none"
+      />
+      <LinearGradient
+        colors={["transparent", Colors.bg]}
+        style={styles.fadeBottom}
+        pointerEvents="none"
+      />
       <ScrollView
         ref={scrollRef}
         style={styles.chantScroll}
@@ -160,10 +196,19 @@ function ChantScrollSection({
       >
         {track.script.map((line, i) => {
           const isActive = i === player.activeLineIndex;
-          const isPast   = i < player.activeLineIndex;
-          const dist     = Math.abs(i - player.activeLineIndex);
-          const opacity  = dist > 3 ? 0.15 : dist > 2 ? 0.3 : dist > 1 ? 0.5 : dist > 0 ? 0.7 : 1;
-          const scale    = isActive ? 1.04 : Math.max(0.97, 1 - dist * 0.015);
+          const isPast = i < player.activeLineIndex;
+          const dist = Math.abs(i - player.activeLineIndex);
+          const opacity =
+            dist > 3
+              ? 0.15
+              : dist > 2
+                ? 0.3
+                : dist > 1
+                  ? 0.5
+                  : dist > 0
+                    ? 0.7
+                    : 1;
+          const scale = isActive ? 1.04 : Math.max(0.97, 1 - dist * 0.015);
 
           return (
             <Animated.View
@@ -171,7 +216,8 @@ function ChantScrollSection({
               style={[
                 styles.chantLine,
                 {
-                  opacity:   isActive && player.playing ? anims.activeGlowAnim : opacity,
+                  opacity:
+                    isActive && player.playing ? anims.activeGlowAnim : opacity,
                   transform: [{ scale }],
                 },
               ]}
@@ -200,11 +246,11 @@ function ProgressSection({
   seek: ReturnType<typeof useSeekGesture>;
   player: AudioPlayer;
 }) {
-  const displayMs  = Math.floor(seek.displayProgress * player.durationMs);
+  const displayMs = Math.floor(seek.displayProgress * player.durationMs);
   const displayMin = Math.floor(displayMs / 60000);
   const displaySec = Math.floor((displayMs % 60000) / 1000);
-  const totalMin   = Math.floor(player.durationMs / 60000);
-  const totalSec   = Math.floor((player.durationMs % 60000) / 1000);
+  const totalMin = Math.floor(player.durationMs / 60000);
+  const totalSec = Math.floor((player.durationMs % 60000) / 1000);
 
   return (
     <View style={styles.progressSection}>
@@ -225,7 +271,10 @@ function ProgressSection({
             colors={[Colors.red, Colors.gold]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={[styles.progressFill, { width: `${seek.displayProgress * 100}%` }]}
+            style={[
+              styles.progressFill,
+              { width: `${seek.displayProgress * 100}%` },
+            ]}
           />
         </View>
 
@@ -244,7 +293,12 @@ function ProgressSection({
 
       {/* Time labels — elapsed label tracks drag position while scrubbing */}
       <View style={styles.progressTimes}>
-        <Text style={[styles.progressTime, seek.isDragging && styles.progressTimeActive]}>
+        <Text
+          style={[
+            styles.progressTime,
+            seek.isDragging && styles.progressTimeActive,
+          ]}
+        >
           {displayMin}:{String(displaySec).padStart(2, "0")}
         </Text>
         <Text style={styles.progressTime}>
@@ -255,7 +309,13 @@ function ProgressSection({
   );
 }
 
-function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: string }) {
+function ControlsSection({
+  player,
+  trackId,
+}: {
+  player: AudioPlayer;
+  trackId: string;
+}) {
   const analytics = useAnalytics();
 
   return (
@@ -264,15 +324,25 @@ function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: st
         style={styles.controlBtnMd}
         onPress={() => {
           player.seekToLine(player.activeLineIndex - 1);
-          analytics.capture({ type: 'chant_seeked', trackId, direction: 'backward' });
+          analytics.capture({
+            type: "chant_seeked",
+            trackId,
+            direction: "backward",
+          });
         }}
       >
         <Ionicons name="play-skip-back" size={22} color={Colors.gold} />
       </Pressable>
 
       <Pressable onPress={player.togglePlay} style={styles.playBtnWrapper}>
-        <GoldGradient style={[styles.playBtn, player.playing && styles.playBtnActive]}>
-          <Ionicons name={player.playing ? "pause" : "play"} size={28} color={Colors.cream} />
+        <GoldGradient
+          style={[styles.playBtn, player.playing && styles.playBtnActive]}
+        >
+          <Ionicons
+            name={player.playing ? "pause" : "play"}
+            size={28}
+            color={Colors.cream}
+          />
         </GoldGradient>
       </Pressable>
 
@@ -280,7 +350,11 @@ function ControlsSection({ player, trackId }: { player: AudioPlayer; trackId: st
         style={styles.controlBtnMd}
         onPress={() => {
           player.seekToLine(player.activeLineIndex + 1);
-          analytics.capture({ type: 'chant_seeked', trackId, direction: 'forward' });
+          analytics.capture({
+            type: "chant_seeked",
+            trackId,
+            direction: "forward",
+          });
         }}
       >
         <Ionicons name="play-skip-forward" size={22} color={Colors.gold} />
