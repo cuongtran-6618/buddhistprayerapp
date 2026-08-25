@@ -79,7 +79,6 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greetingEn}>{g.label}</Text>
             <Text style={styles.greetingVi}>{g.main}</Text>
           </View>
           <View style={styles.headerActions}>
@@ -268,14 +267,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 4,
   },
-  greetingEn: {
-    color: Colors.gold,
-    fontSize: 11.5,
-    letterSpacing: 2.5,
-    textTransform: "uppercase",
-    fontFamily: Fonts.medium,
-    marginBottom: 4,
-  },
   greetingVi: {
     color: Colors.cream,
     fontSize: 22,
@@ -298,8 +289,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   langButton: {
+    width: 40,
     height: 40,
-    paddingHorizontal: 10,
     borderRadius: 999,
     backgroundColor: Colors.card,
     borderWidth: 1,

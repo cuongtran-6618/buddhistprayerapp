@@ -36,13 +36,9 @@
     "streak_sub": "%{streak}-day streak • %{done} sessions today",
     "this_month": "THIS MONTH",
     "progress_title": "Your Progress",
-    "greeting_night_label": "PEACEFUL NIGHT",
     "greeting_night": "Still of the night",
-    "greeting_morning_label": "GOOD MORNING",
     "greeting_morning": "Good morning",
-    "greeting_afternoon_label": "GOOD AFTERNOON",
     "greeting_afternoon": "Good afternoon",
-    "greeting_evening_label": "GOOD EVENING",
     "greeting_evening": "Good evening"
   },
   "player": {

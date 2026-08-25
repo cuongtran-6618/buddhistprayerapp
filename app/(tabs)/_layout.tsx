@@ -14,12 +14,16 @@ export default function TabsLayout() {
           backgroundColor: Colors.surface,
           borderTopColor: Colors.border,
           borderTopWidth: 1,
+          height: 75,
         },
         tabBarActiveTintColor: Colors.gold,
         tabBarInactiveTintColor: Colors.muted,
         tabBarLabelStyle: {
           fontFamily: Fonts.medium,
           fontSize: 11,
+        },
+        tabBarIconStyle: {
+          marginTop: 10,
         },
       }}
     >

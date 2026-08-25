@@ -36,13 +36,9 @@
     "streak_sub": "%{streak} ngày liên tiếp • %{done} buổi hôm nay",
     "this_month": "THÁNG NÀY",
     "progress_title": "Tiến Độ Tu Tập",
-    "greeting_night_label": "KHUYA TĨNH LẶNG",
     "greeting_night": "Khuya tĩnh lặng",
-    "greeting_morning_label": "BUỔI SÁNG AN LÀNH",
     "greeting_morning": "Buổi sáng an lành",
-    "greeting_afternoon_label": "BUỔI TRƯA BÌNH AN",
     "greeting_afternoon": "Buổi trưa bình an",
-    "greeting_evening_label": "BUỔI TỐI THANH TỊNH",
     "greeting_evening": "Buổi tối thanh tịnh"
   },
   "player": {

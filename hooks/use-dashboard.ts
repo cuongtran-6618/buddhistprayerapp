@@ -22,15 +22,15 @@ export interface DashboardData {
   streak: number;
   todayProgress: { done: number; total: number };
   monthPct: number;
-  greeting: { label: string; main: string };
+  greeting: { main: string };
 }
 
-function getGreeting(t: (key: string) => string): { label: string; main: string } {
+function getGreeting(t: (key: string) => string): { main: string } {
   const h = new Date().getHours();
-  if (h < 6) return { label: t("home.greeting_night_label"), main: t("home.greeting_night") };
-  if (h < 12) return { label: t("home.greeting_morning_label"), main: t("home.greeting_morning") };
-  if (h < 17) return { label: t("home.greeting_afternoon_label"), main: t("home.greeting_afternoon") };
-  return { label: t("home.greeting_evening_label"), main: t("home.greeting_evening") };
+  if (h < 6) return { main: t("home.greeting_night") };
+  if (h < 12) return { main: t("home.greeting_morning") };
+  if (h < 17) return { main: t("home.greeting_afternoon") };
+  return { main: t("home.greeting_evening") };
 }
 
 export function useDashboard(): DashboardData {
