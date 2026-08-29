@@ -84,7 +84,7 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
             notification.request.content.title ?? "",
             data.reminderId ?? "",
             notification.request.content.body ?? ""
-          );
+          ).catch(console.warn);
         }
       }
     );

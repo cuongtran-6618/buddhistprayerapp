@@ -81,7 +81,13 @@
     "title": "Nhắc Nhở",
     "empty_title": "Chưa có nhắc nhở",
     "empty_body": "Nhấn + để tạo nhắc nhở cầu nguyện hàng ngày.",
-    "snooze_label": "Báo lại sau %{count} phút"
+    "snooze_label": "Báo lại sau %{count} phút",
+    "notifications_not_enabled": "Chưa bật thông báo",
+    "notifications_not_enabled_hint": "Cho phép thông báo để nhận nhắc nhở tụng kinh hàng ngày.",
+    "allow_notifications": "Cho phép",
+    "notifications_disabled": "Thông báo đang bị tắt",
+    "notifications_disabled_hint": "Bật thông báo trong Cài đặt để nhận nhắc nhở tụng kinh.",
+    "open_settings": "Mở Cài Đặt"
   },
   "create_reminder": {
     "title_new": "Nhắc Nhở Mới",

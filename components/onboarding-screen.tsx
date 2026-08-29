@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { useI18n } from "@/lib/i18n";
+import { requestNotificationPermission } from "@/hooks/use-notifications";
 
 interface OnboardingScreenProps {
   onNext: () => void;
@@ -57,10 +58,11 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   };
 
   const goBack = () => { if (step > 0 && !animating) transitionToStep(step - 1); };
-  const advance = () => {
+  const advance = async () => {
     if (!isLastSlide) {
       transitionToStep(step + 1);
     } else {
+      await requestNotificationPermission();
       analytics.capture({ type: 'onboarding_completed' });
       onNext();
     }
@@ -121,10 +123,8 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
 
         {/* Text content */}
         <Animated.View style={[styles.textBlock, { opacity: textOpacity }]}>
-          <Text style={styles.subtitle}>{slide.subtitle}</Text>
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.body}>{slide.body}</Text>
-          <Text style={styles.bodyEn}>{slide.bodyEn}</Text>
         </Animated.View>
       </View>
 
@@ -231,14 +231,6 @@ const styles = StyleSheet.create({
   textBlock: {
     alignItems: "center",
   },
-  subtitle: {
-    color: Colors.goldBright,
-    fontSize: 12,
-    letterSpacing: 3,
-    textTransform: "uppercase",
-    fontFamily: Fonts.medium,
-    marginBottom: 8,
-  },
   title: {
     color: Colors.cream,
     fontSize: 30,
@@ -254,13 +246,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular,
     textAlign: "center",
     marginBottom: 6,
-  },
-  bodyEn: {
-    color: Colors.muted,
-    fontSize: 12.5,
-    lineHeight: 20,
-    fontFamily: Fonts.italic,
-    textAlign: "center",
   },
   bottom: {
     paddingHorizontal: 32,

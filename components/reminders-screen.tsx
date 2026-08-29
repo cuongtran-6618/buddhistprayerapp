@@ -16,27 +16,49 @@ import { useAnalytics } from "@/hooks/use-analytics";
 import { useTracks } from "@/hooks/use-tracks";
 import {
   cancelReminderNotification,
+  requestNotificationPermission,
   scheduleReminderNotification,
 } from "@/hooks/use-notifications";
 import { useRemindersStore } from "@/store/reminders-store";
 import { Reminder } from "@/types/reminder";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
+  AppState,
   FlatList,
+  Linking,
   Pressable,
   StyleSheet,
   Switch,
   Text,
   View,
 } from "react-native";
+import * as Notifications from "expo-notifications";
 
 export function RemindersScreen() {
   const i18n = useI18n();
   const analytics = useAnalytics();
   const { reminders, updateReminder, removeReminder } = useRemindersStore();
   const { getTrackById } = useTracks();
+  const [notifStatus, setNotifStatus] = useState<"undetermined" | "denied" | null>(null);
+
+  useEffect(() => {
+    async function checkPermission() {
+      const { status } = await Notifications.getPermissionsAsync();
+      setNotifStatus(status === "granted" ? null : (status as "undetermined" | "denied"));
+    }
+    checkPermission();
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") checkPermission();
+    });
+    return () => sub.remove();
+  }, []);
+
+  async function handleAllowNotifications() {
+    const granted = await requestNotificationPermission();
+    setNotifStatus(granted ? null : "denied");
+  }
 
   async function handleToggle(reminder: Reminder) {
     try {
@@ -76,6 +98,29 @@ export function RemindersScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{i18n.t("reminders.title")}</Text>
       </View>
+
+      {/* Notification permission banner */}
+      {notifStatus !== null && (
+        <View style={styles.permissionBanner}>
+          <View style={styles.permissionBannerText}>
+            <Text style={styles.permissionBannerTitle}>
+              {i18n.t(notifStatus === "undetermined" ? "reminders.notifications_not_enabled" : "reminders.notifications_disabled")}
+            </Text>
+            <Text style={styles.permissionBannerHint}>
+              {i18n.t(notifStatus === "undetermined" ? "reminders.notifications_not_enabled_hint" : "reminders.notifications_disabled_hint")}
+            </Text>
+          </View>
+          {notifStatus === "undetermined" ? (
+            <Pressable onPress={handleAllowNotifications} accessibilityRole="button">
+              <Text style={styles.permissionBannerAction}>{i18n.t("reminders.allow_notifications")}</Text>
+            </Pressable>
+          ) : (
+            <Pressable onPress={() => Linking.openSettings()} accessibilityRole="button">
+              <Text style={styles.permissionBannerAction}>{i18n.t("reminders.open_settings")}</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
 
       {/* List */}
       <FlatList
@@ -310,6 +355,39 @@ const styles = StyleSheet.create({
   emptyHighlight: {
     color: Colors.gold,
     fontFamily: Fonts.bold,
+  },
+  // Permission banner
+  permissionBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginHorizontal: 24,
+    marginBottom: 12,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: "rgba(139,26,26,0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(139,26,26,0.3)",
+  },
+  permissionBannerText: {
+    flex: 1,
+    gap: 2,
+  },
+  permissionBannerTitle: {
+    color: Colors.cream,
+    fontSize: 13,
+    fontFamily: Fonts.semiBold,
+  },
+  permissionBannerHint: {
+    color: Colors.muted,
+    fontSize: 12,
+    fontFamily: Fonts.regular,
+    lineHeight: 17,
+  },
+  permissionBannerAction: {
+    color: Colors.gold,
+    fontSize: 12,
+    fontFamily: Fonts.semiBold,
   },
   // FAB
   fab: {

@@ -81,7 +81,13 @@
     "title": "Reminders",
     "empty_title": "No reminders yet",
     "empty_body": "Tap + to create a daily prayer reminder.",
-    "snooze_label": "Snooze %{count} min"
+    "snooze_label": "Snooze %{count} min",
+    "notifications_not_enabled": "Notifications not enabled",
+    "notifications_not_enabled_hint": "Allow notifications to receive daily prayer reminders.",
+    "allow_notifications": "Allow",
+    "notifications_disabled": "Notifications are disabled",
+    "notifications_disabled_hint": "Enable notifications in Settings to receive prayer reminders.",
+    "open_settings": "Open Settings"
   },
   "create_reminder": {
     "title_new": "New Reminder",

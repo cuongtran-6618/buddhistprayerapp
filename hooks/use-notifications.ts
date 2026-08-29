@@ -11,6 +11,7 @@
  */
 
 import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
 import { Reminder } from "@/types/reminder";
 import { i18n } from "@/lib/i18n";
 
@@ -49,6 +50,15 @@ export async function requestNotificationPermission(): Promise<boolean> {
  * iOS requires categories to be registered before the first notification fires.
  */
 export async function setupNotificationCategory(): Promise<void> {
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("prayer-reminders", {
+      name: "Prayer Reminders",
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: "default",
+      vibrationPattern: [0, 250, 250, 250],
+    });
+  }
+
   // Categories are an iOS concept; Android uses action buttons directly.
   // expo-notifications handles the platform differences transparently.
   await Notifications.setNotificationCategoryAsync(PRAYER_REMINDER_CATEGORY, [
@@ -101,6 +111,7 @@ export async function scheduleReminderNotification(
         snoozeMinutes: reminder.snoozeMinutes,
       },
       categoryIdentifier: PRAYER_REMINDER_CATEGORY,
+      ...(Platform.OS === "android" && { android: { channelId: "prayer-reminders" } }),
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
@@ -150,6 +161,7 @@ export async function snoozeReminder(
         snoozeMinutes,
       },
       categoryIdentifier: PRAYER_REMINDER_CATEGORY,
+      ...(Platform.OS === "android" && { android: { channelId: "prayer-reminders" } }),
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
