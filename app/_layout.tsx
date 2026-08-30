@@ -7,6 +7,7 @@ import {
   BeVietnamPro_700Bold,
   useFonts,
 } from "@expo-google-fonts/be-vietnam-pro";
+import * as Sentry from "@sentry/react-native";
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef } from "react";
@@ -22,6 +23,8 @@ import {
   setupNotificationCategory,
   snoozeReminder,
 } from "@/hooks/use-notifications";
+
+Sentry.init({ dsn: process.env.EXPO_PUBLIC_SENTRY_DSN });
 
 SplashScreen.preventAutoHideAsync();
 
@@ -83,10 +86,10 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
             data.trackId ?? "",
             notification.request.content.title ?? "",
             data.reminderId ?? "",
-            notification.request.content.body ?? ""
+            notification.request.content.body ?? "",
           ).catch(console.warn);
         }
-      }
+      },
     );
 
     return () => subscription.remove();
@@ -102,7 +105,7 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   const [fontsLoaded] = useFonts({
     BeVietnamPro_300Light_Italic,
     BeVietnamPro_400Regular,
@@ -121,3 +124,5 @@ export default function RootLayout() {
     </PostHogProvider>
   );
 }
+
+export default Sentry.wrap(RootLayout);
