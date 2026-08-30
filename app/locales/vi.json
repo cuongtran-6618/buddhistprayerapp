@@ -23,7 +23,8 @@
     "chantingDaily": "Tụng Kinh hàng ngày",
     "chantingDailyDescription": "Tụng Kinh hàng ngày giúp bạn duy trì sự kết nối với lời dạy của Đức Phật và nuôi dưỡng tâm hồn của bạn.",
     "prayerReminders": "Nhắc nhở thời khóa",
-    "prayerRemindersDescription": "Đặt nhắc nhở để không bao giờ bỏ lỡ thời khóa tu hành."
+    "prayerRemindersDescription": "Đặt nhắc nhở để không bao giờ bỏ lỡ thời khóa tu hành.",
+    "default_reminder_title": "Tụng Kinh Sáng"
   },
   "home": {
     "todays_schedule": "Thời Khóa Hôm Nay",

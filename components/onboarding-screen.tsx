@@ -1,9 +1,14 @@
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
+import { TRACKS } from "@/constants/tracks";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { usePulsingRings } from "@/hooks/use-pulsing-rings";
+import { requestNotificationPermission, scheduleReminderNotification } from "@/hooks/use-notifications";
+import { useI18n } from "@/lib/i18n";
+import { useRemindersStore } from "@/store/reminders-store";
+import { Reminder } from "@/types/reminder";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Animated,
   Pressable,
@@ -11,8 +16,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { useI18n } from "@/lib/i18n";
-import { requestNotificationPermission } from "@/hooks/use-notifications";
 
 interface OnboardingScreenProps {
   onNext: () => void;
@@ -23,6 +26,7 @@ const RING_SIZES = [180, 160, 140];
 export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   const i18n = useI18n();
   const analytics = useAnalytics();
+  const addReminder = useRemindersStore((s) => s.addReminder);
 
   const slides = [
     { icon: "🪷", title: i18n.t("onboarding.welcome"), body: i18n.t("onboarding.description") },
@@ -58,11 +62,29 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   };
 
   const goBack = () => { if (step > 0 && !animating) transitionToStep(step - 1); };
+
+  const createDefaultReminder = async () => {
+    const track = TRACKS[0];
+    const reminder: Reminder = {
+      id: Date.now().toString(),
+      title: i18n.t("onboarding.default_reminder_title"),
+      trackId: track.id,
+      hour: 7,
+      minute: 0,
+      snoozeMinutes: 10,
+      enabled: true,
+      notificationId: null,
+    };
+    const notificationId = await scheduleReminderNotification(reminder, track.title);
+    addReminder({ ...reminder, notificationId });
+  };
+
   const advance = async () => {
     if (!isLastSlide) {
       transitionToStep(step + 1);
     } else {
-      await requestNotificationPermission();
+      const granted = await requestNotificationPermission();
+      if (granted) await createDefaultReminder();
       analytics.capture({ type: 'onboarding_completed' });
       onNext();
     }

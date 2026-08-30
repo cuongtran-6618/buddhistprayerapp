@@ -23,7 +23,8 @@
     "chantingDaily": "Daily Chanting Practice",
     "chantingDailyDescription": "Daily chanting helps you maintain a connection with the Buddha's teachings and nourish your soul.",
     "prayerReminders": "Prayer Reminders",
-    "prayerRemindersDescription": "Set reminders so you never miss a prayer time."
+    "prayerRemindersDescription": "Set reminders so you never miss a prayer time.",
+    "default_reminder_title": "Morning Prayer"
   },
   "home": {
     "todays_schedule": "Today's Schedule",
