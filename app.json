@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Chu Dai Bi",
+    "name": "Chu Dai Bi · Buddhist Prayer",
     "slug": "buddhistprayerapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "buddhistprayerapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.tiikeritran.buddhistprayerapp",
@@ -74,7 +74,7 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
+      "reactCompiler": false
     },
     "extra": {
       "router": {},
