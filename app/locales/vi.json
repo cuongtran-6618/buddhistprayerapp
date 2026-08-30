@@ -29,8 +29,9 @@
   "home": {
     "todays_schedule": "Thời Khóa Hôm Nay",
     "edit": "Chỉnh sửa",
-    "no_reminders": "Chưa có lịch tụng kinh",
-    "no_reminders_hint": "Nhấn để thêm nhắc nhở →",
+    "no_reminders": "Thiết lập thời khóa tụng kinh",
+    "no_reminders_hint": "Nhắc nhở bạn mỗi buổi sáng",
+    "no_reminders_cta": "+ Thêm Nhắc Nhở Đầu Tiên",
     "exit_hint": "Nhấn lại để thoát",
     "streak_days": "ngày",
     "streak_highlight": "liên tiếp",

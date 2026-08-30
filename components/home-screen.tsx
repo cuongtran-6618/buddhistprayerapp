@@ -133,8 +133,12 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
           </View>
           {scheduleItems.length === 0 ? (
             <Pressable style={styles.emptySchedule} onPress={onRemindersPress}>
+              <BellIcon size={28} color={Colors.gold} />
               <Text style={styles.emptyScheduleText}>{i18n.t("home.no_reminders")}</Text>
               <Text style={styles.emptyScheduleHint}>{i18n.t("home.no_reminders_hint")}</Text>
+              <Pressable style={styles.emptyScheduleCta} onPress={onRemindersPress}>
+                <Text style={styles.emptyScheduleCtaText}>{i18n.t("home.no_reminders_cta")}</Text>
+              </Pressable>
             </Pressable>
           ) : (
             <View style={styles.scheduleList}>
@@ -391,23 +395,37 @@ const styles = StyleSheet.create({
   },
   // Empty schedule state
   emptySchedule: {
-    padding: 24,
+    padding: 28,
     borderRadius: 14,
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
     alignItems: "center",
-    gap: 6,
+    gap: 8,
   },
   emptyScheduleText: {
-    color: Colors.creamMuted,
-    fontSize: 14,
+    color: Colors.cream,
+    fontSize: 15,
     fontFamily: Fonts.semiBold,
+    marginTop: 4,
   },
   emptyScheduleHint: {
-    color: Colors.gold,
-    fontSize: 12,
+    color: Colors.muted,
+    fontSize: 13,
     fontFamily: Fonts.regular,
+  },
+  emptyScheduleCta: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: Colors.gold,
+  },
+  emptyScheduleCtaText: {
+    color: Colors.gold,
+    fontSize: 13,
+    fontFamily: Fonts.semiBold,
   },
   // Schedule
   scheduleList: {

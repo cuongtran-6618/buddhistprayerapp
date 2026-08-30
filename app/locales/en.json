@@ -29,8 +29,9 @@
   "home": {
     "todays_schedule": "Today's Schedule",
     "edit": "Edit",
-    "no_reminders": "No chanting schedule",
-    "no_reminders_hint": "Tap to add a reminder →",
+    "no_reminders": "Set your prayer schedule",
+    "no_reminders_hint": "Get reminded every morning",
+    "no_reminders_cta": "+ Add First Reminder",
     "exit_hint": "Press back again to exit",
     "streak_days": "days",
     "streak_highlight": "in a row",
