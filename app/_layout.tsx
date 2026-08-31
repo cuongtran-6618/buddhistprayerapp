@@ -98,10 +98,7 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
   if (!fontsLoaded) return null;
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="player" />
-    </Stack>
+    <Stack screenOptions={{ headerShown: false }} />
   );
 }
 
