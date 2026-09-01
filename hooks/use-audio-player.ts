@@ -80,8 +80,18 @@ export function useAudioPlayer(track: Track | null, onComplete?: () => void): Au
 
   const script = track?.script ?? [];
   let activeLineIndex = 0;
-  for (let i = script.length - 1; i >= 0; i--) {
-    if (script[i].startMs <= currentMs) { activeLineIndex = i; break; }
+  if (script.length > 0) {
+    let lowerBound = 0;
+    let upperBound = script.length - 1;
+    while (lowerBound < upperBound) {
+      const midpoint = (lowerBound + upperBound + 1) >> 1;
+      if (script[midpoint].startMs <= currentMs) {
+        lowerBound = midpoint;
+      } else {
+        upperBound = midpoint - 1;
+      }
+    }
+    activeLineIndex = lowerBound;
   }
 
   return {

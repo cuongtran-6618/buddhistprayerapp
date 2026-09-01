@@ -114,10 +114,9 @@ export async function scheduleReminderNotification(
       ...(Platform.OS === "android" && { android: { channelId: "prayer-reminders" } }),
     },
     trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour: reminder.hour,
       minute: reminder.minute,
-      repeats: true,
     },
   });
 

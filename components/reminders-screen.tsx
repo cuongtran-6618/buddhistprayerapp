@@ -22,7 +22,7 @@ import {
 import { useRemindersStore } from "@/store/reminders-store";
 import { Reminder } from "@/types/reminder";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   AppState,
@@ -60,7 +60,7 @@ export function RemindersScreen() {
     setNotifStatus(granted ? null : "denied");
   }
 
-  async function handleToggle(reminder: Reminder) {
+  const handleToggle = useCallback(async (reminder: Reminder) => {
     try {
       if (reminder.enabled) {
         // Disable — cancel the scheduled notification.
@@ -79,9 +79,9 @@ export function RemindersScreen() {
     } catch {
       Alert.alert(i18n.t("errors.notification_update"), i18n.t("errors.notification_update_body"));
     }
-  }
+  }, [updateReminder, removeReminder, getTrackById, analytics, i18n]);
 
-  async function handleDelete(reminder: Reminder) {
+  const handleDelete = useCallback(async (reminder: Reminder) => {
     try {
       await cancelReminderNotification(reminder.notificationId);
     } catch {
@@ -90,7 +90,11 @@ export function RemindersScreen() {
     }
     analytics.capture({ type: 'reminder_deleted', reminderId: reminder.id });
     removeReminder(reminder.id);
-  }
+  }, [removeReminder, analytics]);
+
+  const handleEdit = useCallback((reminderId: string) => {
+    router.push(`/create-reminder?id=${reminderId}` as any);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -137,9 +141,9 @@ export function RemindersScreen() {
           <ReminderRow
             reminder={item}
             trackTitle={getTrackById(item.trackId)?.title ?? item.trackId}
-            onToggle={() => handleToggle(item)}
-            onDelete={() => handleDelete(item)}
-            onEdit={() => router.push(`/create-reminder?id=${item.id}` as any)}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
           />
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -162,7 +166,7 @@ export function RemindersScreen() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────
 
-function ReminderRow({
+const ReminderRow = React.memo(function ReminderRow({
   reminder,
   trackTitle,
   onToggle,
@@ -171,9 +175,9 @@ function ReminderRow({
 }: {
   reminder: Reminder;
   trackTitle: string;
-  onToggle: () => void;
-  onDelete: () => void;
-  onEdit: () => void;
+  onToggle: (reminder: Reminder) => void;
+  onDelete: (reminder: Reminder) => void;
+  onEdit: (reminderId: string) => void;
 }) {
   const i18n = useI18n();
   const hourStr = String(reminder.hour).padStart(2, "0");
@@ -182,7 +186,7 @@ function ReminderRow({
   return (
     <View style={[styles.row, !reminder.enabled && styles.rowDisabled]}>
       {/* Tappable body: time pill + info */}
-      <Pressable style={styles.rowBody} onPress={onEdit}>
+      <Pressable style={styles.rowBody} onPress={() => onEdit(reminder.id)}>
         {/* Time pill */}
         <View style={styles.timePill}>
           <Text style={styles.timeText}>
@@ -207,18 +211,18 @@ function ReminderRow({
       {/* Toggle */}
       <Switch
         value={reminder.enabled}
-        onValueChange={onToggle}
+        onValueChange={() => onToggle(reminder)}
         trackColor={{ false: Colors.border, true: Colors.goldDim }}
         thumbColor={reminder.enabled ? Colors.gold : Colors.muted}
       />
 
       {/* Delete */}
-      <Pressable style={styles.deleteButton} onPress={onDelete} accessibilityLabel={i18n.t("a11y.delete_reminder")} accessibilityRole="button">
+      <Pressable style={styles.deleteButton} onPress={() => onDelete(reminder)} accessibilityLabel={i18n.t("a11y.delete_reminder")} accessibilityRole="button">
         <Text style={styles.deleteIcon}>✕</Text>
       </Pressable>
     </View>
   );
-}
+});
 
 function EmptyState() {
   const i18n = useI18n();

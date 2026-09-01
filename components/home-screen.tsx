@@ -32,12 +32,14 @@ interface HomeScreenProps {
 function GlowView({ style, children }: { style?: object; children: React.ReactNode }) {
   const glowAnim = useRef(new Animated.Value(0.6)).current;
   useEffect(() => {
-    Animated.loop(
+    const glowLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(glowAnim, { toValue: 1, duration: 2000, useNativeDriver: true }),
         Animated.timing(glowAnim, { toValue: 0.6, duration: 2000, useNativeDriver: true }),
       ])
-    ).start();
+    );
+    glowLoop.start();
+    return () => glowLoop.stop();
   }, []);
   return <Animated.View style={[style, { opacity: glowAnim }]}>{children}</Animated.View>;
 }
@@ -166,18 +168,19 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
   );
 }
 
-function ScheduleItem({ item, onPress }: { item: DashboardScheduleItem; onPress?: () => void }) {
+const ScheduleItem = React.memo(function ScheduleItem({ item, onPress }: { item: DashboardScheduleItem; onPress?: () => void }) {
   const glowAnim = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
-    if (item.current) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, { toValue: 1, duration: 1500, useNativeDriver: true }),
-          Animated.timing(glowAnim, { toValue: 0.6, duration: 1500, useNativeDriver: true }),
-        ])
-      ).start();
-    }
+    if (!item.current) return;
+    const glowLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, { toValue: 1, duration: 1500, useNativeDriver: true }),
+        Animated.timing(glowAnim, { toValue: 0.6, duration: 1500, useNativeDriver: true }),
+      ])
+    );
+    glowLoop.start();
+    return () => glowLoop.stop();
   }, [item.current]);
 
   if (item.current) {
@@ -202,9 +205,9 @@ function ScheduleItem({ item, onPress }: { item: DashboardScheduleItem; onPress?
       <ScheduleItemContent item={item} />
     </Pressable>
   );
-}
+});
 
-function ScheduleItemContent({ item }: { item: DashboardScheduleItem }) {
+const ScheduleItemContent = React.memo(function ScheduleItemContent({ item }: { item: DashboardScheduleItem }) {
   const { trackTitle } = item;
   return (
     <>
@@ -244,7 +247,7 @@ function ScheduleItemContent({ item }: { item: DashboardScheduleItem }) {
       </View>
     </>
   );
-}
+});
 
 
 const styles = StyleSheet.create({

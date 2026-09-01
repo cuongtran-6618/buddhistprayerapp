@@ -31,6 +31,7 @@ import {
 import { useReminderForm } from "@/hooks/use-reminder-form";
 import { useTracks } from "@/hooks/use-tracks";
 import { useRemindersStore } from "@/store/reminders-store";
+import { Reminder } from "@/types/reminder";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -71,6 +72,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
   } = useReminderForm(tracks, existing);
 
   const [saving, setSaving] = useState(false);
+  const [showAndroidPicker, setShowAndroidPicker] = useState(false);
 
   async function handleSave() {
     const trimmedTitle = title.trim();
@@ -158,21 +160,39 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
         </Field>
 
         {/* ── Time ──
-            iOS compact: renders as a small tappable label in-flow; tapping opens
-            an OS overlay — no layout shift, no Done button needed.
-            Android default: opens the native time-picker dialog. */}
+            iOS compact: renders as a small tappable label in-flow.
+            Android: dialog is shown on-demand and unmounted on dismiss. */}
         <Field label={i18n.t("create_reminder.field_time")}>
           <View style={styles.timeField}>
             <Text style={styles.timeDailyHint}>{i18n.t("create_reminder.daily_hint")}</Text>
+            {Platform.OS === "ios" ? (
+              <DateTimePicker
+                value={time}
+                mode="time"
+                display="compact"
+                onChange={handleTimeChange}
+                themeVariant="dark"
+              />
+            ) : (
+              <Pressable onPress={() => setShowAndroidPicker(true)}>
+                <Text style={styles.androidTimeText}>
+                  {String(time.getHours()).padStart(2, "0")}:{String(time.getMinutes()).padStart(2, "0")}
+                </Text>
+              </Pressable>
+            )}
+          </View>
+          {showAndroidPicker && (
             <DateTimePicker
               value={time}
               mode="time"
               is24Hour
-              display={Platform.OS === "ios" ? "compact" : "default"}
-              onChange={handleTimeChange}
-              themeVariant="dark"
+              display="default"
+              onChange={(event, selected) => {
+                setShowAndroidPicker(false);
+                handleTimeChange(event, selected);
+              }}
             />
-          </View>
+          )}
         </Field>
 
         {/* ── Chant selector ──
@@ -384,6 +404,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  androidTimeText: {
+    color: Colors.gold,
+    fontSize: 15,
+    fontFamily: Fonts.semiBold,
   },
   timeDailyHint: {
     color: Colors.muted,

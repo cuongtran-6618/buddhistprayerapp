@@ -174,7 +174,7 @@ function ChantScrollSection({
   track: Track;
   player: AudioPlayer;
   anims: ReturnType<typeof usePlayerAnimations>;
-  scrollRef: React.RefObject<ScrollView>;
+  scrollRef: React.RefObject<ScrollView | null>;
 }) {
   return (
     <View style={styles.chantContainer}>
