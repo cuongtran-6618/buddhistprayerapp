@@ -26,21 +26,21 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
       duration: 700,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [contentOpacity]);
 
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.content, { opacity: contentOpacity }]}>
         <View style={styles.ringContainer}>
-          {ringAnims.map((anim, i) => (
+          {ringAnims.map((anim, ringIndex) => (
             <Animated.View
-              key={i}
+              key={ringIndex}
               style={[
                 styles.ring,
                 {
-                  width: RING_SIZES[i],
-                  height: RING_SIZES[i],
-                  borderColor: `rgba(200,135,42,${0.06 + i * 0.07})`,
+                  width: RING_SIZES[ringIndex],
+                  height: RING_SIZES[ringIndex],
+                  borderColor: `rgba(200,135,42,${0.06 + ringIndex * 0.07})`,
                   transform: [{ scale: anim }],
                 },
               ]}

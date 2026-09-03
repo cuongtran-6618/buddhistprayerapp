@@ -79,7 +79,7 @@ export function RemindersScreen() {
     } catch {
       Alert.alert(i18n.t("errors.notification_update"), i18n.t("errors.notification_update_body"));
     }
-  }, [updateReminder, removeReminder, getTrackById, analytics, i18n]);
+  }, [updateReminder, getTrackById, analytics, i18n]);
 
   const handleDelete = useCallback(async (reminder: Reminder) => {
     try {

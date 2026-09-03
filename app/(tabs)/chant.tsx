@@ -3,7 +3,7 @@ import { usePlayerStore } from "@/store/player-store";
 import { router } from "expo-router";
 
 export default function Chant() {
-  const setTrack = usePlayerStore((s) => s.setTrack);
+  const setTrack = usePlayerStore((state) => state.setTrack);
 
   return (
     <ChantListScreen

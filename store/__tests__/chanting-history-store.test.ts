@@ -1,4 +1,3 @@
-import * as store from "../chanting-history-store";
 import {
   computeHeatmapGrid,
   computeMilestoneCrossing,
@@ -16,10 +15,10 @@ function dateKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-function daysAgo(n: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return dateKey(d);
+function daysAgo(daysBack: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() - daysBack);
+  return dateKey(date);
 }
 
 function makeReminder(overrides: Partial<Reminder> = {}): Reminder {
@@ -71,7 +70,7 @@ describe("computeStreak", () => {
 
   it("counts consecutive days ending today", () => {
     const history: Record<string, Record<string, number>> = {};
-    for (let i = 0; i < 3; i++) history[daysAgo(i)] = { "track-a": 1 };
+    for (let dayIndex = 0; dayIndex < 3; dayIndex++) history[daysAgo(dayIndex)] = { "track-a": 1 };
     expect(computeStreak(history)).toBe(3);
   });
 
@@ -154,7 +153,7 @@ describe("computeMilestoneCrossing", () => {
 
 describe("computeHeatmapGrid", () => {
   function countCells(grid: ReturnType<typeof computeHeatmapGrid>) {
-    return grid.reduce((sum, col) => sum + col.filter((c) => c !== null).length, 0);
+    return grid.reduce((sum, col) => sum + col.filter((cell) => cell !== null).length, 0);
   }
 
   it("returns an empty grid for a zero-length streak", () => {
@@ -174,9 +173,9 @@ describe("computeHeatmapGrid", () => {
     const history = { [formatDateKey(new Date())]: { "track-a": 1 } };
     const grid = computeHeatmapGrid(history, 2);
     const today = formatDateKey(new Date());
-    const flat = grid.flat().filter((c): c is NonNullable<typeof c> => c !== null);
-    const todayCell = flat.find((c) => c.dateKey === today);
-    const otherCell = flat.find((c) => c.dateKey !== today);
+    const flat = grid.flat().filter((cell): cell is NonNullable<typeof cell> => cell !== null);
+    const todayCell = flat.find((cell) => cell.dateKey === today);
+    const otherCell = flat.find((cell) => cell.dateKey !== today);
     expect(todayCell?.filled).toBe(true);
     expect(otherCell?.filled).toBe(false);
   });
@@ -200,8 +199,8 @@ describe("computeScheduleStatus", () => {
   });
 
   it("excludes disabled reminders", () => {
-    const r = makeReminder({ enabled: false });
-    expect(computeScheduleStatus([r], {})).toEqual([]);
+    const reminder = makeReminder({ enabled: false });
+    expect(computeScheduleStatus([reminder], {})).toEqual([]);
   });
 
   it("marks all items as not done when no completions", () => {
@@ -243,8 +242,8 @@ describe("computeScheduleStatus", () => {
   });
 
   it("formats time as HH:MM with zero-padding", () => {
-    const r = makeReminder({ hour: 5, minute: 3 });
-    const result = computeScheduleStatus([r], {});
+    const reminder = makeReminder({ hour: 5, minute: 3 });
+    const result = computeScheduleStatus([reminder], {});
     expect(result[0].time).toBe("05:03");
   });
 });
@@ -257,13 +256,13 @@ describe("computeTodayProgress", () => {
   });
 
   it("excludes disabled reminders from total", () => {
-    const r = makeReminder({ enabled: false });
-    expect(computeTodayProgress([r], {})).toEqual({ done: 0, total: 0 });
+    const reminder = makeReminder({ enabled: false });
+    expect(computeTodayProgress([reminder], {})).toEqual({ done: 0, total: 0 });
   });
 
   it("counts done correctly", () => {
-    const r = makeReminder();
-    expect(computeTodayProgress([r], { "track-a": 1 })).toEqual({ done: 1, total: 1 });
+    const reminder = makeReminder();
+    expect(computeTodayProgress([reminder], { "track-a": 1 })).toEqual({ done: 1, total: 1 });
   });
 
   it("caps done per reminder slot, not by raw completion count", () => {
@@ -297,16 +296,16 @@ describe("computeMonthProgress", () => {
 
   it("returns 100 when every day up to today has a completion", () => {
     const history: Record<string, Record<string, number>> = {};
-    for (let d = 1; d <= today; d++) {
-      history[`${year}-${month}-${String(d).padStart(2, "0")}`] = { "track-a": 1 };
+    for (let day = 1; day <= today; day++) {
+      history[`${year}-${month}-${String(day).padStart(2, "0")}`] = { "track-a": 1 };
     }
     expect(computeMonthProgress(history)).toBe(100);
   });
 
   it("returns approximately 50 when half the days have completions", () => {
     const history: Record<string, Record<string, number>> = {};
-    for (let d = 1; d <= today; d += 2) {
-      history[`${year}-${month}-${String(d).padStart(2, "0")}`] = { "track-a": 1 };
+    for (let day = 1; day <= today; day += 2) {
+      history[`${year}-${month}-${String(day).padStart(2, "0")}`] = { "track-a": 1 };
     }
     const result = computeMonthProgress(history);
     expect(result).toBeGreaterThan(0);

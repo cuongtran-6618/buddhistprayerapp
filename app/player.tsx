@@ -4,8 +4,8 @@ import { usePlayerStore } from "@/store/player-store";
 import { router } from "expo-router";
 
 export default function Player() {
-  const currentTrack = usePlayerStore((s) => s.currentTrack);
-  const recordCompletion = useChantingHistoryStore((s) => s.recordCompletion);
+  const currentTrack = usePlayerStore((state) => state.currentTrack);
+  const recordCompletion = useChantingHistoryStore((state) => state.recordCompletion);
 
   if (!currentTrack) return null;
 

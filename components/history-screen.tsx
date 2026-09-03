@@ -16,8 +16,8 @@ type HistoryMap = Record<string, Record<string, number>>;
 function findMostRecentDate(history: HistoryMap): string | null {
   return (
     Object.entries(history)
-      .filter(([, r]) => Object.values(r).some((c) => c > 0))
-      .sort(([a], [b]) => b.localeCompare(a))[0]?.[0] ?? null
+      .filter(([, record]) => Object.values(record).some((count) => count > 0))
+      .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))[0]?.[0] ?? null
   );
 }
 
@@ -63,8 +63,8 @@ function MonthCalendar({
   const firstDayOfWeek = new Date(year, month, 1).getDay();
 
   const cells: (string | null)[] = Array(firstDayOfWeek).fill(null);
-  for (let d = 1; d <= daysInMonth; d++) {
-    cells.push(formatDateKey(new Date(year, month, d)));
+  for (let day = 1; day <= daysInMonth; day++) {
+    cells.push(formatDateKey(new Date(year, month, day)));
   }
   while (cells.length % 7 !== 0) cells.push(null);
 
@@ -86,21 +86,21 @@ function MonthCalendar({
       </View>
 
       <View style={calStyles.weekRow}>
-        {WEEKDAY_LABELS.map((label, i) => (
-          <Text key={i} style={calStyles.dayHeader}>{label}</Text>
+        {WEEKDAY_LABELS.map((label, labelIndex) => (
+          <Text key={labelIndex} style={calStyles.dayHeader}>{label}</Text>
         ))}
       </View>
 
-      {Array.from({ length: cells.length / 7 }, (_, ri) => (
-        <View key={ri} style={calStyles.weekRow}>
-          {cells.slice(ri * 7, ri * 7 + 7).map((dateKey, di) => {
-            if (!dateKey) return <View key={di} style={calStyles.dayCell} />;
+      {Array.from({ length: cells.length / 7 }, (_unused, rowIndex) => (
+        <View key={rowIndex} style={calStyles.weekRow}>
+          {cells.slice(rowIndex * 7, rowIndex * 7 + 7).map((dateKey, dayIndex) => {
+            if (!dateKey) return <View key={dayIndex} style={calStyles.dayCell} />;
             const record = history[dateKey];
-            const completed = record != null && Object.values(record).some((c) => c > 0);
+            const completed = record != null && Object.values(record).some((count) => count > 0);
             const selected = dateKey === selectedDate;
             const isToday = dateKey === todayKey;
             return (
-              <Pressable key={di} style={calStyles.dayCell} onPress={() => onSelectDate(dateKey)} hitSlop={4}>
+              <Pressable key={dayIndex} style={calStyles.dayCell} onPress={() => onSelectDate(dateKey)} hitSlop={4}>
                 <View
                   style={[
                     calStyles.dayCircle,
@@ -133,7 +133,7 @@ export function HistoryScreen() {
   const i18n = useI18n();
   const { locale } = i18n;
   const insets = useSafeAreaInsets();
-  const history = useChantingHistoryStore((s) => s.history);
+  const history = useChantingHistoryStore((state) => state.history);
   const { getTrackById } = useTracks();
 
   // Initialize to most recent date with data; fall back to today
@@ -193,7 +193,7 @@ export function HistoryScreen() {
 
   const selectedRecord = selectedDate ? history[selectedDate] : null;
   const selectedEntries = selectedRecord
-    ? Object.entries(selectedRecord).filter(([, c]) => c > 0)
+    ? Object.entries(selectedRecord).filter(([, count]) => count > 0)
     : [];
 
   return (

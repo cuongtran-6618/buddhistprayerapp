@@ -68,7 +68,7 @@ export const useChantingHistoryStore = create<ChantingHistoryStore>()(
 export function computeStreak(history: HistoryMap): number {
   const hasCompletion = (dateKey: string) => {
     const day = history[dateKey];
-    return day != null && Object.values(day).some((c) => c > 0);
+    return day != null && Object.values(day).some((count) => count > 0);
   };
 
   let streak = 0;
@@ -122,10 +122,10 @@ export function computeHeatmapGrid(history: HistoryMap, streakLength: number): (
   const cells: HeatmapCell[] = [];
   const cursor = new Date();
   cursor.setDate(cursor.getDate() - (days - 1));
-  for (let i = 0; i < days; i++) {
+  for (let dayOffset = 0; dayOffset < days; dayOffset++) {
     const key = formatDateKey(cursor);
     const record = history[key];
-    const count = record != null ? Object.values(record).reduce((s, c) => s + c, 0) : 0;
+    const count = record != null ? Object.values(record).reduce((sum, completionCount) => sum + completionCount, 0) : 0;
     cells.push({ dateKey: key, weekday: cursor.getDay(), filled: count > 0, count });
     cursor.setDate(cursor.getDate() + 1);
   }
@@ -139,7 +139,7 @@ export function computeHeatmapGrid(history: HistoryMap, streakLength: number): (
       column = new Array(7).fill(null);
     }
   }
-  if (column.some((c) => c !== null)) columns.push(column);
+  if (column.some((cell) => cell !== null)) columns.push(column);
 
   return columns;
 }
@@ -154,7 +154,7 @@ export function computeMonthProgress(history: HistoryMap): number {
   for (let day = 1; day <= today; day++) {
     const key = formatDateKey(new Date(year, month, day));
     const record = history[key];
-    if (record && Object.values(record).some((c) => c > 0)) daysWithCompletion++;
+    if (record && Object.values(record).some((count) => count > 0)) daysWithCompletion++;
   }
 
   return today > 0 ? Math.round((daysWithCompletion / today) * 100) : 0;

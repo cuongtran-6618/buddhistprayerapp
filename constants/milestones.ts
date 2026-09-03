@@ -12,7 +12,7 @@ export const HEATMAP_MAX_DAYS = 112;
 
 /** Smallest milestone strictly greater than `after` (0 for "no milestone celebrated yet") */
 export function getNextMilestone(after: number): number {
-  const base = BASE_MILESTONES.find((m) => m > after);
+  const base = BASE_MILESTONES.find((milestone) => milestone > after);
   if (base !== undefined) return base;
   return after + MILESTONE_REPEAT_INTERVAL;
 }

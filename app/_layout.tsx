@@ -13,7 +13,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef } from "react";
 import * as Notifications from "expo-notifications";
 import { AppState } from "react-native";
-import { PostHogProvider, usePostHog } from "posthog-react-native";
+import { PostHogProvider } from "posthog-react-native";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 import { useTracks } from "@/hooks/use-tracks";
 import { usePlayerStore } from "@/store/player-store";
@@ -29,8 +30,8 @@ Sentry.init({ dsn: process.env.EXPO_PUBLIC_SENTRY_DSN });
 SplashScreen.preventAutoHideAsync();
 
 function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
-  const posthog = usePostHog();
-  const setTrack = usePlayerStore((s) => s.setTrack);
+  const analytics = useAnalytics();
+  const setTrack = usePlayerStore((state) => state.setTrack);
   const { getTrackById } = useTracks();
   const sessionStart = useRef<number | null>(null);
 
@@ -47,15 +48,13 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
         sessionStart.current = Date.now();
       } else if (state === "background" || state === "inactive") {
         if (sessionStart.current) {
-          posthog.capture("app_session", {
-            duration_ms: Date.now() - sessionStart.current,
-          });
+          analytics.capture({ type: 'app_session', durationMs: Date.now() - sessionStart.current });
           sessionStart.current = null;
         }
       }
     });
     return () => sub.remove();
-  }, [posthog]);
+  }, [analytics]);
 
   useEffect(() => {
     setupNotificationCategory();
@@ -73,12 +72,23 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
           actionIdentifier === ACTION_ACCEPT ||
           actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
         ) {
-          const track = getTrackById(data.trackId ?? "");
-          if (track) {
-            posthog.capture("reminder_opened");
-            setTrack(track);
-            router.navigate("/player" as any);
+          if (!data.trackId) {
+            analytics.capture({ type: 'reminder_open_invalid', reason: 'missing_track_id' });
+            return;
           }
+          const track = getTrackById(data.trackId);
+          if (!track) {
+            analytics.capture({ type: 'reminder_open_invalid', reason: 'unknown_track_id' });
+            return;
+          }
+          if (!data.reminderId) {
+            analytics.capture({ type: 'reminder_open_invalid', reason: 'missing_reminder_id' });
+            // warning, not a block — still open the player
+          } else {
+            analytics.capture({ type: 'reminder_opened', reminderId: data.reminderId });
+          }
+          setTrack(track);
+          router.navigate("/player" as any);
         } else if (actionIdentifier === ACTION_SNOOZE) {
           const minutes = data.snoozeMinutes ?? 10;
           snoozeReminder(
@@ -93,7 +103,7 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
     );
 
     return () => subscription.remove();
-  }, [posthog, setTrack]);
+  }, [analytics, setTrack, getTrackById]);
 
   if (!fontsLoaded) return null;
 

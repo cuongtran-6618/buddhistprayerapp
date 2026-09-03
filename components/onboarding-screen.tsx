@@ -26,7 +26,7 @@ const RING_SIZES = [180, 160, 140];
 export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
   const i18n = useI18n();
   const analytics = useAnalytics();
-  const addReminder = useRemindersStore((s) => s.addReminder);
+  const addReminder = useRemindersStore((state) => state.addReminder);
 
   const slides = [
     { icon: "🪷", title: i18n.t("onboarding.welcome"), body: i18n.t("onboarding.description") },
@@ -118,16 +118,16 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
       <View style={styles.illustrationArea}>
         {/* Decorative rings */}
         <View style={styles.ringContainer}>
-          {RING_SIZES.map((size, i) => (
+          {RING_SIZES.map((size, ringIndex) => (
             <Animated.View
-              key={i}
+              key={ringIndex}
               style={[
                 styles.ring,
                 {
                   width: size,
                   height: size,
-                  borderColor: `rgba(200,135,42,${0.08 + i * 0.06})`,
-                  transform: [{ scale: ringAnims[i] }],
+                  borderColor: `rgba(200,135,42,${0.08 + ringIndex * 0.06})`,
+                  transform: [{ scale: ringAnims[ringIndex] }],
                 },
               ]}
             />
@@ -154,14 +154,14 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
       <View style={styles.bottom}>
         {/* Dot indicators */}
         <View style={styles.dots}>
-          {slides.map((_, i) => (
+          {slides.map((_slide, slideIndex) => (
             <View
-              key={i}
+              key={slideIndex}
               style={[
                 styles.dot,
                 {
-                  width: i === step ? 28 : 8,
-                  backgroundColor: i === step ? Colors.gold : Colors.border,
+                  width: slideIndex === step ? 28 : 8,
+                  backgroundColor: slideIndex === step ? Colors.gold : Colors.border,
                 },
               ]}
             />

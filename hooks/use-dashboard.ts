@@ -25,18 +25,18 @@ export interface DashboardData {
   greeting: { main: string };
 }
 
-function getGreeting(t: (key: string) => string): { main: string } {
-  const h = new Date().getHours();
-  if (h < 6) return { main: t("home.greeting_night") };
-  if (h < 12) return { main: t("home.greeting_morning") };
-  if (h < 17) return { main: t("home.greeting_afternoon") };
-  return { main: t("home.greeting_evening") };
+function getGreeting(translate: (key: string) => string): { main: string } {
+  const hour = new Date().getHours();
+  if (hour < 6) return { main: translate("home.greeting_night") };
+  if (hour < 12) return { main: translate("home.greeting_morning") };
+  if (hour < 17) return { main: translate("home.greeting_afternoon") };
+  return { main: translate("home.greeting_evening") };
 }
 
 export function useDashboard(): DashboardData {
   const i18n = useI18n();
-  const reminders = useRemindersStore((s) => s.reminders);
-  const history = useChantingHistoryStore((s) => s.history);
+  const reminders = useRemindersStore((state) => state.reminders);
+  const history = useChantingHistoryStore((state) => state.history);
   const { getTrackById } = useTracks();
 
   return useMemo(() => {
@@ -55,5 +55,5 @@ export function useDashboard(): DashboardData {
       monthPct: computeMonthProgress(history),
       greeting: getGreeting(i18n.t),
     };
-  }, [reminders, history, i18n.locale]);
+  }, [reminders, history, getTrackById, i18n]);
 }

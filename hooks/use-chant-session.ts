@@ -28,6 +28,8 @@ export function useChantSession(track: Track, onComplete?: () => void): ChantSes
         analytics.capture({
           type: 'chant_abandoned',
           trackId: track.id,
+          // progressRef.current is read at teardown time intentionally — captures final progress
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           progressPercent: Math.round(progressRef.current * 100),
         });
       }

@@ -73,14 +73,6 @@ function clamp(value: number, lo: number, hi: number): number {
   return Math.min(Math.max(value, lo), hi);
 }
 
-/** Convert milliseconds → "M:SS" label. */
-function msToLabel(ms: number): string {
-  const totalSec = Math.floor(ms / 1000);
-  const min = Math.floor(totalSec / 60);
-  const sec = totalSec % 60;
-  return `${min}:${String(sec).padStart(2, "0")}`;
-}
-
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useSeekGesture({
@@ -120,22 +112,22 @@ export function useSeekGesture({
       onPanResponderGrant: (evt: GestureResponderEvent) => {
         // Atomic update: isDragging and dragProgress are always in sync.
         // Clear any pending seek so we immediately show the new drag position.
-        const p = toProgress(evt.nativeEvent.locationX);
-        setDrag({ isDragging: true, dragProgress: p, seekTargetProgress: null });
+        const seekProgress = toProgress(evt.nativeEvent.locationX);
+        setDrag({ isDragging: true, dragProgress: seekProgress, seekTargetProgress: null });
       },
 
       onPanResponderMove: (evt: GestureResponderEvent) => {
-        const p = toProgress(evt.nativeEvent.locationX);
-        setDrag((prev) => ({ ...prev, dragProgress: p }));
+        const seekProgress = toProgress(evt.nativeEvent.locationX);
+        setDrag((prev) => ({ ...prev, dragProgress: seekProgress }));
       },
 
       onPanResponderRelease: (evt: GestureResponderEvent) => {
         // Seek fires here — after the finger lifts (seek only on release).
-        // seekTargetProgress pins displayProgress to p until the audio player
+        // seekTargetProgress pins displayProgress to seekProgress until the audio player
         // confirms the position, preventing the transient-zero flash.
-        const p = toProgress(evt.nativeEvent.locationX);
-        setDrag({ isDragging: false, dragProgress: p, seekTargetProgress: p });
-        onSeekRef.current(p * durationRef.current);
+        const seekProgress = toProgress(evt.nativeEvent.locationX);
+        setDrag({ isDragging: false, dragProgress: seekProgress, seekTargetProgress: seekProgress });
+        onSeekRef.current(seekProgress * durationRef.current);
       },
 
       onPanResponderTerminate: () => {
@@ -145,8 +137,8 @@ export function useSeekGesture({
     })
   );
 
-  const handleLayout = useCallback((e: LayoutChangeEvent) => {
-    barWidthRef.current = e.nativeEvent.layout.width;
+  const handleLayout = useCallback((event: LayoutChangeEvent) => {
+    barWidthRef.current = event.nativeEvent.layout.width;
   }, []);
 
   // Once currentProgress is within 1% of the seek target the audio player

@@ -1,3 +1,4 @@
+import * as Notifications from "expo-notifications";
 import { Reminder } from "@/types/reminder";
 import {
   cancelReminderNotification,
@@ -25,11 +26,10 @@ jest.mock("expo-notifications", () => ({
   setNotificationHandler: jest.fn(),
   SchedulableTriggerInputTypes: {
     CALENDAR: "calendar",
+    DAILY: "daily",
     TIME_INTERVAL: "timeInterval",
   },
 }));
-
-import * as Notifications from "expo-notifications";
 
 // ─── Test fixture ─────────────────────────────────────────────────────────────
 
@@ -90,9 +90,9 @@ describe("scheduleReminderNotification", () => {
     (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue("notif-456");
     await scheduleReminderNotification(makeReminder({ hour: 5, minute: 30 }), "Chú Đại Bi");
     const call = (Notifications.scheduleNotificationAsync as jest.Mock).mock.calls[0][0];
+    expect(call.trigger.type).toBe("daily");
     expect(call.trigger.hour).toBe(5);
     expect(call.trigger.minute).toBe(30);
-    expect(call.trigger.repeats).toBe(true);
   });
 
   it("includes reminderId and trackId in the notification data payload", async () => {

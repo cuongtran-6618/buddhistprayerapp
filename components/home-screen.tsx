@@ -8,7 +8,7 @@ import { DashboardScheduleItem, useDashboard } from "@/hooks/use-dashboard";
 import { useAppStore } from "@/store/app-store";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Animated,
   BackHandler,
@@ -40,7 +40,7 @@ function GlowView({ style, children }: { style?: object; children: React.ReactNo
     );
     glowLoop.start();
     return () => glowLoop.stop();
-  }, []);
+  }, [glowAnim]);
   return <Animated.View style={[style, { opacity: glowAnim }]}>{children}</Animated.View>;
 }
 
@@ -48,7 +48,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
   const i18n = useI18n();
   const analytics = useAnalytics();
   const { language, setLanguage } = useAppStore();
-  const { scheduleItems, streak, todayProgress, monthPct, greeting: g } = useDashboard();
+  const { scheduleItems, streak, todayProgress, monthPct, greeting } = useDashboard();
   const { done } = todayProgress;
 
   const backPressedOnce = useRef(false);
@@ -66,7 +66,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
     };
     const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
     return () => sub.remove();
-  }, []);
+  }, [i18n]);
 
   return (
     <View style={styles.container}>
@@ -81,7 +81,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greetingVi}>{g.main}</Text>
+            <Text style={styles.greetingVi}>{greeting.main}</Text>
           </View>
           <View style={styles.headerActions}>
             <Pressable
@@ -181,7 +181,7 @@ const ScheduleItem = React.memo(function ScheduleItem({ item, onPress }: { item:
     );
     glowLoop.start();
     return () => glowLoop.stop();
-  }, [item.current]);
+  }, [item, glowAnim]);
 
   if (item.current) {
     return (

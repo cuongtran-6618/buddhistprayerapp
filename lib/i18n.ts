@@ -1,4 +1,3 @@
-import { getLocales } from "expo-localization";
 import { I18n } from "i18n-js";
 import { useMemo } from "react";
 import { useAppStore } from "@/store/app-store";
@@ -18,7 +17,7 @@ export type I18nHandle = { t: (key: string, vars?: object) => string; locale: st
  * compiler cannot detect locale mutations via reference equality.
  */
 export function useI18n(): I18nHandle {
-  const language = useAppStore((s) => s.language);
+  const language = useAppStore((state) => state.language);
   i18n.locale = language;
   // ponytail: new wrapper object per language change forces React Compiler cache miss
   return useMemo(() => ({

@@ -16,23 +16,23 @@ export function computeScheduleStatus(
   completions: DayRecord
 ): ScheduleItemData[] {
   const sorted = [...reminders]
-    .filter((r) => r.enabled)
-    .sort((a, b) => (a.hour !== b.hour ? a.hour - b.hour : a.minute - b.minute));
+    .filter((reminder) => reminder.enabled)
+    .sort((reminderA, reminderB) => (reminderA.hour !== reminderB.hour ? reminderA.hour - reminderB.hour : reminderA.minute - reminderB.minute));
 
   const slotIndex: { [trackId: string]: number } = {};
 
-  const items: ScheduleItemData[] = sorted.map((r) => {
-    const idx = slotIndex[r.trackId] ?? 0;
-    slotIndex[r.trackId] = idx + 1;
+  const items: ScheduleItemData[] = sorted.map((reminder) => {
+    const idx = slotIndex[reminder.trackId] ?? 0;
+    slotIndex[reminder.trackId] = idx + 1;
 
-    const done = idx < (completions[r.trackId] ?? 0);
-    const hour = String(r.hour).padStart(2, "0");
-    const min = String(r.minute).padStart(2, "0");
+    const done = idx < (completions[reminder.trackId] ?? 0);
+    const hour = String(reminder.hour).padStart(2, "0");
+    const min = String(reminder.minute).padStart(2, "0");
 
-    return { id: r.id, time: `${hour}:${min}`, label: r.title, trackId: r.trackId, done, current: false };
+    return { id: reminder.id, time: `${hour}:${min}`, label: reminder.title, trackId: reminder.trackId, done, current: false };
   });
 
-  const firstNonDone = items.findIndex((i) => !i.done);
+  const firstNonDone = items.findIndex((item) => !item.done);
   if (firstNonDone >= 0) items[firstNonDone].current = true;
 
   return items;
@@ -42,18 +42,18 @@ export function computeTodayProgress(
   reminders: Reminder[],
   completions: DayRecord
 ): { done: number; total: number } {
-  const enabled = reminders.filter((r) => r.enabled);
-  const sorted = [...enabled].sort((a, b) =>
-    a.hour !== b.hour ? a.hour - b.hour : a.minute - b.minute
+  const enabled = reminders.filter((reminder) => reminder.enabled);
+  const sorted = [...enabled].sort((reminderA, reminderB) =>
+    reminderA.hour !== reminderB.hour ? reminderA.hour - reminderB.hour : reminderA.minute - reminderB.minute
   );
 
   const slotIndex: { [trackId: string]: number } = {};
   let done = 0;
 
-  for (const r of sorted) {
-    const idx = slotIndex[r.trackId] ?? 0;
-    slotIndex[r.trackId] = idx + 1;
-    if (idx < (completions[r.trackId] ?? 0)) done++;
+  for (const reminder of sorted) {
+    const idx = slotIndex[reminder.trackId] ?? 0;
+    slotIndex[reminder.trackId] = idx + 1;
+    if (idx < (completions[reminder.trackId] ?? 0)) done++;
   }
 
   return { done, total: enabled.length };

@@ -15,7 +15,7 @@ export function usePulsingRings(sizes: number[]): Animated.Value[] {
     );
     loops.forEach((loop) => loop.start());
     return () => loops.forEach((loop) => loop.stop());
-  }, []);
+  }, [anims]);
 
   return anims;
 }

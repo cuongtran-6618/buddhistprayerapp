@@ -3,7 +3,7 @@ import { usePlayerStore } from "@/store/player-store";
 import { router } from "expo-router";
 
 export default function Home() {
-  const setTrack = usePlayerStore((s) => s.setTrack);
+  const setTrack = usePlayerStore((state) => state.setTrack);
 
   return (
     <HomeScreen

@@ -31,7 +31,7 @@ interface PlayerScreenProps {
 }
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
-  const checkMilestone = useChantingHistoryStore((s) => s.checkMilestone);
+  const checkMilestone = useChantingHistoryStore((state) => state.checkMilestone);
   const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(
     null,
   );
@@ -123,12 +123,12 @@ function MandalaSection({
           { transform: [{ rotate: anims.outerRotateDeg }] },
         ]}
       >
-        {Array.from({ length: 12 }).map((_, i) => (
+        {Array.from({ length: 12 }).map((_unused, tickIndex) => (
           <View
-            key={i}
+            key={tickIndex}
             style={[
               styles.mandalaTick,
-              { transform: [{ rotate: `${i * 30}deg` }, { translateY: -75 }] },
+              { transform: [{ rotate: `${tickIndex * 30}deg` }, { translateY: -75 }] },
             ]}
           />
         ))}
@@ -194,10 +194,10 @@ function ChantScrollSection({
         showsVerticalScrollIndicator={false}
         scrollEnabled={false}
       >
-        {track.script.map((line, i) => {
-          const isActive = i === player.activeLineIndex;
-          const isPast = i < player.activeLineIndex;
-          const dist = Math.abs(i - player.activeLineIndex);
+        {track.script.map((line, lineIndex) => {
+          const isActive = lineIndex === player.activeLineIndex;
+          const isPast = lineIndex < player.activeLineIndex;
+          const dist = Math.abs(lineIndex - player.activeLineIndex);
           const opacity =
             dist > 3
               ? 0.15
@@ -212,7 +212,7 @@ function ChantScrollSection({
 
           return (
             <Animated.View
-              key={i}
+              key={lineIndex}
               style={[
                 styles.chantLine,
                 {

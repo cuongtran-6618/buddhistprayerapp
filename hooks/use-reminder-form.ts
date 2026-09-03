@@ -32,16 +32,16 @@ export function useReminderForm(
   const [title, setTitle] = useState(existing?.title ?? "");
 
   const [time, setTime] = useState<Date>(() => {
-    const d = new Date();
-    d.setHours(existing?.hour ?? d.getHours());
-    d.setMinutes(existing?.minute ?? d.getMinutes());
-    d.setSeconds(0);
-    d.setMilliseconds(0);
-    return d;
+    const date = new Date();
+    date.setHours(existing?.hour ?? date.getHours());
+    date.setMinutes(existing?.minute ?? date.getMinutes());
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
   });
 
   const [selectedTrack, setSelectedTrack] = useState<Track>(
-    tracks.find((t) => t.id === existing?.trackId) ?? tracks[0]
+    tracks.find((track) => track.id === existing?.trackId) ?? tracks[0]
   );
 
   const [snoozeMinutes, setSnoozeMinutes] = useState<5 | 10 | 15>(

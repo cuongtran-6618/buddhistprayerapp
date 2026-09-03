@@ -74,7 +74,7 @@ export function usePlayerAnimations(playing: boolean): PlayerAnimations {
       // Snap lotus back to resting scale
       Animated.timing(breatheAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
     }
-  }, [playing]);
+  }, [playing, breatheAnim, outerRotate, middleRotate, activeGlowAnim]);
 
   const outerRotateDeg  = outerRotate.interpolate({ inputRange: [0, 1], outputRange: ["0deg",  "360deg"]  });
   const middleRotateDeg = middleRotate.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "-360deg"] });

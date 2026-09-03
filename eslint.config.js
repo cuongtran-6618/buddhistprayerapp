@@ -7,4 +7,9 @@ module.exports = defineConfig([
   {
     ignores: ['dist/*'],
   },
+  {
+    rules: {
+      'id-length': ['warn', { min: 2, properties: 'never' }],
+    },
+  },
 ]);

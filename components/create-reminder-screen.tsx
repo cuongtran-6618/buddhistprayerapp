@@ -57,12 +57,12 @@ const SNOOZE_OPTIONS: (5 | 10 | 15)[] = [5, 10, 15];
 export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateReminderScreenProps) {
   const i18n = useI18n();
   const analytics      = useAnalytics();
-  const addReminder    = useRemindersStore((s) => s.addReminder);
-  const updateReminder = useRemindersStore((s) => s.updateReminder);
-  const reminders      = useRemindersStore((s) => s.reminders);
+  const addReminder    = useRemindersStore((state) => state.addReminder);
+  const updateReminder = useRemindersStore((state) => state.updateReminder);
+  const reminders      = useRemindersStore((state) => state.reminders);
   const { tracks }     = useTracks();
 
-  const existing = reminderId ? reminders.find((r) => r.id === reminderId) : undefined;
+  const existing = reminderId ? reminders.find((reminder) => reminder.id === reminderId) : undefined;
 
   const {
     title, setTitle,

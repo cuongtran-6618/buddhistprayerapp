@@ -3,9 +3,9 @@ import { useAppStore } from "@/store/app-store";
 import { Redirect } from "expo-router";
 
 export default function Index() {
-  const hasSeenOnboarding = useAppStore((s) => s.hasSeenOnboarding);
-  const setHasSeenOnboarding = useAppStore((s) => s.setHasSeenOnboarding);
-  const hydrated = useAppStore((s) => s._hydrated);
+  const hasSeenOnboarding = useAppStore((state) => state.hasSeenOnboarding);
+  const setHasSeenOnboarding = useAppStore((state) => state.setHasSeenOnboarding);
+  const hydrated = useAppStore((state) => state._hydrated);
 
   if (!hydrated) return null;
 

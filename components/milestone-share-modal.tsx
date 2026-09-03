@@ -18,7 +18,7 @@ interface MilestoneShareModalProps {
 export function MilestoneShareModal({ streak, onClose }: MilestoneShareModalProps) {
   const i18n = useI18n();
   const analytics = useAnalytics();
-  const history = useChantingHistoryStore((s) => s.history);
+  const history = useChantingHistoryStore((state) => state.history);
   const cardRef = useRef<View>(null);
   const [sharing, setSharing] = useState(false);
 
@@ -26,7 +26,7 @@ export function MilestoneShareModal({ streak, onClose }: MilestoneShareModalProp
 
   useEffect(() => {
     if (visible) analytics.capture({ type: "milestone_reached", streak: streak! });
-  }, [visible, streak]);
+  }, [visible, streak, analytics]);
 
   if (!visible) return null;
 

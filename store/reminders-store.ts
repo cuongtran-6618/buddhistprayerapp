@@ -27,14 +27,14 @@ export const useRemindersStore = create<RemindersStore>()(
 
       updateReminder: (reminder) =>
         set((state) => ({
-          reminders: state.reminders.map((r) =>
-            r.id === reminder.id ? reminder : r
+          reminders: state.reminders.map((existing) =>
+            existing.id === reminder.id ? reminder : existing
           ),
         })),
 
       removeReminder: (id) =>
         set((state) => ({
-          reminders: state.reminders.filter((r) => r.id !== id),
+          reminders: state.reminders.filter((reminder) => reminder.id !== id),
         })),
     }),
     {

@@ -54,7 +54,7 @@ export function useAudioPlayer(track: Track | null, onComplete?: () => void): Au
       ? track.audio.asset
       : { uri: track.audio.uri };
     player.replace(source);
-  }, [track?.id]);
+  }, [track, player]);
 
   // Detect natural playback end (playing → stopped near duration)
   useEffect(() => {
@@ -99,7 +99,7 @@ export function useAudioPlayer(track: Track | null, onComplete?: () => void): Au
     progress,
     durationMs,
     activeLineIndex,
-    togglePlay: () => { status.playing ? player.pause() : player.play(); },
+    togglePlay: () => { if (status.playing) { player.pause(); } else { player.play(); } },
     seekToLine: (index) => {
       const ms = script[Math.max(0, Math.min(index, script.length - 1))]?.startMs ?? 0;
       player.seekTo(ms / 1000);

@@ -21,12 +21,12 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
         <View style={styles.statusIcons}>
           {/* Signal bars */}
           <View style={styles.signalBars}>
-            {[3, 4, 4, 4].map((_, i) => (
+            {[3, 4, 4, 4].map((barHeight, barIndex) => (
               <View
-                key={i}
+                key={barIndex}
                 style={[
                   styles.signalBar,
-                  { height: 8 + _ , opacity: i < 3 ? 1 : 0.3 },
+                  { height: 8 + barHeight, opacity: barIndex < 3 ? 1 : 0.3 },
                 ]}
               />
             ))}
