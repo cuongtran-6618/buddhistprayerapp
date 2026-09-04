@@ -42,19 +42,6 @@ export function computeTodayProgress(
   reminders: Reminder[],
   completions: DayRecord
 ): { done: number; total: number } {
-  const enabled = reminders.filter((reminder) => reminder.enabled);
-  const sorted = [...enabled].sort((reminderA, reminderB) =>
-    reminderA.hour !== reminderB.hour ? reminderA.hour - reminderB.hour : reminderA.minute - reminderB.minute
-  );
-
-  const slotIndex: { [trackId: string]: number } = {};
-  let done = 0;
-
-  for (const reminder of sorted) {
-    const idx = slotIndex[reminder.trackId] ?? 0;
-    slotIndex[reminder.trackId] = idx + 1;
-    if (idx < (completions[reminder.trackId] ?? 0)) done++;
-  }
-
-  return { done, total: enabled.length };
+  const items = computeScheduleStatus(reminders, completions);
+  return { done: items.filter((item) => item.done).length, total: items.length };
 }
