@@ -12,9 +12,10 @@ import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef } from "react";
 import * as Notifications from "expo-notifications";
-import { AppState } from "react-native";
+import { AppState, Text, View } from "react-native";
 import { PostHogProvider } from "posthog-react-native";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { Colors } from "@/constants/colors";
 
 import { useTracks } from "@/hooks/use-tracks";
 import { usePlayerStore } from "@/store/player-store";
@@ -112,6 +113,19 @@ function AppShell({ fontsLoaded }: { fontsLoaded: boolean }) {
   );
 }
 
+function CrashFallback() {
+  return (
+    <View style={{ flex: 1, backgroundColor: Colors.bg, alignItems: "center", justifyContent: "center", padding: 32 }}>
+      <Text style={{ color: Colors.cream, fontSize: 18, textAlign: "center", marginBottom: 8 }}>
+        Something went wrong
+      </Text>
+      <Text style={{ color: Colors.creamMuted, fontSize: 14, textAlign: "center" }}>
+        Please restart the app
+      </Text>
+    </View>
+  );
+}
+
 function RootLayout() {
   const [fontsLoaded] = useFonts({
     BeVietnamPro_300Light_Italic,
@@ -123,12 +137,14 @@ function RootLayout() {
   });
 
   return (
-    <PostHogProvider
-      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY!}
-      options={{ host: process.env.EXPO_PUBLIC_POSTHOG_HOST }}
-    >
-      <AppShell fontsLoaded={fontsLoaded ?? false} />
-    </PostHogProvider>
+    <Sentry.ErrorBoundary fallback={<CrashFallback />}>
+      <PostHogProvider
+        apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY!}
+        options={{ host: process.env.EXPO_PUBLIC_POSTHOG_HOST }}
+      >
+        <AppShell fontsLoaded={fontsLoaded ?? false} />
+      </PostHogProvider>
+    </Sentry.ErrorBoundary>
   );
 }
 
