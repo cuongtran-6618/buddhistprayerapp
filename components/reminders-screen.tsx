@@ -333,7 +333,6 @@ const styles = StyleSheet.create({
   deleteIcon: {
     color: Colors.red,
     fontSize: 12,
-    lineHeight: 12,
     fontFamily: Fonts.semiBold,
   },
   // Empty state

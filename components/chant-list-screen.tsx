@@ -149,6 +149,5 @@ const styles = StyleSheet.create({
   playIcon: {
     color: Colors.cream,
     fontSize: 14,
-    lineHeight: 14,
   },
 });

@@ -351,7 +351,6 @@ const styles = StyleSheet.create({
   backArrow: {
     color: Colors.cream,
     fontSize: 18,
-    lineHeight: 18,
   },
   headerTitle: {
     flex: 1,

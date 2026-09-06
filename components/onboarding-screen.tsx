@@ -211,7 +211,6 @@ const styles = StyleSheet.create({
   backText: {
     color: Colors.muted,
     fontSize: 20,
-    lineHeight: 20,
     fontFamily: Fonts.regular,
   },
   skipText: {
