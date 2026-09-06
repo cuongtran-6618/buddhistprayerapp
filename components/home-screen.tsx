@@ -95,9 +95,6 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
             <Pressable style={styles.iconButton} onPress={onRemindersPress} accessibilityLabel={i18n.t("a11y.open_reminders")} accessibilityRole="button">
               <BellIcon size={18} />
             </Pressable>
-            <GoldGradient style={styles.avatarButton}>
-              <Text style={styles.avatarEmoji}>🙏</Text>
-            </GoldGradient>
           </View>
         </View>
 
@@ -312,16 +309,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: Fonts.semiBold,
     letterSpacing: 1,
-  },
-  avatarButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarEmoji: {
-    fontSize: 16,
   },
   // Streak card
   streakCard: {
