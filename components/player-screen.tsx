@@ -417,6 +417,7 @@ const styles = StyleSheet.create({
   headerButtonText: {
     color: Colors.cream,
     fontSize: 18,
+    lineHeight: 18,
     fontFamily: Fonts.regular,
   },
   headerCenter: {

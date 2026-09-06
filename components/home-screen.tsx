@@ -489,6 +489,7 @@ const styles = StyleSheet.create({
   doneCheck: {
     color: Colors.cream,
     fontSize: 12,
+    lineHeight: 12,
   },
   playButton: {
     width: 28,
@@ -500,6 +501,7 @@ const styles = StyleSheet.create({
   playIcon: {
     color: Colors.cream,
     fontSize: 13,
+    lineHeight: 13,
   },
   // Bottom nav
   bottomNav: {
