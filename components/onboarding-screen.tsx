@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { TRACKS } from "@/constants/tracks";
@@ -104,7 +105,7 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
           <View />
         ) : (
           <Pressable onPress={goBack} hitSlop={12}>
-            <Text style={styles.backText}>←</Text>
+            <Ionicons name="arrow-back" size={20} color={Colors.muted} />
           </Pressable>
         )}
         {!isLastSlide && (
@@ -207,11 +208,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 62,
     paddingBottom: 8,
-  },
-  backText: {
-    color: Colors.muted,
-    fontSize: 20,
-    fontFamily: Fonts.regular,
   },
   skipText: {
     color: Colors.muted,

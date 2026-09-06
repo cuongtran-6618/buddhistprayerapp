@@ -1,5 +1,6 @@
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { GoldGradient } from "@/components/ui/gold-gradient";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
@@ -62,7 +63,7 @@ function ChantRow({ track, onPress }: { track: Track; onPress: () => void }) {
       </View>
       <Pressable onPress={onPress} style={styles.playButton}>
         <GoldGradient style={styles.playButtonGradient}>
-          <Text style={styles.playIcon}>▶</Text>
+          <Ionicons name="play" size={14} color={Colors.cream} />
         </GoldGradient>
       </Pressable>
     </View>
@@ -145,9 +146,5 @@ const styles = StyleSheet.create({
     height: 36,
     alignItems: "center",
     justifyContent: "center",
-  },
-  playIcon: {
-    color: Colors.cream,
-    fontSize: 14,
   },
 });

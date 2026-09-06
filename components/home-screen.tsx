@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import { BellIcon } from "@/components/icons/bell-icon";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
@@ -234,11 +235,11 @@ const ScheduleItemContent = React.memo(function ScheduleItemContent({ item }: { 
       <View>
         {item.done ? (
           <View style={styles.doneCircle}>
-            <Text style={styles.doneCheck}>✓</Text>
+            <Ionicons name="checkmark" size={13} color={Colors.cream} />
           </View>
         ) : (
           <GoldGradient style={styles.playButton}>
-            <Text style={styles.playIcon}>▶</Text>
+            <Ionicons name="play" size={12} color={Colors.cream} />
           </GoldGradient>
         )}
       </View>
@@ -486,20 +487,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  doneCheck: {
-    color: Colors.cream,
-    fontSize: 12,
-  },
   playButton: {
     width: 28,
     height: 28,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
-  },
-  playIcon: {
-    color: Colors.cream,
-    fontSize: 13,
   },
   // Bottom nav
   bottomNav: {

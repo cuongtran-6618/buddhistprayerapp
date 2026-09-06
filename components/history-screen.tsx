@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useCallback, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -77,11 +78,11 @@ function MonthCalendar({
     <View>
       <View style={calStyles.navRow}>
         <Pressable onPress={onPrev} hitSlop={16} accessibilityLabel={i18n.t("a11y.prev_month")} accessibilityRole="button">
-          <Text style={calStyles.navArrow}>‹</Text>
+          <Ionicons name="chevron-back" size={22} color={Colors.gold} />
         </Pressable>
         <Text style={calStyles.monthTitle}>{monthLabel}</Text>
         <Pressable onPress={onNext} disabled={isCurrentMonth} hitSlop={16} accessibilityLabel={i18n.t("a11y.next_month")} accessibilityRole="button">
-          <Text style={[calStyles.navArrow, isCurrentMonth && calStyles.navArrowDisabled]}>›</Text>
+          <Ionicons name="chevron-forward" size={22} color={isCurrentMonth ? Colors.muted : Colors.gold} />
         </Pressable>
       </View>
 
@@ -273,8 +274,6 @@ const calStyles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 8,
   },
-  navArrow: { fontFamily: Fonts.bold, fontSize: 22, color: Colors.gold, paddingHorizontal: 4 },
-  navArrowDisabled: { color: Colors.muted },
   monthTitle: { fontFamily: Fonts.semiBold, fontSize: 14, color: Colors.cream },
   weekRow: { flexDirection: "row", marginBottom: 2 },
   dayHeader: {

@@ -17,6 +17,7 @@
  */
 
 import { useI18n } from "@/lib/i18n";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
@@ -134,7 +135,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
       {/* Header */}
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backArrow}>←</Text>
+          <Ionicons name="arrow-back" size={20} color={Colors.cream} />
         </Pressable>
         <Text style={styles.headerTitle}>{existing ? i18n.t("create_reminder.title_edit") : i18n.t("create_reminder.title_new")}</Text>
         <View style={styles.headerRight} />
@@ -347,10 +348,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     alignItems: "center",
     justifyContent: "center",
-  },
-  backArrow: {
-    color: Colors.cream,
-    fontSize: 18,
   },
   headerTitle: {
     flex: 1,

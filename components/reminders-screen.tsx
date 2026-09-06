@@ -9,6 +9,7 @@
  */
 
 import { useI18n } from "@/lib/i18n";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { GoldGradient } from "@/components/ui/gold-gradient";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
@@ -218,7 +219,7 @@ const ReminderRow = React.memo(function ReminderRow({
 
       {/* Delete */}
       <Pressable style={styles.deleteButton} onPress={() => onDelete(reminder)} accessibilityLabel={i18n.t("a11y.delete_reminder")} accessibilityRole="button">
-        <Text style={styles.deleteIcon}>✕</Text>
+        <Ionicons name="close" size={14} color={Colors.red} />
       </Pressable>
     </View>
   );
@@ -329,11 +330,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(139,26,26,0.2)",
     alignItems: "center",
     justifyContent: "center",
-  },
-  deleteIcon: {
-    color: Colors.red,
-    fontSize: 12,
-    fontFamily: Fonts.semiBold,
   },
   // Empty state
   emptyInner: {

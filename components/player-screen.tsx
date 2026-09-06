@@ -96,7 +96,7 @@ function Header({ track, onBack }: { track: Track; onBack: () => void }) {
   return (
     <View style={styles.header}>
       <Pressable onPress={onBack} style={styles.headerButton} accessibilityLabel={i18n.t("a11y.back")} accessibilityRole="button">
-        <Text style={styles.headerButtonText}>←</Text>
+        <Ionicons name="arrow-back" size={20} color={Colors.cream} />
       </Pressable>
       <View style={styles.headerCenter}>
         <Text style={styles.headerLabel}>{i18n.t("player.now_chanting")}</Text>
@@ -413,11 +413,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     alignItems: "center",
     justifyContent: "center",
-  },
-  headerButtonText: {
-    color: Colors.cream,
-    fontSize: 18,
-    fontFamily: Fonts.regular,
   },
   headerCenter: {
     alignItems: "center",
