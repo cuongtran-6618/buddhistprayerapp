@@ -112,7 +112,7 @@ export function CreateReminderScreen({ onBack, onSave, reminderId }: CreateRemin
 
     let notificationId: string | null = null;
     try {
-      notificationId = await scheduleReminderNotification(reminder, selectedTrack.title);
+      notificationId = await scheduleReminderNotification(reminder, i18n.t(`tracks.${selectedTrack.id.replace(/-/g, '_')}.title`));
     } catch {
       Alert.alert(i18n.t("errors.notification_schedule"), i18n.t("errors.notification_schedule_body"));
       setSaving(false);
@@ -280,6 +280,8 @@ function TrackRow({
   selected: boolean;
   onPress: () => void;
 }) {
+  const i18n = useI18n();
+  const key = track.id.replace(/-/g, '_');
   return (
     <Pressable
       style={[styles.trackRow, selected && styles.trackRowSelected]}
@@ -291,7 +293,7 @@ function TrackRow({
       <View style={styles.trackRowContent}>
         <LotusIcon
           size={16}
-          color={selected ? Colors.gold : track.isPremium ? Colors.goldDim : Colors.muted}
+          color={selected ? Colors.gold : Colors.muted}
         />
         <View style={styles.trackRowInfo}>
           <Text
@@ -301,25 +303,17 @@ function TrackRow({
             ]}
             numberOfLines={1}
           >
-            {track.title}
+            {i18n.t(`tracks.${key}.title`)}
           </Text>
           <Text style={styles.trackRowSubtitle} numberOfLines={1}>
-            {track.subtitle}
+            {i18n.t(`tracks.${key}.subtitle`)}
           </Text>
         </View>
         <View style={styles.trackRowRight}>
-          {track.durationLabel && (
-            <Text style={styles.trackRowDuration}>{track.durationLabel}</Text>
-          )}
+          <Text style={styles.trackRowDuration}>{i18n.t(`tracks.${key}.duration`)}</Text>
         </View>
       </View>
 
-      {/* PRO badge */}
-      {track.isPremium && (
-        <GoldGradient style={styles.trackRowProBadge}>
-          <Text style={styles.trackRowProText}>PRO</Text>
-        </GoldGradient>
-      )}
     </Pressable>
   );
 }
@@ -465,20 +459,6 @@ const styles = StyleSheet.create({
     color: Colors.muted,
     fontSize: 11,
     fontFamily: Fonts.regular,
-  },
-  trackRowProBadge: {
-    position: "absolute",
-    top: 6,
-    right: 8,
-    borderRadius: 5,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-  },
-  trackRowProText: {
-    color: Colors.cream,
-    fontSize: 8,
-    fontFamily: Fonts.bold,
-    letterSpacing: 0.5,
   },
   // Snooze pills
   snoozeRow: {

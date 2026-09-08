@@ -58,6 +58,13 @@
   "chant": {
     "heading": "Daily Sutras"
   },
+  "tracks": {
+    "chu_dai_bi": {
+      "title": "Chú Đại Bi",
+      "subtitle": "Great Compassion Mantra · 84 verses",
+      "duration": "18 min"
+    }
+  },
   "tabs": {
     "home": "Home",
     "chant": "Chant",

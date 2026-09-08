@@ -166,9 +166,9 @@ export function HistoryScreen() {
     return {
       totalSessions: total,
       streak: computeStreak(history),
-      topTrackTitle: topTrackId ? (getTrackById(topTrackId)?.title ?? "—") : "—",
+      topTrackTitle: topTrackId ? i18n.t(`tracks.${topTrackId.replace(/-/g, '_')}.title`) : "—",
     };
-  }, [history, getTrackById]);
+  }, [history, getTrackById, i18n]);
 
   const handleCalendarSelect = useCallback((dateKey: string) => {
     setSelectedDate(dateKey);
@@ -253,7 +253,7 @@ export function HistoryScreen() {
               const track = getTrackById(trackId);
               return (
                 <View key={trackId} style={styles.row}>
-                  <Text style={styles.trackTitle}>{track?.title ?? trackId}</Text>
+                  <Text style={styles.trackTitle}>{track ? i18n.t(`tracks.${trackId.replace(/-/g, '_')}.title`) : trackId}</Text>
                   <Text style={styles.count}>×{count}</Text>
                 </View>
               );

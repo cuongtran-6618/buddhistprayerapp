@@ -100,7 +100,7 @@ function Header({ track, onBack }: { track: Track; onBack: () => void }) {
       </Pressable>
       <View style={styles.headerCenter}>
         <Text style={styles.headerLabel}>{i18n.t("player.now_chanting")}</Text>
-        <Text style={styles.headerSub}>{track.subtitle}</Text>
+        <Text style={styles.headerSub}>{i18n.t(`tracks.${track.id.replace(/-/g, '_')}.subtitle`)}</Text>
       </View>
     </View>
   );
@@ -157,10 +157,12 @@ function MandalaSection({
 }
 
 function TrackInfo({ track }: { track: Track }) {
+  const i18n = useI18n();
+  const key = track.id.replace(/-/g, '_');
   return (
     <View style={styles.trackInfo}>
-      <Text style={styles.trackTitle}>{track.title}</Text>
-      <Text style={styles.trackSub}>{track.subtitle}</Text>
+      <Text style={styles.trackTitle}>{i18n.t(`tracks.${key}.title`)}</Text>
+      <Text style={styles.trackSub}>{i18n.t(`tracks.${key}.subtitle`)}</Text>
     </View>
   );
 }

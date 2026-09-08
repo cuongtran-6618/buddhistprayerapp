@@ -1,36 +1,23 @@
 // AudioSource discriminated union — no nullable fields, TypeScript exhaustive-checks each branch.
-// To swap in a real file: { type: 'local', asset: require('@/assets/audio/file.mp3') }
-// To stream remotely:     { type: 'remote', uri: 'https://cdn.example.com/file.mp3' }
 export type AudioSource =
   | { type: "local"; asset: number }
   | { type: "remote"; uri: string };
 
 export interface ScriptLine {
-  text: string; // language-agnostic; add a second array for multi-language support
-  startMs: number; // milliseconds from audio start
+  text: string;
+  startMs: number;
 }
 
 export interface Track {
   id: string;
-  title: string;
-  subtitle: string;
   audio: AudioSource;
   script: ScriptLine[];
-  isPremium?: boolean;
-  durationLabel?: string; // display string e.g. "18 phút"; computed from audio at runtime
 }
 
-// Seed data — replace with a useTracks() Supabase hook when ready.
-// PlayerScreen and HomeScreen will not need to change.
 export const TRACKS: Track[] = [
   {
     id: "chu-dai-bi",
-    title: "Chú Đại Bi",
-    subtitle: "Great Compassion Mantra · 84 câu",
-    // Swap to local once the file is in assets/audio/:
     audio: { type: "local", asset: require("@/assets/audio/chu_dai_bi.mp3") },
-    // audio: { type: 'remote', uri: '' },
-    durationLabel: "18 phút",
     script: [
       { text: "Nam mô Đại bi Hội Thượng Phật Bồ tát", startMs: 12000 },
       { text: "Nam mô Đại bi Hội Thượng Phật Bồ tát", startMs: 19000 },

@@ -76,7 +76,7 @@ export function OnboardingScreen({ onNext }: OnboardingScreenProps) {
       enabled: true,
       notificationId: null,
     };
-    const notificationId = await scheduleReminderNotification(reminder, track.title);
+    const notificationId = await scheduleReminderNotification(reminder, i18n.t(`tracks.${track.id.replace(/-/g, '_')}.title`));
     addReminder({ ...reminder, notificationId });
   };
 

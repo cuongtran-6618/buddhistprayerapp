@@ -44,22 +44,17 @@ export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
 }
 
 function ChantRow({ track, onPress }: { track: Track; onPress: () => void }) {
+  const i18n = useI18n();
+  const key = track.id.replace(/-/g, '_');
   return (
     <View style={styles.row}>
-      <LotusIcon size={22} color={track.isPremium ? Colors.goldDim : Colors.gold} />
+      <LotusIcon size={22} color={Colors.gold} />
       <View style={styles.rowInfo}>
         <View style={styles.rowTitleRow}>
-          <Text style={styles.rowTitle}>{track.title}</Text>
-          {track.isPremium && (
-            <GoldGradient style={styles.proBadge}>
-              <Text style={styles.proBadgeText}>PRO</Text>
-            </GoldGradient>
-          )}
+          <Text style={styles.rowTitle}>{i18n.t(`tracks.${key}.title`)}</Text>
         </View>
-        <Text style={styles.rowSubtitle}>{track.subtitle}</Text>
-        {track.durationLabel && (
-          <Text style={styles.rowDuration}>🕐 {track.durationLabel}</Text>
-        )}
+        <Text style={styles.rowSubtitle}>{i18n.t(`tracks.${key}.subtitle`)}</Text>
+        <Text style={styles.rowDuration}>🕐 {i18n.t(`tracks.${key}.duration`)}</Text>
       </View>
       <Pressable onPress={onPress} style={styles.playButton}>
         <GoldGradient style={styles.playButtonGradient}>
@@ -126,16 +121,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: Fonts.regular,
     marginTop: 6,
-  },
-  proBadge: {
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  proBadgeText: {
-    color: Colors.cream,
-    fontSize: 9,
-    fontFamily: Fonts.bold,
   },
   playButton: {
     borderRadius: 18,

@@ -45,7 +45,7 @@ export function useDashboard(): DashboardData {
 
     const scheduleItems: DashboardScheduleItem[] = baseItems.map((item) => {
       const track = getTrackById(item.trackId);
-      return { ...item, trackTitle: track?.title ?? item.trackId, track };
+      return { ...item, trackTitle: i18n.t(`tracks.${item.trackId.replace(/-/g, '_')}.title`), track };
     });
 
     return {

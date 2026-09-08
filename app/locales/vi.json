@@ -58,6 +58,13 @@
   "chant": {
     "heading": "Kinh Thường Tụng"
   },
+  "tracks": {
+    "chu_dai_bi": {
+      "title": "Chú Đại Bi",
+      "subtitle": "Thần Chú Đại Bi · 84 câu",
+      "duration": "18 phút"
+    }
+  },
   "tabs": {
     "home": "Trang Chủ",
     "chant": "Kinh",

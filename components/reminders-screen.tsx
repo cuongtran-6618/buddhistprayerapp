@@ -72,7 +72,7 @@ export function RemindersScreen() {
         // Enable — reschedule the notification.
         const notificationId = await scheduleReminderNotification(
           reminder,
-          getTrackById(reminder.trackId)?.title ?? ""
+          i18n.t(`tracks.${reminder.trackId.replace(/-/g, '_')}.title`)
         );
         updateReminder({ ...reminder, enabled: true, notificationId });
         analytics.capture({ type: 'reminder_toggled', reminderId: reminder.id, enabled: true });
@@ -141,7 +141,7 @@ export function RemindersScreen() {
         renderItem={({ item }) => (
           <ReminderRow
             reminder={item}
-            trackTitle={getTrackById(item.trackId)?.title ?? item.trackId}
+            trackTitle={i18n.t(`tracks.${item.trackId.replace(/-/g, '_')}.title`)}
             onToggle={handleToggle}
             onDelete={handleDelete}
             onEdit={handleEdit}
