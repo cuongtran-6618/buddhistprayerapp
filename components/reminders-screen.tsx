@@ -11,6 +11,7 @@
 import { useI18n } from "@/lib/i18n";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { GoldGradient } from "@/components/ui/gold-gradient";
+import { LangToggle } from "@/components/ui/lang-toggle";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
 import { useAnalytics } from "@/hooks/use-analytics";
@@ -101,7 +102,9 @@ export function RemindersScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+        <View style={styles.headerSpacer} />
         <Text style={styles.headerTitle}>{i18n.t("reminders.title")}</Text>
+        <LangToggle />
       </View>
 
       {/* Notification permission banner */}
@@ -229,7 +232,7 @@ function EmptyState() {
   const i18n = useI18n();
   return (
     <View style={styles.emptyInner}>
-      <Text style={styles.emptyIcon}>🔔</Text>
+      <Ionicons name="notifications-outline" size={48} color={Colors.gold} />
       <Text style={styles.emptyTitle}>{i18n.t("reminders.empty_title")}</Text>
       <Text style={styles.emptyBody}>{i18n.t("reminders.empty_body")}</Text>
     </View>
@@ -250,6 +253,9 @@ const styles = StyleSheet.create({
     paddingTop: 56,
     paddingBottom: 16,
     paddingHorizontal: 24,
+  },
+  headerSpacer: {
+    width: 40,
   },
   headerTitle: {
     flex: 1,
@@ -324,9 +330,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   deleteButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: "rgba(139,26,26,0.2)",
     alignItems: "center",
     justifyContent: "center",
@@ -335,9 +341,6 @@ const styles = StyleSheet.create({
   emptyInner: {
     alignItems: "center",
     gap: 12,
-  },
-  emptyIcon: {
-    fontSize: 48,
   },
   emptyTitle: {
     color: Colors.cream,

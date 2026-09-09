@@ -15,6 +15,7 @@ import { useChantingHistoryStore } from "@/store/chanting-history-store";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Animated,
   Pressable,
@@ -31,6 +32,7 @@ interface PlayerScreenProps {
 }
 
 export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
+  const insets = useSafeAreaInsets();
   const checkMilestone = useChantingHistoryStore((state) => state.checkMilestone);
   const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(
     null,
@@ -65,7 +67,7 @@ export function PlayerScreen({ onBack, onComplete, track }: PlayerScreenProps) {
   }, [player.activeLineIndex]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.atmosphereTop} pointerEvents="none" />
       <View style={styles.atmosphereBottom} pointerEvents="none" />
 
@@ -102,6 +104,7 @@ function Header({ track, onBack }: { track: Track; onBack: () => void }) {
         <Text style={styles.headerLabel}>{i18n.t("player.now_chanting")}</Text>
         <Text style={styles.headerSub}>{i18n.t(`tracks.${track.id.replace(/-/g, '_')}.subtitle`)}</Text>
       </View>
+      <View style={styles.headerSpacer} />
     </View>
   );
 }
@@ -381,7 +384,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.bg,
-    paddingTop: 50,
   },
   atmosphereTop: {
     position: "absolute",
@@ -417,7 +419,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerCenter: {
+    flex: 1,
     alignItems: "center",
+  },
+  headerSpacer: {
+    width: 40,
   },
   headerLabel: {
     color: Colors.gold,

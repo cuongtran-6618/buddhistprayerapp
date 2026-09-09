@@ -6,8 +6,8 @@ import { Fonts } from "@/constants/fonts";
 import { Track } from "@/constants/tracks";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { DashboardScheduleItem, useDashboard } from "@/hooks/use-dashboard";
-import { useAppStore } from "@/store/app-store";
 import { GoldGradient } from "@/components/ui/gold-gradient";
+import { LangToggle } from "@/components/ui/lang-toggle";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import {
@@ -48,7 +48,6 @@ function GlowView({ style, children }: { style?: object; children: React.ReactNo
 export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: HomeScreenProps) {
   const i18n = useI18n();
   const analytics = useAnalytics();
-  const { language, setLanguage } = useAppStore();
   const { scheduleItems, streak, todayProgress, monthPct, greeting } = useDashboard();
   const { done } = todayProgress;
 
@@ -85,14 +84,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
             <Text style={styles.greetingVi}>{greeting.main}</Text>
           </View>
           <View style={styles.headerActions}>
-            <Pressable
-              style={styles.langButton}
-              onPress={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
-              accessibilityLabel={i18n.t("a11y.switch_language")}
-              accessibilityRole="button"
-            >
-              <Text style={styles.langButtonText}>{language.toUpperCase()}</Text>
-            </Pressable>
+            <LangToggle />
             <Pressable style={styles.iconButton} onPress={onRemindersPress} accessibilityLabel={i18n.t("a11y.open_reminders")} accessibilityRole="button">
               <BellIcon size={18} />
             </Pressable>
@@ -108,7 +100,7 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
               end={{ x: 1, y: 1 }}
               style={styles.streakGradient}
             >
-              <Text style={styles.streakFire}>🔥</Text>
+              <Ionicons name="flame" size={42} color={Colors.goldBright} />
               <View style={styles.streakInfo}>
                 <Text style={styles.streakTitle}>
                   {streak} {i18n.t("home.streak_days")} <Text style={styles.streakHighlight}>{i18n.t("home.streak_highlight")}</Text>
@@ -127,8 +119,9 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{i18n.t("home.todays_schedule")}</Text>
-            <Pressable onPress={onRemindersPress}>
+            <Pressable onPress={onRemindersPress} style={styles.sectionActionButton}>
               <Text style={styles.sectionAction}>{i18n.t("home.edit")}</Text>
+              <Ionicons name="chevron-forward" size={13} color={Colors.gold} />
             </Pressable>
           </View>
           {scheduleItems.length === 0 ? (
@@ -136,9 +129,9 @@ export function HomeScreen({ onChantSelect, onRemindersPress, onHistoryPress }: 
               <BellIcon size={28} color={Colors.gold} />
               <Text style={styles.emptyScheduleText}>{i18n.t("home.no_reminders")}</Text>
               <Text style={styles.emptyScheduleHint}>{i18n.t("home.no_reminders_hint")}</Text>
-              <Pressable style={styles.emptyScheduleCta} onPress={onRemindersPress}>
+              <View style={styles.emptyScheduleCta}>
                 <Text style={styles.emptyScheduleCtaText}>{i18n.t("home.no_reminders_cta")}</Text>
-              </Pressable>
+              </View>
             </Pressable>
           ) : (
             <View style={styles.scheduleList}>
@@ -295,22 +288,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  langButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 999,
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  langButtonText: {
-    color: Colors.gold,
-    fontSize: 11,
-    fontFamily: Fonts.semiBold,
-    letterSpacing: 1,
-  },
   // Streak card
   streakCard: {
     marginHorizontal: 24,
@@ -326,10 +303,6 @@ const styles = StyleSheet.create({
     gap: 16,
     padding: 18,
     borderRadius: 20,
-  },
-  streakFire: {
-    fontSize: 42,
-    lineHeight: 48,
   },
   streakInfo: {
     flex: 1,
@@ -379,10 +352,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: Fonts.semiBold,
   },
+  sectionActionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+  },
   sectionAction: {
     color: Colors.gold,
     fontSize: 12.5,
-    fontFamily: Fonts.regular,
+    fontFamily: Fonts.semiBold,
   },
   // Empty schedule state
   emptySchedule: {

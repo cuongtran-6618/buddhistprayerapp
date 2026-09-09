@@ -1,5 +1,6 @@
 import { LotusIcon } from "@/components/icons/lotus-icon";
 import { GoldGradient } from "@/components/ui/gold-gradient";
+import { LangToggle } from "@/components/ui/lang-toggle";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/fonts";
@@ -25,7 +26,10 @@ export function ChantListScreen({ onChantSelect }: ChantListScreenProps) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.heading}>{i18n.t("chant.heading")}</Text>
+        <View style={styles.header}>
+          <Text style={styles.heading}>{i18n.t("chant.heading")}</Text>
+          <LangToggle />
+        </View>
         <View style={styles.list}>
           {tracks.map((track) => (
             <ChantRow
@@ -47,21 +51,22 @@ function ChantRow({ track, onPress }: { track: Track; onPress: () => void }) {
   const i18n = useI18n();
   const key = track.id.replace(/-/g, '_');
   return (
-    <View style={styles.row}>
+    <Pressable style={styles.row} onPress={onPress}>
       <LotusIcon size={22} color={Colors.gold} />
       <View style={styles.rowInfo}>
         <View style={styles.rowTitleRow}>
           <Text style={styles.rowTitle}>{i18n.t(`tracks.${key}.title`)}</Text>
         </View>
         <Text style={styles.rowSubtitle}>{i18n.t(`tracks.${key}.subtitle`)}</Text>
-        <Text style={styles.rowDuration}>🕐 {i18n.t(`tracks.${key}.duration`)}</Text>
+        <View style={styles.rowDurationRow}>
+          <Ionicons name="time-outline" size={11} color={Colors.muted} />
+          <Text style={styles.rowDuration}>{i18n.t(`tracks.${key}.duration`)}</Text>
+        </View>
       </View>
-      <Pressable onPress={onPress} style={styles.playButton}>
-        <GoldGradient style={styles.playButtonGradient}>
-          <Ionicons name="play" size={14} color={Colors.cream} />
-        </GoldGradient>
-      </Pressable>
-    </View>
+      <GoldGradient style={styles.playButtonGradient}>
+        <Ionicons name="play" size={14} color={Colors.cream} />
+      </GoldGradient>
+    </Pressable>
   );
 }
 
@@ -78,11 +83,16 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     paddingHorizontal: 24,
   },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
   heading: {
     color: Colors.cream,
     fontSize: 22,
     fontFamily: Fonts.bold,
-    marginBottom: 20,
   },
   list: {
     gap: 12,
@@ -116,19 +126,22 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.italic,
     marginTop: 3,
   },
+  rowDurationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 6,
+  },
   rowDuration: {
     color: Colors.muted,
     fontSize: 11,
     fontFamily: Fonts.regular,
-    marginTop: 6,
-  },
-  playButton: {
-    borderRadius: 18,
-    overflow: "hidden",
   },
   playButtonGradient: {
     width: 36,
     height: 36,
+    borderRadius: 18,
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },

@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useCallback, useMemo, useState } from "react";
+import { LangToggle } from "@/components/ui/lang-toggle";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -33,8 +34,8 @@ function formatDisplayDate(dateKey: string, locale: string): string {
 
 // ── Calendar ──────────────────────────────────────────────────────────────────
 
-const WEEKDAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
-const CELL = 30;
+const WEEKDAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const CELL = 38;
 
 function MonthCalendar({
   year,
@@ -203,6 +204,7 @@ export function HistoryScreen() {
       <View style={styles.topSection}>
         <View style={styles.headerRow}>
           <Text style={styles.heading}>{i18n.t("history.heading")}</Text>
+          <LangToggle />
         </View>
 
         <View style={styles.summaryRow}>
